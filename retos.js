@@ -390,7 +390,7 @@
           h('input', { value: nombre, maxLength: 20, onChange: function (ev) { setNombre(ev.target.value); }, onKeyDown: function (ev) { if (ev.key === 'Enter') join(); }, placeholder: 'Tu nombre en la tabla', 'aria-label': 'Nombre en la clasificación' }),
           h('button', { className: 'btn btn-primary', onClick: join }, h('span', null, 'Unirme'))),
         msg ? h('p', { className: 'lj-err' }, msg) : null)) : null;
-    var noAcc = !demo && !CLAS.ready() ? h('div', { className: 'lb-empty' }, h(UI.Mascot, { kind: 'peon', mood: 'think', size: 80 }), h('div', null, h('b', null, 'Inicia sesión para ver la clasificación'), h('p', { className: 'muted small' }, 'La clasificación usa tu cuenta para guardar tus cifras.'))) : null;
+    var noAcc = !demo && !CLAS.ready() ? h('div', { className: 'lb-empty' }, h(UI.Mascot, { kind: 'peon', mood: 'think', size: 80 }), h('div', null, h('b', null, 'Inicia sesión para ver la clasificación'), h('p', { className: 'muted small' }, 'La clasificación usa tu cuenta para guardar tus cifras.'), window.AA_ENTRAR ? h(UI.Btn, { kind: 'success', onClick: window.AA_ENTRAR }, 'Crear cuenta gratis') : null)) : null;
 
     return h('div', { className: 'page-retos clasif' },
       h('section', { className: 'lb-hero' },

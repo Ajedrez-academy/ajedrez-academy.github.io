@@ -44,3 +44,6 @@
 .tr-skip { border: 0; background: none; color: var(--ink-3); font: 800 .88rem Nunito, sans-serif; cursor: pointer; }
 .tr-next { min-height: 0; padding: 9px 16px; }
 @media (max-width: 760px) { .nv-stage { grid-template-columns: 1fr; } .nv-head { flex-direction: column; text-align: center; } .nv-actions { justify-content: center; } }
+/* Usuario sin nivel en el móvil: la prueba de nivel va primero; misiones y metas aparecen después */
+@media (max-width: 899px) { .home:has(.nv-card) .side-col { display: none; } }
+.nv-card { scroll-margin-top: 80px; }

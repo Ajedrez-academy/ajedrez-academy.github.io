@@ -58,8 +58,21 @@
       var c = el && el.closest && el.closest("button,a,input,select,textarea,label,[role=button],[onclick]");
       return c && c.getBoundingClientRect().height < 70 ? c : null;
     }
+    /* En Ajedrez Academy: no molestar a quien acaba de llegar (sin nivel, en la partida de nivel, durante el tour,
+       ni antes de 300 XP) y no tapar el tablero durante lecciones y partidas. */
+    function oculto() {
+      try {
+        var st = JSON.parse(localStorage.getItem('chess-academy/v1') || 'null');
+        if (!st) return false;
+        if (!st.level || (st.xp || 0) < 300) return true;
+        if (document.querySelector('.aa-tour')) return true;
+        return !/^#?(inicio|progreso|ajustes|clasificacion)?$/.test(location.hash.replace(/^#/, '').split('/')[0]);
+      } catch (e) { return false; }
+    }
     function colocar() {
       if (!host.isConnected) return;
+      var off = oculto(); host.style.display = off ? 'none' : '';
+      if (off) return;
       var alto = window.innerHeight, base = 12;
       host.style.visibility = "hidden";
       [24, 70, 120].forEach(function (x) {
@@ -81,7 +94,7 @@
       host.style.bottom = base + "px";
     }
     colocar(); setTimeout(colocar, 800); setInterval(colocar, 2000);
-    window.addEventListener("resize", colocar);
+    window.addEventListener("resize", colocar); window.addEventListener("hashchange", colocar);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar); else montar();
 })();

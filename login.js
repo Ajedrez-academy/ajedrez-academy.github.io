@@ -12,7 +12,9 @@
 
   var LEN = Math.min(10, Math.max(6, CFG.codeLength || 6));
   var KEYS = ['chess-academy/v1', 'chess-academy/vet'];
-  var SYNC_AT = 'chess-academy/sync-at', OWNER = 'chess-academy/owner';
+  var SYNC_AT = 'chess-academy/sync-at', OWNER = 'chess-academy/owner', GUEST = 'aa-guest';
+  /* Abre la pantalla de acceso desde cualquier sitio (modo invitado → crear cuenta). El progreso local se conserva. */
+  window.AA_ENTRAR = function () { try { localStorage.removeItem(GUEST); } catch (e) {} location.reload(); };
   var SDK = ['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
              'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'];
   var html = document.documentElement;
@@ -79,6 +81,9 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
 #aa-login .aa-code.bad{animation:aa-shake .38s}
 #aa-login .aa-err{min-height:1.4em;margin:0 0 14px;color:var(--a-red);font-weight:800;font-size:.92rem}
 #aa-login .aa-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+#aa-login .aa-guest{margin-top:10px;background:none;box-shadow:none;border:2px solid var(--a-line,#dfe5e0);color:var(--a-ink2,#4a554e)}
+#aa-login .aa-gnote{margin:8px 2px 0;font-size:.8rem;font-weight:700;color:var(--a-ink3,#96a199);line-height:1.4}
+#aa-chip .aa-save{display:flex;width:100%;justify-content:center;margin-top:8px;padding:10px;border:0;border-radius:12px;background:var(--green,#2bb45c);color:#fff;font:800 .9rem Nunito,sans-serif;cursor:pointer}
 #aa-login .aa-link{background:none;border:0;padding:6px 2px;color:var(--a-gd);font:800 .92rem Nunito,sans-serif;cursor:pointer;border-radius:8px}
 #aa-login .aa-link:disabled{color:var(--a-ink3);cursor:default}
 #aa-login .aa-link.mut{color:var(--a-ink2)}
@@ -183,10 +188,12 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
         '<ol class="aa-steps" aria-label="Pasos"><li data-s="google">Google</li><li data-s="code">Código</li></ol>' +
         '<section data-v="wait" class="aa-wait"><span class="aa-spin"></span><span>Preparando tu club…</span></section>' +
         '<section data-v="google" hidden>' +
-          '<h1 id="aa-t">Entra a tu club</h1>' +
-          '<p class="aa-sub">Inicia sesión para guardar tu progreso y seguir donde lo dejaste.</p>' +
+          '<h1 id="aa-t">Aprende ajedrez gratis</h1>' +
+          '<p class="aa-sub">Lecciones cortas, táctica y retos. Entra con Google para guardar tu progreso en todos tus dispositivos.</p>' +
           '<button type="button" class="aa-btn" data-a="google">' + G + '<span>Continuar con Google</span></button>' +
           '<p class="aa-err" role="alert" data-e="google"></p><p class="aa-hint" data-e="hint" hidden></p>' +
+          '<button type="button" class="aa-btn aa-guest" data-a="guest"><span>Probar sin cuenta</span></button>' +
+          '<p class="aa-gnote">Sin cuenta, tu progreso se guarda solo en este dispositivo. Puedes crear la cuenta cuando quieras.</p>' +
           '<p class="aa-note">' + ICO.mail + '<span>Después te enviaremos un código de ' + LEN + ' dígitos a tu correo de Google para confirmar que eres tú.</span></p>' +
         '</section>' +
         '<section data-v="code" hidden>' +
@@ -234,6 +241,7 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
     $('[data-a="google"]').addEventListener('click', startGoogle);
     $('[data-a="verify"]').addEventListener('submit', function (e) { e.preventDefault(); submitCode(); });
     $('[data-a="resend"]').addEventListener('click', function () { sendCode(true); });
+    $('[data-a="guest"]').addEventListener('click', function () { try { origSet.call(localStorage, GUEST, '1'); } catch (e) {} unlock(null, true); });
     $('[data-a="other"]').addEventListener('click', otherAccount);
     cellsEls().forEach(function (inp, idx, all) {
       inp.addEventListener('input', function () {
@@ -437,9 +445,9 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
     var t = chip.querySelector('.aa-stt');
     if (t) t.textContent = s === 'ok' ? 'Progreso guardado' : s === 'wait' ? 'Guardando…' : 'Sin conexión · se guardará luego';
   }
-  function mountChip(user) {
+  function mountChip(user, guest) {
     var m = (user && user.user_metadata) || {};
-    var name = m.full_name || m.name || email || 'Tu cuenta';
+    var name = guest ? 'Invitado' : (m.full_name || m.name || email || 'Tu cuenta');
     var pic = m.avatar_url || m.picture || '';
     chip = document.createElement('div');
     chip.id = 'aa-chip';
@@ -448,9 +456,9 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
       (pic ? '<img alt="" referrerpolicy="no-referrer" src="' + esc(pic) + '">' : esc(name.trim().charAt(0).toUpperCase())) +
       '</span><span class="aa-lbl">' + esc(first) + '</span><span class="aa-dot"></span></button>' +
       '<div class="aa-menu" hidden><div class="aa-mh"><span class="aa-av">' + (pic ? '<img alt="" referrerpolicy="no-referrer" src="' + esc(pic) + '">' : esc(name.trim().charAt(0).toUpperCase())) + '</span><span class="aa-mt"><b>' + esc(name.indexOf('@') > 0 ? first : name) + '</b><small class="aa-em" title="' + esc(email) + '">' + esc(email) + '</small></span></div>' +
-      '<p class="aa-state"><span class="aa-dot"></span><span class="aa-stt"></span></p>' +
+      (guest ? '<p class="aa-state" style="display:block">Tu progreso se guarda solo en este dispositivo.</p><button type="button" class="aa-save" data-a="save">Crear cuenta y guardarlo</button>' : '<p class="aa-state"><span class="aa-dot"></span><span class="aa-stt"></span></p>') +
       '<div class="aa-go"><button type="button" data-go="Progreso">Progreso</button><button type="button" data-go="Ajustes">Ajustes</button><button type="button" data-go="Evaluar">Evaluar</button><button type="button" data-go="Clasificación">Clasificación</button><button type="button" data-go="Memoria">Memoria</button><button type="button" data-go="tema">Tema</button></div>' +
-      '<button type="button" class="aa-exit" data-a="out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>Cerrar sesión</button></div>';
+      (guest ? '' : '<button type="button" class="aa-exit" data-a="out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>Cerrar sesión</button>') + '</div>';
     var btn = chip.firstChild, menu = chip.querySelector('.aa-menu');
     /* El botón vive dentro de la barra de navegación de la app: encima de «Tema» en el ordenador y
        en la cabecera en el móvil. En pantallas sin barra (lecciones, Evaluar…) no se muestra. */
@@ -479,7 +487,8 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
     addEventListener('resize', function () { if (!menu.hidden) pos(); });
     document.addEventListener('click', function (e) { if (!chip.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
-    chip.querySelector('[data-a="out"]').addEventListener('click', signOut);
+    if (guest) chip.querySelector('[data-a="save"]').addEventListener('click', window.AA_ENTRAR);
+    else chip.querySelector('[data-a="out"]').addEventListener('click', signOut);
     setChip(chipState);
   }
   function signOut() {
@@ -493,15 +502,16 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
   }
 
   /* ── Entrada ─────────────────────────────────────────────────────────── */
-  function unlock(user) {
+  function unlock(user, guest) {
     unlocked = true;
     if (mo) mo.disconnect();
     html.classList.remove('aa-lock');
     box.classList.add('aa-out');
     setTimeout(function () { box.remove(); }, 400);
-    if (user || DEMO) mountChip(user);
+    if (user || DEMO) mountChip(user); else if (guest) mountChip(null, true);
     /* Para la clasificación (retos.js): cliente, usuario y nombre de pila */
     var md = (user && user.user_metadata) || {};
+    if (guest) { window.AA_INVITADO = true; return; }
     window.AA_CUENTA = { sb: sb, uid: uid, nombre: (md.given_name || (md.full_name || md.name || '').split(' ')[0] || '').trim(), demo: !!DEMO };
     window.dispatchEvent(new Event('aa-cuenta'));
     if (sb && uid && !DEMO) heartbeat();
@@ -560,11 +570,13 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
       }
       var s = r.data && r.data.session;
       if (!s && hadCode) { clearAuthLeftovers(); view('google'); err('google', 'El acceso con Google caducó o se abrió en otra ventana. Pulsa otra vez «Continuar con Google».'); return; }
-      if (s && hasGoogle(s) && codeOk(s)) return enter(s);
-      if (s && hasGoogle(s)) { email = s.user.email; view('code'); sendCode(false); return; }
+      if (s && hasGoogle(s) && codeOk(s)) { localStorage.removeItem(GUEST); return enter(s); }
+      if (!s && localStorage.getItem(GUEST) === '1') return unlock(null, true);
+      if (s && hasGoogle(s)) { localStorage.removeItem(GUEST); email = s.user.email; view('code'); sendCode(false); return; }
       if (s) sb.auth.signOut();
       view('google');
     }).catch(function () {
+      if (localStorage.getItem(GUEST) === '1') return unlock(null, true);
       view('google');
       err('google', 'No se pudo conectar con el servidor de cuentas. Revisa tu conexión y recarga la página.');
     });
