@@ -22,7 +22,7 @@
     var c = document.createElement('canvas'), r = el.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
     c.className = 'aa-confetti'; c.width = r.width * dpr; c.height = r.height * dpr; el.appendChild(c);
     var x = c.getContext('2d'); x.scale(dpr, dpr);
-    var cols = ['#ffc83d', '#2fb344', '#1cb0f6', '#ff9600', '#a560e8', '#ff5e7a'], P = [];
+    var cols = ['#ffc83d', '#2bb45c', '#1cb0f6', '#ff9600', '#a560e8', '#ff5e7a'], P = [];
     for (var i = 0; i < (n || 140); i++) P.push({ x: r.width / 2 + (Math.random() - .5) * r.width * .3, y: r.height * .35, vx: (Math.random() - .5) * 9, vy: -Math.random() * 9 - 3,
       w: 6 + Math.random() * 6, h: 4 + Math.random() * 4, a: Math.random() * 6, va: (Math.random() - .5) * .3, c: cols[i % cols.length] });
     var t0 = performance.now();
@@ -313,7 +313,7 @@
     ['Thiago', 980, 19, 7, 300, 8, 1655, 3550, 400], ['Camila', 760, 12, 2, 520, 31, 1402, 2900, 860], ['Benjamín', 540, 9, 3, 180, 5, 1310, 2100, 240], ['Sofía', 410, 6, 2, 120, 3, 1250, 1700, 150]];
   function demoRows() { return DEMO_ROWS.map(function (r, i) { return { user_id: 'demo' + i, nombre: r[0], xp_semana: r[1], problemas_semana: r[2], lecciones_semana: r[3], memoria_semana: r[4],
     racha: r[5], tactica: r[6], xp_total: r[7], memoria_record: r[8] }; }); }
-  var AV = ['#2fb344', '#1cb0f6', '#ff9600', '#a560e8', '#ff5e7a', '#14b8a6'];
+  var AV = ['#2bb45c', '#1cb0f6', '#ff9600', '#a560e8', '#ff5e7a', '#14b8a6'];
   function avColor(id) { var s = 0; for (var i = 0; i < (id || '').length; i++) s = (s * 31 + id.charCodeAt(i)) >>> 0; return AV[s % AV.length]; }
 
   function Clasificacion() {

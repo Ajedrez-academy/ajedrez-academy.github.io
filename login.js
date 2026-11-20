@@ -31,7 +31,7 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
 #aa-login *{box-sizing:border-box}
 #aa-login.aa-out{opacity:0;pointer-events:none}
 #aa-login .aa-side{position:relative;overflow:hidden;isolation:isolate;color:#fff;padding:56px clamp(32px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;
-  background:linear-gradient(150deg,#43d477 0%,#2bb45c 38%,#1b8a45 100%)}
+  background:linear-gradient(150deg,#3ccb6c 0%,#2bb45c 38%,#1d8a44 100%)}
 #aa-login .aa-side::before{content:"";position:absolute;inset:-20px;z-index:-1;opacity:.13;background:conic-gradient(#fff 25%,transparent 0 50%,#fff 0 75%,transparent 0) 0 0/56px 56px;
   -webkit-mask:linear-gradient(200deg,#000 0%,transparent 55%);mask:linear-gradient(200deg,#000 0%,transparent 55%)}
 #aa-login .aa-knight{position:absolute;right:-6%;bottom:-8%;width:min(62%,420px);z-index:-1;opacity:.17}
@@ -148,9 +148,9 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
   /* ── Dibujos ─────────────────────────────────────────────────────────── */
   var KNIGHT = 'M20 51 C20 45 22.5 39.5 28.5 33.5 C26.5 34.5 24 34.5 22.3 32.6 C21 34.4 19 35.2 16.8 35 L13.6 34.8 C11.2 34.6 9.9 32.6 10.6 30.4 L12.3 25 C13.8 18.8 17.6 14.3 22.6 12.3 L23.6 7.8 C23.8 7 24.8 6.8 25.3 7.5 L28.2 11.2 C35.4 11.6 41 16.6 43.6 24.4 C45.4 30 46.2 38 46 51 Z';
   function logo(n, id) {
-    return '<svg width="' + n + '" height="' + n + '" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#43d477"/><stop offset="1" stop-color="#1b8a45"/></linearGradient><clipPath id="' + id + 'c"><rect x="2" y="2" width="60" height="60" rx="16"/></clipPath></defs>' +
+    return '<svg width="' + n + '" height="' + n + '" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3ccb6c"/><stop offset="1" stop-color="#1d8a44"/></linearGradient><clipPath id="' + id + 'c"><rect x="2" y="2" width="60" height="60" rx="16"/></clipPath></defs>' +
       '<rect x="2" y="2" width="60" height="60" rx="16" fill="url(#' + id + 'g)"/><g clip-path="url(#' + id + 'c)" fill="#fff" opacity=".16"><rect x="2" y="44" width="9" height="9"/><rect x="11" y="53" width="9" height="9"/><rect x="53" y="2" width="9" height="9"/></g>' +
-      '<path d="' + KNIGHT + '" fill="#fff"/><circle cx="21.6" cy="19.6" r="1.8" fill="#1b8a45"/><path d="M33 16 C37 18 39.5 22 40.6 27" stroke="#1b8a45" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".35"/><rect x="17.5" y="50" width="31" height="5.5" rx="2.75" fill="#fff"/></svg>';
+      '<path d="' + KNIGHT + '" fill="#fff"/><circle cx="21.6" cy="19.6" r="1.8" fill="#1d8a44"/><path d="M33 16 C37 18 39.5 22 40.6 27" stroke="#1d8a44" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".35"/><rect x="17.5" y="50" width="31" height="5.5" rx="2.75" fill="#fff"/></svg>';
   }
   var G = '<svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A12 12 0 0 1 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
   var ICO = {

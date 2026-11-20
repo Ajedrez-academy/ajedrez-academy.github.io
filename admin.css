@@ -1,8 +1,8 @@
 /* ═══ Ajedrez Academy · panel de administración ═══ */
 .adm { max-width: 1240px; }
 .adm-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; padding: 22px 24px; border-radius: 24px; margin-bottom: 16px; color: #fff;
-  background: radial-gradient(80% 140% at 100% 0%, #2fb344 0%, transparent 55%), linear-gradient(135deg, #0f172a, #1e293b 60%, #14532d); box-shadow: 0 20px 40px -26px rgba(15, 23, 42, .9); }
-.adm-kicker { font: 900 .72rem/1 var(--fd, inherit); letter-spacing: .1em; text-transform: uppercase; color: #86efac; }
+  background: radial-gradient(80% 140% at 100% 0%, var(--green) 0%, transparent 55%), linear-gradient(135deg, #0f172a, #1e293b 60%, color-mix(in srgb, var(--green-d) 60%, #000)); box-shadow: 0 20px 40px -26px rgba(15, 23, 42, .9); }
+.adm-kicker { font: 900 .72rem/1 var(--fd, inherit); letter-spacing: .1em; text-transform: uppercase; color: color-mix(in srgb, var(--green) 55%, #fff); }
 .adm-hero h1 { color: #fff; font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 8px 0 4px; }
 .adm-hero p { margin: 0; color: rgba(255, 255, 255, .75); font-weight: 700; font-size: .88rem; }
 .adm-refresh { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 0; cursor: pointer; background: rgba(255, 255, 255, .12); color: #fff; font: 800 .9rem/1 var(--fd, inherit); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2); }
@@ -13,11 +13,11 @@
 .adm-kpi small { font-weight: 800; color: var(--ink-3); font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; }
 .adm-kpi b { font: 800 1.9rem/1 var(--fd, inherit); color: var(--ink); font-variant-numeric: tabular-nums; }
 .adm-kpi span { font-weight: 700; font-size: .78rem; color: var(--ink-2); }
-.adm-kpi.green { box-shadow: inset 0 0 0 1px color-mix(in srgb, #2fb344 40%, var(--line)), inset 0 3px 0 #2fb344; } .adm-kpi.green b { color: #2fb344; }
+.adm-kpi.green { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 40%, var(--line)), inset 0 3px 0 var(--green); } .adm-kpi.green b { color: var(--green); }
 .adm-kpi.blue { box-shadow: inset 0 0 0 1px var(--line), inset 0 3px 0 #1cb0f6; }
-.adm-online { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; margin-bottom: 14px; border-radius: 16px; background: color-mix(in srgb, #2fb344 9%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, #2fb344 30%, var(--line)); }
+.adm-online { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; margin-bottom: 14px; border-radius: 16px; background: color-mix(in srgb, var(--green) 9%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 30%, var(--line)); }
 .adm-online > b { display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; font: 800 .9rem/1 var(--fd, inherit); color: var(--ink); }
-.adm-pulse { width: 10px; height: 10px; border-radius: 50%; background: #2fb344; box-shadow: 0 0 0 0 rgba(47, 179, 68, .6); animation: adm-p 1.6s infinite; }
+.adm-pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(47, 179, 68, .6); animation: adm-p 1.6s infinite; }
 @keyframes adm-p { 70% { box-shadow: 0 0 0 10px rgba(47, 179, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(47, 179, 68, 0); } }
 .adm-chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; border: 0; cursor: pointer; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); text-align: left; font-weight: 800; font-size: .84rem; }
 .adm-chip small { display: block; font-weight: 700; color: var(--ink-3); font-size: .72rem; }
@@ -32,7 +32,7 @@
 .adm-table { border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
 .adm-tr { display: grid; grid-template-columns: minmax(220px, 2.2fr) 1.2fr .7fr 1.1fr .9fr .6fr .9fr 1fr 1.3fr; align-items: center; gap: 10px; width: 100%; padding: 10px 16px;
   border: 0; border-top: 1px solid var(--line); background: none; color: var(--ink); text-align: left; font: 700 .86rem Nunito, sans-serif; cursor: pointer; }
-.adm-tr:hover { background: var(--surface-2); } .adm-tr.sel { background: color-mix(in srgb, #2fb344 8%, var(--surface)); }
+.adm-tr:hover { background: var(--surface-2); } .adm-tr.sel { background: color-mix(in srgb, var(--green) 8%, var(--surface)); }
 .adm-th { cursor: default; border-top: 0; background: var(--surface-2); font: 900 .7rem/1 var(--fd, inherit); color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; padding: 12px 16px; }
 .adm-th:hover { background: var(--surface-2); }
 .adm-tr > span { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
@@ -41,16 +41,16 @@
 .adm-user { flex-direction: row !important; align-items: center; gap: 10px !important; }
 .adm-user b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .adm-user small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.adm-user em { margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: #0f172a; color: #86efac; font: 900 .62rem/1.4 var(--fd, inherit); font-style: normal; text-transform: uppercase; vertical-align: 1px; }
-.adm-av { width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center; object-fit: cover; background: #2fb344; color: #fff; font: 900 .95rem/1 var(--fd, inherit); }
+.adm-user em { margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: #0f172a; color: color-mix(in srgb, var(--green) 55%, #fff); font: 900 .62rem/1.4 var(--fd, inherit); font-style: normal; text-transform: uppercase; vertical-align: 1px; }
+.adm-av { width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center; object-fit: cover; background: var(--green); color: #fff; font: 900 .95rem/1 var(--fd, inherit); }
 .adm-av.big { width: 56px; height: 56px; font-size: 1.4rem; }
 .adm-st { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: var(--ink-3); font-size: .82rem; }
 .adm-st i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-d, #ccc); }
 .adm-st.today i { background: #f2a900; } .adm-st.today { color: var(--ink-2); }
-.adm-st.on { color: #2fb344; } .adm-st.on i { background: #2fb344; box-shadow: 0 0 0 3px color-mix(in srgb, #2fb344 25%, transparent); }
-.adm-where { color: #2fb344 !important; }
+.adm-st.on { color: var(--green); } .adm-st.on i { background: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent); }
+.adm-where { color: var(--green) !important; }
 .adm-bar { display: block; height: 6px; border-radius: 99px; background: var(--surface-3, #eee); overflow: hidden; }
-.adm-bar i { display: block; height: 100%; background: linear-gradient(90deg, #2fb344, #1cb0f6); border-radius: 99px; }
+.adm-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), #1cb0f6); border-radius: 99px; }
 .adm-dev { font-size: .8rem; color: var(--ink-2); }
 /* ficha */
 .adm-drawer-wrap { position: fixed; inset: 0; z-index: 80; background: rgba(15, 23, 42, .35); display: flex; justify-content: flex-end; animation: adm-fade .15s ease; }
@@ -66,7 +66,7 @@
 .adm-stats b { font: 800 1.2rem/1 var(--fd, inherit); } .adm-stats small { margin-top: 3px; color: var(--ink-3); font-weight: 800; font-size: .72rem; }
 .adm-drawer h3 { margin: 18px 0 8px; font: 900 .74rem/1 var(--fd, inherit); color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
 .adm-heat { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 3px; }
-.adm-heat i { aspect-ratio: 1; border-radius: 3px; background: var(--surface-3, #e5e7eb); } .adm-heat i.on { background: #2fb344; }
+.adm-heat i { aspect-ratio: 1; border-radius: 3px; background: var(--surface-3, #e5e7eb); } .adm-heat i.on { background: var(--green); }
 .adm-tomo { display: grid; grid-template-columns: 70px 1fr 50px; align-items: center; gap: 10px; margin-bottom: 6px; font-weight: 800; font-size: .84rem; }
 .adm-tomo small { text-align: right; color: var(--ink-3); font-weight: 800; }
 .adm-kv { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: .86rem; }
