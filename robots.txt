@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ajedrez-academy.github.io/sitemap.xml

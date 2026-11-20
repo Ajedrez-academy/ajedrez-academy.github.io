@@ -1,0 +1,227 @@
+/* ═══ Ajedrez Academy · retoques (semana de racha, cofre, botón desactivado) ═══ */
+:root {
+  --m-flame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.6 1.8c.5 3.3 3.1 5.4 4.7 7.6 1.3 1.8 2.2 3.7 2.2 5.9A7.5 7.5 0 0 1 4.5 15.3c0-2.9 1.6-5 3.4-6.6.2 1.9 1 3.2 2.3 3.9-.3-3.9.6-7.4 2.4-10.8z'/%3E%3C/svg%3E");
+  --m-shield: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8 20.5 5v6.3c0 5.2-3.6 9.6-8.5 11-4.9-1.4-8.5-5.8-8.5-11V5z'/%3E%3C/svg%3E");
+  --flame-a: #ffb547; --flame-b: #ff7a1a; --flame-d: #c75a0c;
+  --ice: #2b7fc6; --ice-s: #e3f1fc;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ice: #7cc4ff; --ice-s: #15283a; } }
+:root[data-theme="dark"] { --ice: #7cc4ff; --ice-s: #15283a; }
+
+/* ── Semana de racha: siete casillas con la letra arriba y el estado abajo;
+      debajo, el recuento y los protectores. Se adapta al ancho de la columna. ── */
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: center; gap: 5px; margin-top: 12px; max-width: 300px; }
+.wd {
+  width: auto; min-width: 0; height: 40px; border-radius: 11px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: var(--surface-3); color: var(--ink-3);
+  font: 800 10.5px/1 var(--fd, inherit); letter-spacing: .02em;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .06);
+}
+.wd i { font-style: normal; }
+.wd::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .45; }
+.wd.on { background: linear-gradient(180deg, var(--flame-a), var(--flame-b)); color: #fff; box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--flame-d) 70%, transparent); }
+.wd.on::after { width: 13px; height: 13px; border-radius: 0; opacity: 1; background: #fff; -webkit-mask: var(--m-flame) center / contain no-repeat; mask: var(--m-flame) center / contain no-repeat; }
+.wd.ice { background: var(--ice-s); color: var(--ice); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ice) 45%, transparent); }
+.wd.ice::after { width: 12px; height: 12px; border-radius: 0; opacity: 1; background: currentColor; -webkit-mask: var(--m-shield) center / contain no-repeat; mask: var(--m-shield) center / contain no-repeat; }
+.wd.today:not(.on):not(.ice) { background: var(--surface); color: var(--flame-d); box-shadow: inset 0 0 0 2px var(--flame-b); }
+.wd.fut { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line); opacity: 1; color: var(--ink-3); }
+.wd.fut::after { opacity: .25; }
+.week small { grid-column: 1 / 5; margin-top: 4px; font: 800 .82rem/1 var(--fd, inherit); color: var(--ink-2); white-space: nowrap; }
+.week .freeze {
+  grid-column: 5 / 8; justify-self: end; margin-top: 4px; display: inline-flex; align-items: center; gap: 5px; flex: none;
+  padding: 5px 10px 5px 8px; border-radius: 999px; background: var(--ice-s); color: var(--ice);
+  font: 800 .82rem/1 var(--fd, inherit); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ice) 30%, transparent);
+}
+.ico-shield { display: inline-block; width: 14px; height: 14px; background: currentColor; -webkit-mask: var(--m-shield) center / contain no-repeat; mask: var(--m-shield) center / contain no-repeat; font-style: normal; }
+@media (max-width: 420px) { .week { gap: 4px; } }
+
+/* Racha: llama dibujada (no emoji) en «Meta diaria», rellena en la cabecera */
+.streak-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 6px; border-radius: 999px; background: color-mix(in srgb, var(--flame-b) 14%, var(--surface)); color: var(--flame-d); font-weight: 800; vertical-align: 1px; }
+.ico-flame { display: inline-block; width: 13px; height: 13px; background: linear-gradient(180deg, var(--flame-a), var(--flame-b)); -webkit-mask: var(--m-flame) center / contain no-repeat; mask: var(--m-flame) center / contain no-repeat; font-style: normal; }
+.freeze-note .ico-shield { color: var(--ice); width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }
+.ts-flame svg path { fill: color-mix(in srgb, currentColor 35%, transparent); }
+
+/* ── Cofre de misiones: tarjeta de recompensa con el cofre a color ── */
+.q-chest {
+  margin-top: 12px; padding: 10px 14px 10px 10px; gap: 12px; border-top: 0; border-radius: 16px;
+  background: linear-gradient(100deg, color-mix(in srgb, #ffc83d 14%, var(--surface)), var(--surface-2) 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #e0a400 28%, var(--line));
+  font-weight: 700; font-size: .84rem; color: var(--ink-2); line-height: 1.3;
+}
+.q-chest > span::before { content: "Cofre del día"; display: block; margin-bottom: 2px; font: 900 .95rem/1.2 var(--fd, inherit); color: var(--ink); }
+.q-chest.open > span::before { content: "Cofre abierto"; }
+.q-chest.ready > span::before { content: "¡Cofre listo!"; color: #b07800; }
+.q-chest.ready { background: color-mix(in srgb, #ffc83d 22%, var(--surface)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #e0a400 60%, transparent); color: var(--ink); }
+.q-chest.open { background: color-mix(in srgb, var(--green) 12%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--green) 40%, transparent); color: var(--ink); }
+.q-chest svg.chest2 { width: 58px; height: 51px; flex: none; overflow: visible; filter: none !important; }
+.chest2 .c-shadow { fill: rgba(0, 0, 0, .14); }
+.chest2 .c-spark path { fill: #ffd24a; }
+.chest2 .c-spark, .chest2 .c-glow { opacity: 0; }
+.chest2 .c-lid { transform-origin: 8px 29px; transition: transform .5s var(--ease, ease); }
+.q-chest:not(.ready):not(.open) .chest2 { opacity: .92; }
+.q-chest.ready .chest2 { filter: drop-shadow(0 0 9px color-mix(in srgb, #ffc83d 75%, transparent)) !important; animation: aa-chest-bob 1.8s ease-in-out infinite; }
+.q-chest.ready .chest2 .c-spark { opacity: 1; animation: aa-twinkle 1.4s ease-in-out infinite; }
+.q-chest.open .chest2 .c-lid, .q-chest.opening .chest2 .c-lid { transform: translate(-2px, -9px) rotate(-18deg); }
+.q-chest.open .chest2 .c-glow { opacity: 1; }
+.q-chest.open .chest2 .c-lock { opacity: 0; }
+.q-chest.open .chest2 .c-spark { opacity: .9; }
+@keyframes aa-twinkle { 50% { opacity: .35; } }
+@keyframes aa-chest-bob { 50% { transform: translateY(-2px) rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) { .q-chest .chest2, .q-chest .chest2 .c-spark { animation: none; } }
+
+/* ── Botón grande desactivado («Mueve una pieza»): hueco discontinuo, no un bloque oscuro ── */
+.btn-big:disabled, .btn-big:disabled:hover {
+  background: transparent !important; color: var(--ink-3) !important;
+  border: 2px dashed var(--line-d) !important; box-shadow: none !important;
+  opacity: 1 !important; filter: none !important; transform: none !important;
+}
+
+/* Racha en Táctica */
+.streak .ico-flame { width: 14px; height: 14px; margin-right: 3px; vertical-align: -2px; }
+
+/* Portátiles con poca altura: la barra lateral se compacta para que quepan
+   todas las secciones, la cuenta y el tema sin taparse */
+@media (min-width: 900px) and (max-height: 800px) {
+  .rail { padding-top: 16px; padding-bottom: 14px; overflow-y: auto; scrollbar-width: none; }
+  .rail .brand { margin-bottom: 4px; }
+  .rail ul { gap: 0; }
+  .rail .nav { padding-top: 4px; padding-bottom: 4px; }
+  .rail .nav-ico { width: 32px; height: 32px; }
+  .rail .theme-btn { padding-top: 7px; padding-bottom: 7px; }
+}
+
+/* ── Tomos superados: quedan atrás como chips pequeños, no como tarjetas ── */
+.path-col { display: flex; flex-wrap: wrap; align-items: center; align-content: flex-start; column-gap: 8px; }
+.path-col > * { flex: 1 1 100%; min-width: 0; }
+.path-col:has(> .unit-mini)::before {
+  content: "Recorrido"; flex: 0 0 auto; margin: 0 2px 12px 0;
+  font: 900 .72rem/1 var(--fd, inherit); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+}
+.path-col > .unit-mini {
+  flex: 0 0 auto; width: auto; margin: 0 0 12px; padding: 5px 12px 5px 6px; gap: 6px;
+  justify-content: flex-start; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink-2); font-size: .85rem; box-shadow: none;
+}
+.path-col > .unit-mini:hover { border-color: var(--uc); color: var(--ink); }
+.unit-mini small { display: inline; color: var(--ink-3); font-weight: 800; }
+.unit-mini b { font-weight: 800; }
+.unit-mini .um-check {
+  width: 20px; height: 20px; border-radius: 50%; flex: none; background: var(--uc);
+  -webkit-mask: none; position: relative;
+}
+.unit-mini .um-check::after {
+  content: ""; position: absolute; left: 7px; top: 4px; width: 5px; height: 9px;
+  border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+}
+
+/* ── Cabecera del tomo: silueta de pieza en lugar del damero recortado; contador sólido ── */
+.unit-banner::after {
+  right: 78px; top: 50%; bottom: auto; width: 74px; height: 74px; transform: translateY(-50%) rotate(-8deg);
+  opacity: .2; background: #fff; border-radius: 0;
+  -webkit-mask: var(--aa-piece, var(--p-rook)) center / contain no-repeat; mask: var(--aa-piece, var(--p-rook)) center / contain no-repeat;
+}
+.unit.c-green { --aa-piece: var(--p-pawn); }
+.unit.c-red { --aa-piece: var(--p-knight); }
+.unit.c-blue { --aa-piece: var(--p-rook); }
+.unit.c-purple, .unit.c-orange, .unit.c-teal { --aa-piece: var(--p-queen); }
+.ub-count { background: #fff; color: var(--ucd, #333); box-shadow: 0 2px 0 rgba(0, 0, 0, .12); padding: 6px 14px; }
+:root {
+  --p-pawn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5a3.4 3.4 0 0 1 2.2 6c1.6.6 2.6 1.7 2.6 3h-2.1c.2 2.4 1.4 4.3 3.3 5.6v1.4H6v-1.4c1.9-1.3 3.1-3.2 3.3-5.6H7.2c0-1.3 1-2.4 2.6-3a3.4 3.4 0 0 1 2.2-6zM5 20h14v2H5z'/%3E%3C/svg%3E");
+  --p-knight: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 20v-1.6c0-2.9 2.8-4.3 3.6-6.6-1.7.9-3.5 1-4.6 2l-1.6-1.9c.3-2.2 1.7-3.4 2.8-5 .6-1.8 1.4-3.5 2.9-4.4l.6-1.7 1.3 1.6c4.3.5 6.8 3.9 6.8 9.4V20zM5 20.5h14V22H5z'/%3E%3C/svg%3E");
+  --p-rook: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 2.5h3v2.2h2V2.5h3v2.2h2V2.5h3V8l-2.3 1.8v6.4l2.3 2.3V22h-13v-3.5l2.3-2.3V9.8L5.5 8z'/%3E%3C/svg%3E");
+  --p-queen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.6 9.2a1.7 1.7 0 1 1 1.4-.8l2.5 6.2 2.3-7.4a1.7 1.7 0 1 1 2.4 0l2.3 7.4 2.5-6.2a1.7 1.7 0 1 1 1.4.8L17.6 18H6.4zM6 19h12v3H6z'/%3E%3C/svg%3E");
+}
+
+/* ── Personajes junto al camino ── */
+.prow { position: relative; }
+.path-char { position: absolute; top: 50%; transform: translateY(-58%); pointer-events: none; z-index: 1; }
+.path-char.to-right { left: calc(50% + 74px); }
+.path-char.to-left { right: calc(50% + 74px); }
+.path-char .mascot { width: 78px; height: auto; display: block; }
+.path-char::after {
+  content: ""; position: absolute; left: 50%; bottom: 2px; width: 70%; height: 10px; transform: translateX(-50%);
+  border-radius: 50%; background: color-mix(in srgb, var(--uc, var(--green)) 18%, transparent); z-index: -1;
+}
+@media (max-width: 520px) {
+  .path-char .mascot { width: 60px; }
+  .path-char.to-right { left: calc(50% + 50px); }
+  .path-char.to-left { right: calc(50% + 50px); }
+}
+
+/* ── «Continuar»: texto siempre blanco y verde con profundidad (en oscuro quedaba casi negro) ── */
+.side-col .card-cta.c-green, .op-continue .card-cta.c-green {
+  background: linear-gradient(180deg, #4fd35f, #2fb344) !important; border: 0 !important;
+  border-bottom: 4px solid #1f8a33 !important; color: #fff !important;
+}
+.side-col .card-cta.c-green b, .side-col .card-cta.c-green small, .side-col .card-cta.c-green svg,
+.op-continue .card-cta.c-green b, .op-continue .card-cta.c-green small, .op-continue .card-cta.c-green svg { color: #fff !important; opacity: 1; }
+
+/* ── Meta diaria más ligera: sin barra de nivel (está en Progreso) y meta plegada ── */
+.daily-goal .lv-row { display: none; }
+.daily-goal p.small { margin-bottom: 0; }
+.dg-goals { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.dg-goals:not(.aa-open) button:not(.on) { display: none; }
+.dg-goals:not(.aa-open) button.on { border-color: var(--line) !important; background: transparent !important; color: var(--ink-2) !important; }
+.dg-goals:not(.aa-open) button.on::before { content: "Meta: "; font-weight: 700; }
+.dg-goals:not(.aa-open) button.on::after { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 0 2px 6px; border: solid currentColor; border-width: 0 1.8px 1.8px 0; transform: rotate(45deg); }
+.day-pace p { font-size: .82rem; }
+
+/* ── Aperturas: si ya tienes cursos empezados, la portada se reduce a «Continuar» ── */
+.op-hero:has(.op-continue .card-cta + .card-cta) {
+  display: block; padding: 0; background: none; border: 0; box-shadow: none; margin-bottom: 10px;
+}
+.op-hero:has(.op-continue .card-cta + .card-cta) h1 { font-size: 1.9rem; margin: 0 0 12px; }
+.op-hero:has(.op-continue .card-cta + .card-cta) h1 + p,
+.op-hero:has(.op-continue .card-cta + .card-cta) .op-steps { display: none; }
+.op-hero:has(.op-continue .card-cta + .card-cta) .op-continue {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;
+}
+.op-hero:has(.op-continue .card-cta + .card-cta) .op-continue .card-cta { padding: 12px 14px; }
+
+/* ── Partidas: la reseña larga se lee en la crónica; la tarjeta queda visual ── */
+.library > p.muted.small { display: none; }
+.game-card.ms > p { display: none; }
+.game-card.ms { gap: 6px; }
+.game-card.ms .chips { margin-top: auto; }
+
+/* ── Ajustes como sección propia ── */
+.rail li.aa-sep { margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+.aa-nav-set { --uc: #6f7d8c; --ucd: #556170; --ucs: #eef1f4; }
+@media (max-width: 899px) { .rail li.aa-sep { display: none; } }
+html:not(.aa-settings) .progress > details.settings { display: none; }
+html.aa-settings .progress > :not(details.settings):not(h1) { display: none; }
+html.aa-settings .progress > h1 { position: relative; color: transparent; }
+html.aa-settings .progress > h1::after { content: "Ajustes"; position: absolute; left: 0; top: 0; color: var(--ink); }
+html.aa-settings .progress > details.settings > summary { display: none; }
+html.aa-settings .rail .nav.on:not(.aa-nav-set) { background: transparent; border-color: transparent; box-shadow: none; color: inherit; }
+html.aa-settings .rail .nav.on:not(.aa-nav-set) .nav-ico { background: transparent; color: var(--ink-3); box-shadow: none; }
+.op-hero:has(.op-continue .card-cta + .card-cta) .op-continue { width: 100%; }
+.op-hero:has(.op-continue .card-cta + .card-cta) + p.muted { margin-top: 4px; }
+
+/* ── Barra de resultado en la lección: icono en color (antes un círculo negro sobre verde oscuro) ── */
+.lbar-ok { background: color-mix(in srgb, var(--green) 16%, var(--surface)); box-shadow: inset 0 3px 0 var(--green); }
+.lbar-bad { background: color-mix(in srgb, var(--red) 14%, var(--surface)); box-shadow: inset 0 3px 0 var(--red); }
+.lbar-warn { background: color-mix(in srgb, var(--yellow) 16%, var(--surface)); box-shadow: inset 0 3px 0 var(--yellow-d, #e0a800); }
+.lbar-info { background: color-mix(in srgb, var(--blue) 14%, var(--surface)); box-shadow: inset 0 3px 0 var(--blue); }
+.lbar.lbar-ok .lbar-ico { background: var(--green); color: #fff; box-shadow: 0 3px 0 var(--green-d); }
+.lbar.lbar-bad .lbar-ico { background: var(--red); color: #fff; box-shadow: 0 3px 0 var(--red-d); }
+.lbar.lbar-warn .lbar-ico { background: var(--yellow); color: #6b4a00; box-shadow: 0 3px 0 var(--yellow-d, #e0a800); }
+.lbar.lbar-info .lbar-ico { background: var(--blue); color: #fff; box-shadow: 0 3px 0 var(--blue-d); }
+.lbar-ok .lbar-txt p, .lbar-bad .lbar-txt p, .lbar-info .lbar-txt p, .lbar-warn .lbar-txt p { color: var(--ink); opacity: .85; }
+
+/* ── Accesos a Clasificación y Memoria ── */
+.aa-nav-lb { --uc: #f2a900; --ucd: #c98a00; --ucs: #fff6db; }
+.aa-nav-mm { --uc: #a560e8; --ucd: #7d3fc0; --ucs: #f4e9ff; }
+@media (max-width: 899px) { .rail li.aa-own-li { display: none; } }
+
+/* Botón de apoyo (apoyo.js, fuera de esta carpeta): en el ordenador, a la esquina derecha
+   para no tapar la barra lateral, que ahora es más larga */
+@media (min-width: 900px) { div[data-apoyo="kofi"] { left: auto !important; right: 14px !important; bottom: 14px !important; } }
+
+/* ── Evaluar: quién mueve ── */
+.ev-turn { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 7px 14px 7px 8px; border-radius: 999px; font: 800 .95rem/1 var(--fd, inherit);
+  background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--lift, none); }
+.ev-turn i { width: 20px; height: 20px; border-radius: 50%; flex: none; }
+.ev-turn.ev-w i { background: #fff; box-shadow: inset 0 0 0 2px #9aa7b4; }
+.ev-turn.ev-b i { background: #1b1a19; box-shadow: inset 0 0 0 2px #555; }
