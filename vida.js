@@ -1,6 +1,6 @@
 /* Ajedrez Academy · «Vida»: más ilustración y animación en Jugar, Partidas y Evaluar.
    Todo se añade encima de lo que pinta la app (sin tocar su lógica): personajes de los bots,
-   arena del duelo, miniaturas de partidas y las claves de Evaluar en barras. */
+   arena del duelo, biblioteca de partidas con miniaturas y las claves de Evaluar en barras. */
 (function () {
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
@@ -128,6 +128,7 @@
   var rivalFirma = '';
   function partida() {
     var pg = document.querySelector('.playgame'); if (!pg) { rivalFirma = ''; return; }
+    if (!/^#partida-/.test(location.hash)) { var vx = pg.querySelector('.vx-rival'); if (vx) vx.remove(); pg.classList.remove('vx-on'); rivalFirma = ''; return; }
     var side = pg.querySelector('.pg-side'), av = pg.querySelector('.pg-player .bot-av:not(.you)'); if (!side || !av) return;
     var lv = +((av.className.match(/lv(\d)/) || [])[1] || 0), b = BOTS[lv];
     pg.classList.add('vx-on'); pg.style.setProperty('--vc', b.c); pg.style.setProperty('--vd', b.d); pg.style.setProperty('--vl', b.l);
@@ -153,6 +154,8 @@
   }
 
   /* ================= PARTIDAS: biblioteca ilustrada ================= */
+  var PAL = [['#ff9600', '#c46a00'], ['#2fa8ff', '#1b7fd1'], ['#8b5cf6', '#6a3fd1'], ['#14b8a6', '#0e8a7d'], ['#f0509b', '#c42f76'], ['#2bb45c', '#1d8a44'], ['#ff4b4b', '#c92f2f']];
+  function colorDe(txt) { var h = 0; for (var i = 0; i < txt.length; i++) h = (h * 31 + txt.charCodeAt(i)) >>> 0; return PAL[h % PAL.length]; }
   var fenCache = {};
   function fenFinal(moves) {
     if (fenCache[moves]) return fenCache[moves];
@@ -168,6 +171,8 @@
     try { (U.grauGames || []).forEach(function (g) { out.push({ t: g.theme, w: g.white, b: g.black, y: g.year, ev: g.place, mv: g.moves, grupo: 'grau', cap: g.opening }); }); } catch (e) {}
     return out;
   }
+  function apellido(n) { n = String(n || '').replace(/\(.*?\)/g, '').trim(); var p = n.split(/\s+y\s+|\s*,\s*/)[0].split(/\s+/); return p[p.length - 1] || n; }
+  function inicial(n) { return apellido(n).charAt(0).toUpperCase(); }
   var ioMini = null;
   function pintarMini(el) {
     var U = window.AA_UI; if (!U || !U.createRoot || el.dataset.r) return;
@@ -179,14 +184,27 @@
     var D = datosPartidas(); if (!D.length) return;
     lib.classList.add('vx-on');
     var porT = {}; D.forEach(function (d) { porT[d.t] = d; });
+    // portada
+    if (!lib.querySelector(':scope > .vx-lib-hero')) {
+      var ys = D.map(function (d) { return d.y; }).filter(Boolean), y0 = Math.floor(Math.min.apply(null, ys) / 10) * 10, y1 = Math.ceil((Math.max.apply(null, ys) + 1) / 10) * 10;
+      var jug = {}; D.forEach(function (d) { jug[apellido(d.w)] = 1; jug[apellido(d.b)] = 1; });
+      var hero = document.createElement('section'); hero.className = 'vx-lib-hero';
+      hero.innerHTML = '<div class="vx-lib-deco" aria-hidden="true">♜♞♝♛♚♝♞♜</div>' +
+        '<div class="vx-lib-top"><div><small>Biblioteca</small><h1>Partidas inmortales</h1><p>' + y0 + '–' + (y1 - 1) + ': las partidas que enseñaron a jugar a generaciones, comentadas jugada a jugada.</p></div>' +
+        '<div class="vx-lib-nums"><span><b>' + D.length + '</b><small>partidas</small></span><span><b>' + Object.keys(jug).length + '</b><small>jugadores</small></span><span><b>' + (y1 - y0) + '</b><small>años de historia</small></span></div></div>';
+      lib.insertBefore(hero, lib.firstChild);
+    }
     // tarjetas
     if (!ioMini && 'IntersectionObserver' in window) ioMini = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { pintarMini(e.target); ioMini.unobserve(e.target); } }); }, { rootMargin: '300px' });
     lib.querySelectorAll('.game-card:not(.vx-c)').forEach(function (card) {
       var t = (card.querySelector(':scope > b') || {}).textContent, d = porT[t]; if (!d) return;
       card.classList.add('vx-c');
+      var col = colorDe(d.cap || d.t);
+      card.style.setProperty('--gc', col[0]); card.style.setProperty('--gd', col[1]);
       var fen = ''; try { fen = fenFinal(d.mv || ''); } catch (e) {}
       var top = document.createElement('div'); top.className = 'vx-c-top';
-      top.innerHTML = '<div class="vx-mini" data-fen="' + fen + '" aria-hidden="true"></div>';
+      top.innerHTML = '<div class="vx-mini" data-fen="' + fen + '"></div><div class="vx-c-meta"><b class="vx-c-y">' + (d.y || '') + '</b><small>' + (d.ev || '') + '</small>' +
+        '<span class="vx-duelo"><i class="vx-bl" title="' + d.w + '">' + inicial(d.w) + '</i><em>vs</em><i class="vx-ng" title="' + d.b + '">' + inicial(d.b) + '</i></span></div>';
       card.insertBefore(top, card.firstChild);
       var mini = top.querySelector('.vx-mini');
       if (ioMini) ioMini.observe(mini); else pintarMini(mini);
@@ -237,6 +255,18 @@
     document.body.appendChild(cont); setTimeout(function () { cont.remove(); }, 1600);
   }
 
+  /* ================= VISOR de partidas: cabecera ================= */
+  function visor() {
+    var rv = document.querySelector('.review'), head = rv && rv.querySelector('.rv-head'); if (!head || head.classList.contains('vx-rv')) return;
+    var t = (head.querySelector('h1') || {}).textContent, D = datosPartidas(), d = null;
+    for (var i = 0; i < D.length; i++) if (D[i].t === t) { d = D[i]; break; }
+    if (!d) return;
+    head.classList.add('vx-rv'); var col = colorDe(d.cap || d.t);
+    head.style.setProperty('--gc', col[0]); head.style.setProperty('--gd', col[1]);
+    head.insertAdjacentHTML('beforeend', '<div class="vx-rv-meta"><span class="vx-rv-jug"><i class="vx-bl">' + inicial(d.w) + '</i><b>' + apellido(d.w) + '</b></span><em>vs</em>' +
+      '<span class="vx-rv-jug"><i class="vx-ng">' + inicial(d.b) + '</i><b>' + apellido(d.b) + '</b></span><span class="vx-rv-y">' + (d.y || '') + '</span></div>');
+  }
+
   /* ================= REVISIÓN: guardar solo si quieres ================= */
   function revision() {
     var m = location.hash.match(/^#revision-(.+)$/), head = document.querySelector('.rv-head');
@@ -263,9 +293,19 @@
     head.appendChild(b);
   }
 
+  /* ================= ANÁLISIS: sin frases repetidas ================= */
+  function analisis() {
+    document.querySelectorAll('.main .card').forEach(function (c) {
+      var t = c.firstElementChild; if (!t || !/^¿Por qué\?/.test(t.textContent)) return;
+      Array.prototype.forEach.call(c.querySelectorAll('p, small, div'), function (el) {
+        if (/^Ningún factor destaca/.test(el.textContent.trim())) el.style.display = 'none';
+      });
+    });
+  }
+
   /* ================= Bucle ================= */
   var pend = false;
-  function tick() { pend = false; try { jugar(); partida(); partidas(); evaluar(); revision(); } catch (e) { if (window.console) console.warn('vida', e); } }
+  function tick() { pend = false; try { jugar(); partida(); partidas(); evaluar(); visor(); revision(); if (/^#analisis/.test(location.hash)) analisis(); } catch (e) { if (window.console) console.warn('vida', e); } }
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(tick); } })
     .observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();

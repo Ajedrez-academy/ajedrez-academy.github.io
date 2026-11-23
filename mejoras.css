@@ -246,3 +246,8 @@ html.aa-instalable .aa-instalar { display: flex; align-items: center; gap: 10px;
   .progress > .stat-tiles span { font-size: .62rem; line-height: 1.15; text-align: center; }
   .progress > .stat-tiles svg { width: 18px; height: 18px; }
 }
+
+/* ---------- Limpieza profunda ---------- */
+.tac-head .diff-meter, .tac-head .tc-top > div > p.muted { display: none; }   /* el nivel ya sale en la insignia y en el problema; el recuento es interno */
+.lines-card ~ p.an-empty, .main p.an-empty { display: none; }                 /* instrucción obvia */
+.vet-box { display: none; }                                                    /* aviso técnico de verificación */

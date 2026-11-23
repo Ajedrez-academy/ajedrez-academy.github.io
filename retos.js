@@ -184,9 +184,6 @@
             h('b', null, m.t), h('small', null, m.d),
             h('span', { className: 'mm-best' }, 'Récord ', h('strong', null, (memo.best && memo.best[m.s]) || 0)),
             h('span', { className: 'mm-play' }, 'Jugar')); })),
-        h('div', { className: 'mm-rules' },
-          [['3:00', 'minutos de partida'], ['♥♥♥', 'vidas: fallar rompe una'], ['+2', 'piezas tras cada acierto'], ['×2', 'combo si encadenas aciertos']].map(function (r, i) {
-            return h('div', { key: i, className: 'mm-rule' }, h('b', null, r[0]), h('span', null, r[1])); })),
         h('button', { className: 'btn btn-ghost mm-to-lb', onClick: function () { UI.go('clasificacion'); } }, h('span', null, 'Ver la clasificación')));
     }
 

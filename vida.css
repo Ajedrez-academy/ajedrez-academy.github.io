@@ -120,13 +120,50 @@
 @keyframes vx-punto { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-4px); opacity: 1; } }
 @media (max-width: 760px) { .vx-rival { padding: 8px 12px 8px 6px; border-radius: 18px; } .vx-rival-pj { width: 62px; } .vx-rival-tx b { font-size: 1rem; margin-bottom: 4px; } }
 
-/* ---------- PARTIDAS: tarjetas con la posición final ---------- */
-.library.vx-on .game-card.vx-c { display: grid; grid-template-columns: 92px 1fr; column-gap: 14px; align-content: start; }
-.library.vx-on .game-card.vx-c > * { grid-column: 2; }
-.library.vx-on .game-card.vx-c > .vx-c-top { grid-column: 1; grid-row: 1 / span 6; }
-.vx-mini { width: 92px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--gray, #e3e8e1); box-shadow: 0 0 0 1px var(--line); }
+/* ---------- PARTIDAS: portada ---------- */
+.library.vx-on > h1 { display: none; }
+.vx-lib-hero { position: relative; overflow: hidden; margin: 0 0 22px; padding: 26px 28px 18px; border-radius: 28px; color: #fdf6e8; isolation: isolate;
+  background: radial-gradient(80% 120% at 90% 0%, #6b3f1f 0%, transparent 60%), linear-gradient(135deg, #2a1a10 0%, #3d2614 45%, #24170e 100%);
+  box-shadow: 0 24px 50px -30px #2a1a10; }
+.vx-lib-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .25;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px), repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 3px, transparent 3px 92px); }
+.vx-lib-deco { position: absolute; right: -10px; top: -18px; z-index: -1; font-size: 64px; letter-spacing: 6px; opacity: .08; white-space: nowrap; transform: rotate(-8deg); animation: vx-deco 26s linear infinite; }
+@keyframes vx-deco { 50% { transform: rotate(-8deg) translateX(-60px); } }
+.vx-lib-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px 28px; }
+.vx-lib-top small { font: 900 .72rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #ffcf3f; }
+.vx-lib-top h1 { margin: 6px 0 6px; color: #fff; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.vx-lib-top p { margin: 0; max-width: 520px; color: #eadcc5; }
+.vx-lib-nums { display: flex; gap: 22px; }
+.vx-lib-nums span { display: flex; flex-direction: column; align-items: flex-end; }
+.vx-lib-nums b { font: 800 1.9rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: #ffcf3f; }
+.vx-lib-nums small { font: 700 .74rem 'Nunito', system-ui, sans-serif; color: #eadcc5; }
+
+/* ---------- PARTIDAS: tarjetas ---------- */
+.library.vx-on .game-card.vx-c { position: relative; overflow: hidden; padding-top: 0; transition: transform .2s ease, box-shadow .2s ease; }
+.library.vx-on .game-card.vx-c:hover { transform: translateY(-5px) rotate(-.3deg); box-shadow: 0 24px 40px -26px var(--gd); }
+.vx-c-top { position: relative; display: flex; align-items: center; gap: 14px; margin: 0 -18px 12px; padding: 14px 18px; overflow: hidden;
+  background: linear-gradient(135deg, var(--gc), var(--gd)); color: #fff; }
+.vx-c-top::after { content: ""; position: absolute; right: -30px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.12); }
+.vx-mini { flex: none; width: 96px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,.2);
+  box-shadow: 0 10px 18px -8px rgba(0,0,0,.5), 0 0 0 3px rgba(255,255,255,.35); transform: perspective(500px) rotateY(10deg) rotateX(4deg); transition: transform .3s ease; }
 .vx-mini .cb { pointer-events: none; } .vx-mini .cb-svg { display: block; }
-@media (max-width: 760px) { .library.vx-on .game-card.vx-c { grid-template-columns: 72px 1fr; column-gap: 12px; } .vx-mini { width: 72px; } }
+.game-card.vx-c:hover .vx-mini { transform: perspective(500px) rotateY(0) rotateX(0) scale(1.06); }
+.vx-c-meta { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vx-c-y { font: 800 2rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; letter-spacing: -.02em; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+.vx-c-meta small { font: 700 .76rem/1.2 'Nunito', system-ui, sans-serif; opacity: .9; }
+.vx-duelo { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.vx-duelo i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font: 900 .78rem/1 'Nunito', system-ui, sans-serif; font-style: normal; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.vx-duelo .vx-bl { background: #fff; color: #222; } .vx-duelo .vx-ng { background: #1f2229; color: #fff; }
+.vx-duelo em { font: 900 .7rem 'Nunito', system-ui, sans-serif; font-style: normal; opacity: .85; }
+.library.vx-on .game-card.vx-c .ms-chap { color: var(--gd); }
+.vx-destello { animation: vx-destello 1.4s ease-out; }
+@keyframes vx-destello { 0%, 40% { box-shadow: 0 0 0 6px color-mix(in srgb, #ffcf3f 70%, transparent); } 100% { box-shadow: var(--lift); } }
+@media (max-width: 760px) {
+  .vx-lib-hero { padding: 20px 16px 14px; border-radius: 22px; }
+  .vx-lib-nums { gap: 14px; } .vx-lib-nums span { align-items: flex-start; } .vx-lib-nums b { font-size: 1.4rem; }
+  .vx-c-top { margin: 0 -16px 10px; padding: 12px 16px; }
+  .vx-mini { width: 84px; }
+}
 
 /* ---------- EVALUAR: respuesta correcta ---------- */
 .evaltr.vx-on .quiz-opt.right { animation: vx-correcta .5s ease-out; }
@@ -165,13 +202,26 @@
 .over.vx-over .btn-primary { background: #fff; color: #1f2933; border-color: #fff; box-shadow: 0 4px 0 rgba(0,0,0,.18); }
 .over.vx-over::after { content: ""; position: absolute; right: -40px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: rgba(255,255,255,.14); }
 
+.rv-head.vx-rv { position: relative; flex-wrap: wrap; overflow: hidden; margin-bottom: 14px; padding: 16px 20px; border-radius: 22px; color: #fff;
+  background: linear-gradient(120deg, var(--gc), var(--gd)); box-shadow: 0 18px 34px -22px var(--gd); }
+.rv-head.vx-rv::after { content: "♚"; position: absolute; right: 18px; bottom: -34px; font-size: 140px; line-height: 1; opacity: .12; pointer-events: none; }
+.rv-head.vx-rv h1 { color: #fff; } .rv-head.vx-rv p.muted { color: rgba(255,255,255,.88); }
+.rv-head.vx-rv .hero-back { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.4); }
+.vx-rv-meta { display: flex; align-items: center; gap: 10px; margin-left: auto; position: relative; z-index: 1; }
+.vx-rv-jug { display: flex; align-items: center; gap: 7px; font: 800 .95rem 'Nunito', system-ui, sans-serif; }
+.vx-rv-jug i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font: 900 .9rem/1 'Nunito', system-ui, sans-serif; font-style: normal; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.vx-rv-jug .vx-bl { background: #fff; color: #222; } .vx-rv-jug .vx-ng { background: #1f2229; color: #fff; }
+.vx-rv-meta em { font: 900 .78rem 'Nunito', system-ui, sans-serif; font-style: normal; opacity: .85; }
+.vx-rv-y { margin-left: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.18); font: 800 1.1rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+@media (max-width: 760px) { .vx-rv-meta { margin-left: 0; width: 100%; } .rv-head.vx-rv { padding: 12px 14px; } }
+
 /* entradas escalonadas */
 .play-setup.vx-on .bot { animation: vx-entra-c .45s both ease-out; }
 .play-setup.vx-on .bot:nth-child(2) { animation-delay: .05s; } .play-setup.vx-on .bot:nth-child(3) { animation-delay: .1s; }
 .play-setup.vx-on .bot:nth-child(4) { animation-delay: .15s; } .play-setup.vx-on .bot:nth-child(5) { animation-delay: .2s; } .play-setup.vx-on .bot:nth-child(6) { animation-delay: .25s; }
 .library.vx-on .games-grid > .game-card { animation: vx-entra-c .45s both ease-out; }
 .library.vx-on .games-grid > .game-card:nth-child(3n+2) { animation-delay: .07s; } .library.vx-on .games-grid > .game-card:nth-child(3n+3) { animation-delay: .14s; }
-.vx-arena, .vx-rival { animation: vx-entra-c .5s both ease-out; }
+.vx-arena, .vx-lib-hero, .vx-rival { animation: vx-entra-c .5s both ease-out; }
 @keyframes vx-entra-c { from { opacity: 0; transform: translateY(14px) scale(.98); } }
 .play-setup.vx-on .bot.on { animation: vx-entra-c .45s both ease-out; }
 
