@@ -189,9 +189,88 @@
     });
   }
 
+  /* ================= TÁCTICA: pista por niveles y la idea del problema ================= */
+  var TEMAS = {
+    'mate en 1': ['♚', 'Mate en 1', 'Hay un jaque mate inmediato. Revisa todos los jaques posibles.'],
+    'mate en 2': ['♚', 'Mate en 2', 'Una jugada fuerza la respuesta y la siguiente da mate. Empieza por los jaques.'],
+    'mate en 3': ['♚', 'Mate en 3', 'Una secuencia forzada de jaques y amenazas termina en mate.'],
+    'mate del pasillo': ['▭', 'Mate del pasillo', 'El rey está encerrado por sus propios peones en la última fila: una torre o la dama en esa fila da mate.'],
+    'ataque doble': ['⑂', 'Ataque doble', 'Una pieza ataca dos objetivos a la vez y el rival solo puede salvar uno.'],
+    'jaque doble': ['⑂', 'Jaque doble', 'Dos piezas dan jaque a la vez: el rey tiene que moverse y no puede tapar ni capturar las dos.'],
+    'clavada': ['📌', 'Clavada', 'Una pieza no puede moverse sin dejar expuesta otra más valiosa (o al rey) detrás.'],
+    'enfilada': ['➶', 'Enfilada', 'Atacas una pieza valiosa que, al apartarse, deja otra detrás sin defensa.'],
+    'descubierta': ['↯', 'Ataque descubierto', 'Al mover una pieza, otra que estaba detrás ataca de repente.'],
+    'sacrificio': ['✦', 'Sacrificio', 'Entregas material para conseguir algo mayor: el mate o más material.'],
+    'desviación': ['↪', 'Desviación', 'Obligas a una pieza defensora a abandonar la casilla o la pieza que protegía.'],
+    'atracción': ['⤓', 'Atracción', 'Atraes al rey o a una pieza a una casilla donde sufre un golpe.'],
+    'intermedia': ['⏸', 'Jugada intermedia', 'Antes de la jugada que el rival espera, metes otra con una amenaza más fuerte.'],
+    'despeje': ['⇥', 'Despeje', 'Apartas una pieza propia para abrir una línea o liberar una casilla.'],
+    'interferencia': ['⊣', 'Interferencia', 'Pones una pieza entre la defensora y lo que defiende.'],
+    'rayos X': ['⟿', 'Rayos X', 'Una pieza actúa a través de otra sobre la casilla de detrás.'],
+    'pieza atrapada': ['⛓', 'Pieza atrapada', 'Una pieza rival no tiene casillas a donde huir: atácala y gánala.'],
+    'jugada tranquila': ['…', 'Jugada tranquila', 'Sin jaque ni captura, una jugada silenciosa crea una amenaza que no se puede parar.'],
+    'mate de la coz': ['♞', 'Mate de la coz', 'El caballo da mate a un rey rodeado de sus propias piezas, que le quitan todas las casillas.'],
+    'coronación': ['♛', 'Coronación', 'Un peón llega a la última fila y se convierte en dama: a veces vale la pena sacrificar para abrirle paso.'],
+    'jaque': ['+', 'Jaque con idea', 'Un jaque que obliga al rival y te deja ganar algo en la jugada siguiente.'],
+    'final': ['♔', 'Técnica de final', 'Rey activo, peones pasados y precisión: cada tiempo cuenta.'],
+    'material': ['⚖', 'Ganar material', 'Busca piezas sin defensa o mal defendidas y captúralas.']
+  };
+  var pzCache = { fen: null, p: null }, pzMiss = {}, pistaDada = null;
+  function problemaActual() {
+    var t = window.AA_TABLERO; if (!t || !t.el || !t.el.current || !document.contains(t.el.current)) return pzCache.p;
+    var fen = t.fen.split(' ').slice(0, 4).join(' ');
+    if (pzCache.fen === fen || pzMiss[fen]) return pzCache.p;
+    var P = (window.AA_UI && window.AA_UI.puzzles) || [], hallado = null;
+    for (var i = 0; i < P.length && !hallado; i++) {
+      var z = P[i]; if (!z.last) continue;
+      try { var ch = new window.AA_UI.Chess(z.fen), m = ch.parse(z.last); if (m == null) continue; ch.make(m); if (ch.fen().split(' ').slice(0, 4).join(' ') === fen) hallado = z; } catch (e) {}
+    }
+    if (hallado) { pzCache.fen = fen; pzCache.p = hallado; } else pzMiss[fen] = 1;
+    return pzCache.p;
+  }
+  function temaPrincipal(p) {
+    var ts = (p && p.themes) || []; var t = ts.filter(function (x) { return x !== 'material' && TEMAS[x]; })[0] || ts.filter(function (x) { return TEMAS[x]; })[0];
+    return t ? TEMAS[t].concat([t]) : null;
+  }
+  function tarjetaIdea(L, temas, titulo) {
+    var box = L.querySelector(':scope > .vs-idea');
+    if (!temas.length) { if (box) box.remove(); return; }
+    var html = '<small>' + titulo + '</small>' + temas.map(function (t) { return '<div class="vs-idea-t"><i>' + t[0] + '</i><span><b>' + t[1] + '</b>' + t[2] + '</span></div>'; }).join('');
+    if (!box) { box = document.createElement('div'); box.className = 'vs-idea'; var tu = L.querySelector('.tutor'); if (tu) tu.insertAdjacentElement('afterend', box); else L.appendChild(box); }
+    if (box.innerHTML !== html) box.innerHTML = html;
+  }
+  function tacticaIdea() {
+    var head = document.querySelector('.tac-head'); if (!head) { pistaDada = null; return; }
+    var L = head.closest('.stage-l') || head.parentElement; if (!L) return;
+    var lbar = document.querySelector('.lbar'), fin = lbar && /lbar-(ok|bad|warn|info|shown)/.test(lbar.className) && !/lbar-idle/.test(lbar.className);
+    var p = problemaActual();
+    // primer toque de «Pista»: la idea; el segundo, la pista normal de la app
+    var btn = Array.prototype.find.call(document.querySelectorAll('.main button'), function (x) { return /^\s*pista\s*$/i.test(x.textContent); });
+    if (btn && !btn.dataset.vs) {
+      btn.dataset.vs = '1';
+      btn.addEventListener('click', function (e) {
+        var pz = problemaActual(), tp = temaPrincipal(pz), clave = pzCache.fen;
+        if (tp && pistaDada !== clave) {
+          e.preventDefault(); e.stopPropagation(); pistaDada = clave;
+          var tit = /^mate en/.test(tp[3]) ? 'revisa primero todos los jaques' : 'busca ' + (/^(jaque|ataque|sacrificio|despeje)/.test(tp[3]) ? 'un ' : /^(clavada|enfilada|desviación|atracción|interferencia|pieza|jugada|técnica)/.test(tp[3]) ? 'una ' : '') + tp[1].toLowerCase();
+          tarjetaIdea(L, [[tp[0], 'Pista: ' + tit, tp[2] + ' Si necesitas más ayuda, vuelve a pulsar «Pista».']], 'Pista');
+          if (window.AA_UI) window.AA_UI.sound('hint');
+          var bx = L.querySelector('.vs-idea'); if (bx && bx.scrollIntoView) bx.scrollIntoView({ block: 'nearest', behavior: reduce.matches ? 'auto' : 'smooth' });
+        }
+      }, true);
+    }
+    if (fin && p) {
+      var ts = (p.themes || []).filter(function (x) { return TEMAS[x]; });
+      if (ts.length > 1) ts = ts.filter(function (x) { return x !== 'material'; });
+      tarjetaIdea(L, ts.slice(0, 2).map(function (x) { return TEMAS[x]; }), 'La idea de este problema');
+    } else if (!fin && pistaDada !== pzCache.fen) {
+      var box = L.querySelector(':scope > .vs-idea'); if (box) box.remove();
+    }
+  }
+
   /* ================= Bucle ================= */
   var pend = false;
-  function tick() { pend = false; try { tactica(); finales(); finalEnJuego(); analisis(); } catch (e) { if (window.console) console.warn('visual', e); } }
+  function tick() { pend = false; try { tactica(); tacticaIdea(); finales(); finalEnJuego(); analisis(); } catch (e) { if (window.console) console.warn('visual', e); } }
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(tick); } })
     .observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 })();

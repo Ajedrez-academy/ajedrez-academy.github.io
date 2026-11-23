@@ -1,0 +1,74 @@
+/* Ajedrez Academy · aprender aperturas (ver aperturas.js) */
+
+/* ---------- Explicación de la jugada ---------- */
+.runner.ap-on .tutor.ap-con-idea > .bubble { display: none; }
+.ap-idea { position: relative; flex: 1; min-width: 0; padding: 14px 16px; border-radius: 18px; background: var(--surface); box-shadow: var(--lift), inset 0 0 0 1px var(--line);
+  animation: ap-entra .3s ease-out; }
+.ap-idea::before { content: ""; position: absolute; left: -7px; top: 26px; width: 14px; height: 14px; background: var(--surface); transform: rotate(45deg); box-shadow: -1px 1px 0 var(--line); border-radius: 2px; }
+@keyframes ap-entra { from { opacity: .3; transform: translateY(4px); } }
+.ap-mov { display: flex; align-items: baseline; gap: 10px; }
+.ap-mov b { flex: none; padding: 3px 10px; border-radius: 10px; background: #2a2d35; color: #fff; font: 800 1rem/1.3 ui-monospace, Consolas, monospace; }
+.ap-mov span { font: 800 1.02rem/1.35 'Nunito', system-ui, sans-serif; color: var(--ink); }
+.ap-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ap-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border-radius: 999px; font: 800 .8rem/1.2 'Nunito', system-ui, sans-serif;
+  background: color-mix(in srgb, var(--ac) 13%, var(--surface)); color: color-mix(in srgb, var(--ac) 70%, var(--ink)); animation: ap-chip .35s both cubic-bezier(.2, 1.3, .4, 1); animation-delay: var(--d); }
+.ap-chip i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ac); color: #fff; font-size: .78rem; font-style: normal; }
+@keyframes ap-chip { from { opacity: 0; transform: scale(.7); } }
+.ap-chip.ap-centro, .ap-m.ap-centro { --ac: #e0a800; }
+.ap-chip.ap-objetivo, .ap-m.ap-objetivo, .ap-chip.ap-clava, .ap-m.ap-clava { --ac: #ef4444; }
+.ap-chip.ap-defiende, .ap-m.ap-defiende { --ac: #2fa8ff; }
+.ap-chip.ap-actividad { --ac: #8b5cf6; }
+.ap-chip.ap-desarrollo { --ac: #14b8a6; }
+.ap-chip.ap-linea { --ac: #f0509b; }
+.ap-chip.ap-rey { --ac: #2bb45c; }
+.ap-chip.ap-captura { --ac: #ff9600; }
+.ap-resto { margin: 10px 0 0; color: var(--ink-2); font: 600 .88rem/1.45 'Nunito', system-ui, sans-serif; }
+.ap-plan { display: flex; gap: 8px; align-items: baseline; margin: 10px 0 0; padding-top: 9px; border-top: 1px dashed var(--line); color: var(--ink-2); font: 700 .84rem/1.35 'Nunito', system-ui, sans-serif; }
+.ap-plan i { font-style: normal; color: var(--green); font-weight: 900; }
+
+/* ---------- Casillas señaladas en el tablero ---------- */
+.runner.ap-on .stage-b .cb { position: relative; }
+.ap-capa { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.ap-m { position: absolute; width: 12.5%; height: 12.5%; box-sizing: border-box; border-radius: 10%;
+  box-shadow: inset 0 0 0 4px var(--ac), inset 0 0 18px color-mix(in srgb, var(--ac) 55%, transparent); animation: ap-m .5s both ease-out; }
+.ap-m.ap-objetivo::after, .ap-m.ap-clava::after { content: ""; position: absolute; inset: 30%; border-radius: 50%; border: 3px solid var(--ac); animation: ap-diana 1.4s ease-in-out infinite; }
+@keyframes ap-m { from { opacity: 0; transform: scale(1.25); } }
+@keyframes ap-diana { 0%, 100% { transform: scale(.7); opacity: .9; } 50% { transform: scale(1.15); opacity: .4; } }
+
+/* ---------- Ideas de esta línea ---------- */
+.ap-ideas { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: color-mix(in srgb, var(--green) 7%, var(--surface)); box-shadow: inset 0 0 0 1px var(--line); }
+.ap-ideas > small { display: block; margin-bottom: 8px; font: 900 .68rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.ap-ideas > div { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.ap-ideas span { display: inline-flex; align-items: center; gap: 6px; font: 800 .8rem/1.3 'Nunito', system-ui, sans-serif; color: var(--ink); animation: ap-chip .35s both ease-out; }
+.ap-ideas span i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: var(--green); color: #fff; font-size: .72rem; font-style: normal; }
+
+/* ---------- Mapa de secciones del curso ---------- */
+.sec.ap-sec .sec-n { position: relative; }
+.ap-tipo { position: absolute; right: -6px; bottom: -6px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,.2); font-size: .7rem; font-style: normal; }
+.sec.ap-sec { border-left: 4px solid var(--st, var(--line)); transition: transform .15s; }
+.sec.ap-sec:not(.locked):hover { transform: translateX(3px); }
+.sec.ap-t-teoria { --st: #2fa8ff; } .sec.ap-t-planes { --st: #8b5cf6; } .sec.ap-t-castigo { --st: #ef4444; } .sec.ap-t-trampas { --st: #ff9600; }
+.sec.ap-sec .sec-bar i { background: var(--st); }
+
+@media (max-width: 760px) {
+  .ap-idea { padding: 12px 13px; } .ap-mov span { font-size: .95rem; }
+  .ap-chip { font-size: .74rem; }
+}
+
+.ap-ideas > small + div { margin-bottom: 10px; } .ap-ideas > div:last-child { margin-bottom: 0; }
+.ap-ideas .ap-g-el span i { background: #2a2d35; }
+.runner.ap-on .mini-moves { display: flex; flex-wrap: wrap; gap: 4px; }
+.runner.ap-on .mini-moves span { padding: 2px 7px; border-radius: 7px; background: var(--bg); font: 700 .82rem/1.4 ui-monospace, Consolas, monospace; color: var(--ink-2); }
+.runner.ap-on .mini-moves span:last-child { background: #2a2d35; color: #fff; animation: ap-chip .3s ease-out; }
+
+/* ---------- Adivina la idea ---------- */
+.ap-ops { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
+.ap-op { padding: 10px 12px; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 12px; background: var(--bg); color: var(--ink);
+  font: 800 .9rem/1.2 'Nunito', system-ui, sans-serif; text-align: left; cursor: pointer; transition: transform .12s, border-color .12s; }
+.ap-op:hover { transform: translateX(3px); border-color: var(--green); }
+.ap-res { margin: 0 0 8px; font: 900 .86rem/1.2 'Nunito', system-ui, sans-serif; animation: ap-chip .3s ease-out; }
+.ap-res.ok { color: var(--green-d, #1b8a45); } .ap-res.ko { color: var(--red-d, #c92f2f); }
+.ap-sw { display: flex; align-items: center; gap: 7px; margin-top: 10px; color: var(--ink-2); font: 700 .76rem/1.2 'Nunito', system-ui, sans-serif; cursor: pointer; }
+.ap-sw input { accent-color: var(--green); width: 15px; height: 15px; }
+.ap-ideas .ap-g-el span i { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }

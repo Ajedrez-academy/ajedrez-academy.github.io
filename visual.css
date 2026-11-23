@@ -121,3 +121,13 @@ ul.reasons > li.vs-razon > .dot { display: none; }
 .vs-r-ic.w { background: #fff; color: #1f2229; box-shadow: inset 0 0 0 1.5px #d0d4cf; }
 .vs-r-ic.n { background: #2a2d35; color: #fff; }
 .eng-line.vs-mejor > span { padding-right: 52px; }
+
+/* ---------- TÁCTICA: la idea del problema ---------- */
+.vs-idea { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: color-mix(in srgb, #ffcf3f 12%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, #e0a800 35%, var(--line)); animation: vs-idea .35s ease-out; }
+@keyframes vs-idea { from { opacity: 0; transform: translateY(6px); } }
+.vs-idea > small { display: block; margin-bottom: 8px; font: 900 .68rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #a87900; }
+.vs-idea-t { display: flex; gap: 10px; align-items: flex-start; }
+.vs-idea-t + .vs-idea-t { margin-top: 10px; }
+.vs-idea-t > i { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #e0a800; color: #fff; font: 700 1.05rem/1 'Segoe UI Symbol', 'Noto Sans Symbols 2', system-ui, sans-serif; font-style: normal; box-shadow: 0 3px 0 rgba(0,0,0,.15); }
+.vs-idea-t span { display: flex; flex-direction: column; gap: 2px; font: 600 .86rem/1.4 'Nunito', system-ui, sans-serif; color: var(--ink-2); }
+.vs-idea-t b { font: 800 .95rem/1.2 'Nunito', system-ui, sans-serif; color: var(--ink); }
