@@ -36,7 +36,7 @@
 .play-setup.vx-on .bot:hover { transform: translateY(-4px); box-shadow: 0 18px 30px -18px color-mix(in srgb, var(--vc) 80%, transparent); }
 .play-setup.vx-on .bot:hover .vx-cuerpo { animation: vx-salta .6s ease-out; }
 .play-setup.vx-on .bot.on { border-color: var(--vc); background: color-mix(in srgb, var(--vc) 9%, var(--surface)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc) 22%, transparent), 0 18px 30px -18px var(--vc); transform: translateY(-4px); }
-.play-setup.vx-on .bot.on::after { content: "✓"; position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--vc); color: #fff; font: 900 13px/22px system-ui, sans-serif; animation: vx-pop .35s ease-out; }
+.play-setup.vx-on .bot.on::after { content: ""; position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--vc) var(--icc-check-b) center / 62% no-repeat; animation: vx-pop .35s ease-out; }
 
 /* ---------- JUGAR: arena ---------- */
 .vx-arena {
@@ -65,10 +65,10 @@
 
 /* ---------- JUGAR: color y botón ---------- */
 .play-setup.vx-on .tc-opt .seg button { position: relative; padding-left: 34px; }
-.play-setup.vx-on .tc-opt .seg button::before { position: absolute; left: 12px; top: 50%; transform: translateY(-52%); font-size: 1.15rem; line-height: 1; }
-.play-setup.vx-on .tc-opt .seg button:nth-child(1)::before { content: "♔"; }
-.play-setup.vx-on .tc-opt .seg button:nth-child(2)::before { content: "🎲"; font-size: .95rem; }
-.play-setup.vx-on .tc-opt .seg button:nth-child(3)::before { content: "♚"; }
+.play-setup.vx-on .tc-opt .seg button::before { content: ""; position: absolute; left: 10px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); border-radius: 50%; background-position: center; background-size: 72%; background-repeat: no-repeat; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(1)::before { background-color: #fff; background-image: var(--icc-rey-n); box-shadow: inset 0 0 0 1.5px #9aa09a; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(2)::before { border-radius: 0; background: currentColor; -webkit-mask: var(--ic-dado) center / contain no-repeat; mask: var(--ic-dado) center / contain no-repeat; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(3)::before { background-color: #2a2d35; background-image: var(--icc-rey-b); }
 .play-setup.vx-on .tc-go .btn-primary { position: relative; overflow: hidden; min-width: 220px; }
 
 @media (max-width: 1100px) { .play-setup.vx-on .bots { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -195,8 +195,8 @@
 .over.vx-over.vx-win { background: radial-gradient(120% 140% at 0% 0%, #7be495, #2bb45c 45%, #1d8a44); }
 .over.vx-over.vx-loss { background: radial-gradient(120% 140% at 0% 0%, #ff9a9a, #ff4b4b 45%, #b42323); }
 .over.vx-over > b { display: block; font: 800 1.6rem/1.1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: #fff; }
-.over.vx-over > b::before { margin-right: 8px; }
-.over.vx-over.vx-win > b::before { content: "🏆"; } .over.vx-over.vx-loss > b::before { content: "♟️"; } .over.vx-over.vx-draw > b::before { content: "🤝"; }
+.over.vx-over > b::before { content: ""; display: inline-block; width: .9em; height: .9em; background: currentColor; -webkit-mask: var(--ic-trofeo) center / contain no-repeat; mask: var(--ic-trofeo) center / contain no-repeat; margin-right: 8px; vertical-align: -.08em; }
+.over.vx-over.vx-loss > b::before { -webkit-mask-image: var(--ic-peon); mask-image: var(--ic-peon); } .over.vx-over.vx-draw > b::before { -webkit-mask-image: var(--ic-tablas); mask-image: var(--ic-tablas); }
 .over.vx-over > small { color: rgba(255,255,255,.85); font-weight: 700; }
 .over.vx-over .btn:not(.btn-primary) { background: rgba(255,255,255,.16); color: #fff; border-color: rgba(255,255,255,.5); }
 .over.vx-over .btn-primary { background: #fff; color: #1f2933; border-color: #fff; box-shadow: 0 4px 0 rgba(0,0,0,.18); }
@@ -204,7 +204,7 @@
 
 .rv-head.vx-rv { position: relative; flex-wrap: wrap; overflow: hidden; margin-bottom: 14px; padding: 16px 20px; border-radius: 22px; color: #fff;
   background: linear-gradient(120deg, var(--gc), var(--gd)); box-shadow: 0 18px 34px -22px var(--gd); }
-.rv-head.vx-rv::after { content: "♚"; position: absolute; right: 18px; bottom: -34px; font-size: 140px; line-height: 1; opacity: .12; pointer-events: none; }
+.rv-head.vx-rv::after { content: ""; display: inline-block; width: 150px; height: 150px; background: currentColor; -webkit-mask: var(--ic-rey) center / contain no-repeat; mask: var(--ic-rey) center / contain no-repeat; position: absolute; right: 14px; bottom: -40px; opacity: .14; pointer-events: none; }
 .rv-head.vx-rv h1 { color: #fff; } .rv-head.vx-rv p.muted { color: rgba(255,255,255,.88); }
 .rv-head.vx-rv .hero-back { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.4); }
 .vx-rv-meta { display: flex; align-items: center; gap: 10px; margin-left: auto; position: relative; z-index: 1; }

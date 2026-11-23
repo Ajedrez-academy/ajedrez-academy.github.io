@@ -169,7 +169,7 @@
       return true; }
     var side = sideName(g.fen);
     return h(Shell, { title: p.step.timed ? 'Mate relámpago' : 'Da mate en 1', mood: g.state === 'done' ? 'happy' : g.state === 'bad' || g.state === 'time' ? 'oops' : 'think',
-      say: g.state === 'done' ? '¡' + n + ' mates seguidos!' : g.state === 'time' ? 'Se acabó el tiempo.' : 'Juegan las ' + side + ': encuentra el jaque mate. (' + g.solved + '/' + n + ')' + (p.step.timed ? ' · ⏱ ' + g.left + ' s' : ''),
+      say: g.state === 'done' ? '¡' + n + ' mates seguidos!' : g.state === 'time' ? 'Se acabó el tiempo.' : 'Juegan las ' + side + ': encuentra el jaque mate. (' + g.solved + '/' + n + ')' + (p.step.timed ? ' · ' + g.left + ' s' : ''),
       board: h(UI.Board, { fen: g.state === 'idle' ? g.fen : g.fen2 || g.fen, interactive: g.state === 'idle', onMove: move, lastMove: g.last, orientation: side === 'blancas' ? 'w' : 'b', flash: g.state === 'done' ? 'ok' : g.state === 'bad' ? 'bad' : null }),
       bar: g.state === 'done' ? okBar(UI, '¡Mate!', 'Buscar primero los jaques es la forma más rápida de encontrar mates.', p.onNext)
         : g.state === 'bad' || g.state === 'time' ? badBar(UI, g.state === 'time' ? '¡Tiempo!' : 'Eso no es mate', 'Mira todas las jugadas que dan jaque y comprueba si el rey tiene escapatoria.', function () { set({ i: 0, fen: pick('mate1', B), solved: 0, state: 'idle', left: p.step.timed || 0 }); }) : null });

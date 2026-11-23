@@ -23,7 +23,7 @@
       'a:focus-visible,button:focus-visible{outline:3px solid #ffb627;outline-offset:2px}' +
       '.tx{max-width:0;overflow:hidden;transition:max-width .3s ease}' +
       '.caja:hover .tx,.caja:focus-within .tx{max-width:220px;margin-left:6px}' +
-      '.taza{font-size:17px}.caja:hover button,.caja:focus-within button{opacity:1}' +
+      '.taza{display:flex}.caja:hover button,.caja:focus-within button{opacity:1}' +
       'button{opacity:0;transition:opacity .2s;width:22px;height:22px;border:0;border-radius:50%;background:rgba(20,18,31,.78);color:#fff;font:700 13px/1 system-ui,sans-serif;cursor:pointer;padding:0}' +
       '@media (hover:none){button{opacity:1}}' +
       '@media (prefers-reduced-motion:reduce){.caja,.tx{transition:none}}' +
@@ -31,7 +31,7 @@
       '</style>' +
       '<div class="caja">' +
       '<a href="' + URL_KOFI + '" target="_blank" rel="noopener" title="Apoya estos juegos gratuitos en Ko-fi">' +
-      '<span class="taza" aria-hidden="true">☕</span><span class="tx">Apoyar · invítame un café</span></a>' +
+      '<span class="taza" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v4.8A5.2 5.2 0 0 1 10.8 19H9.2A5.2 5.2 0 0 1 4 13.8z"/><path d="M16 10.2h1.4a2.6 2.6 0 0 1 0 5.2H16M8 3.5v2.8M12 3.5v2.8"/></svg></span><span class="tx">Apoyar · invítame un café</span></a>' +
       '<button type="button" aria-label="Ocultar el botón de apoyo" title="Ocultar">×</button>' +
       '</div>';
     var b = raiz.querySelector('button');

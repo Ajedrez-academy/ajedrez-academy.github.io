@@ -3,26 +3,27 @@
 (function () {
   'use strict';
   var SQ = /\b([a-h][1-8])\b/g;
+  function ico(n) { return window.AA_ICONO ? window.AA_ICONO(n) : ''; }
 
   /* ---------- Entender la explicación de cada jugada ---------- */
   // Cada regla convierte una frase en una idea con icono y, si nombra casillas, las marca en el tablero.
   var REGLAS = [
-    { re: /pasa a controlar (\d+) casillas \(antes (\d+)\)/i, f: function (m) { return { k: 'actividad', ic: '⚡', t: 'Más activa: ' + m[2] + '→' + m[1] + ' casillas', idea: 'Piezas activas' }; } },
+    { re: /pasa a controlar (\d+) casillas \(antes (\d+)\)/i, f: function (m) { return { k: 'actividad', ic: 'rayo', t: 'Más activa: de ' + m[2] + ' a ' + m[1] + ' casillas', idea: 'Piezas activas' }; } },
     { re: /una pieza activa vale más que una pasiva/i, f: null },
-    { re: /aumenta el control del centro\s*\(([^)]+)\)/i, f: function (m) { return { k: 'centro', ic: '◎', t: 'Centro: ' + m[1].replace(/,\s*/g, ' · '), sq: m[1], idea: 'Control del centro' }; } },
+    { re: /aumenta el control del centro\s*\(([^)]+)\)/i, f: function (m) { return { k: 'centro', ic: 'centro', t: 'Centro: ' + m[1].replace(/,\s*/g, ' · '), sq: m[1], idea: 'Control del centro' }; } },
     { re: /que es donde se decide la movilidad de todas las piezas/i, f: null },
-    { re: /apunta a ([a-h][1-8])/i, f: function (m) { return { k: 'objetivo', ic: '🎯', t: 'Apunta a ' + m[1], sq: m[1], idea: 'Presión sobre ' + m[1] }; } },
+    { re: /apunta a ([a-h][1-8])/i, f: function (m) { return { k: 'objetivo', ic: 'diana', t: 'Apunta a ' + m[1], sq: m[1], idea: 'Presión sobre ' + m[1] }; } },
     { re: /una casilla junto al rey que solo defiende el propio rey|un blanco clásico de ataque/i, f: null },
-    { re: /clava (?:el|la) ([a-zá-ú]+) de ([a-h][1-8])/i, f: function (m) { return { k: 'clava', ic: '📌', t: 'Clava ' + m[1] + ' de ' + m[2], sq: m[2], idea: 'Clavadas' }; } },
-    { re: /presiona (?:el|la|los) ([a-zá-ú]+) de ([a-h][1-8](?:,\s*[a-h][1-8])*)/i, f: function (m) { return { k: 'objetivo', ic: '➶', t: 'Presiona ' + m[2].replace(/,\s*/g, ' · '), sq: m[2], idea: 'Presión' }; } },
-    { re: /defiende (?:el|la) ([a-zá-ú]+) de ([a-h][1-8])/i, f: function (m) { return { k: 'defiende', ic: '🛡', t: 'Defiende ' + m[2], sq: m[2], idea: 'Defensa' }; } },
-    { re: /diagonal larga y abierta/i, f: function () { return { k: 'linea', ic: '↗', t: 'Diagonal abierta', idea: 'Diagonales abiertas' }; } },
-    { re: /enroca (corto|largo)/i, f: function (m) { return { k: 'rey', ic: '♔', t: 'Enroque ' + m[1] + ': rey a salvo', idea: 'Enroque' }; } },
+    { re: /clava (?:el|la) ([a-zá-ú]+) de ([a-h][1-8])/i, f: function (m) { return { k: 'clava', ic: 'clava', t: 'Clava ' + m[1] + ' de ' + m[2], sq: m[2], idea: 'Clavadas' }; } },
+    { re: /presiona (?:el|la|los) ([a-zá-ú]+) de ([a-h][1-8](?:,\s*[a-h][1-8])*)/i, f: function (m) { return { k: 'objetivo', ic: 'presiona', t: 'Presiona ' + m[2].replace(/,\s*/g, ' · '), sq: m[2], idea: 'Presión' }; } },
+    { re: /defiende (?:el|la) ([a-zá-ú]+) de ([a-h][1-8])/i, f: function (m) { return { k: 'defiende', ic: 'escudo', t: 'Defiende ' + m[2], sq: m[2], idea: 'Defensa' }; } },
+    { re: /diagonal larga y abierta/i, f: function () { return { k: 'linea', ic: 'diagonal', t: 'Diagonal abierta', idea: 'Diagonales abiertas' }; } },
+    { re: /enroca (corto|largo)/i, f: function (m) { return { k: 'rey', ic: 'rey', t: 'Enroque ' + m[1] + ': rey a salvo', idea: 'Enroque' }; } },
     { re: /con el rey a salvo|el rey se pone a salvo y la torre entra en juego/i, f: null },
-    { re: /desarrolla una pieza/i, f: function () { return { k: 'desarrollo', ic: '♞', t: 'Desarrollo', idea: 'Desarrollo rápido' }; } },
-    { re: /ocupa el centro/i, f: function () { return { k: 'centro', ic: '◎', t: 'Ocupa el centro', idea: 'Control del centro' }; } },
-    { re: /vigila el centro/i, f: function () { return { k: 'centro', ic: '◎', t: 'Vigila el centro', idea: 'Control del centro' }; } },
-    { re: /captura/i, f: function () { return { k: 'captura', ic: '✕', t: 'Captura', idea: 'Cambios' }; } }
+    { re: /desarrolla una pieza/i, f: function () { return { k: 'desarrollo', ic: 'caballo', t: 'Desarrollo', idea: 'Desarrollo rápido' }; } },
+    { re: /ocupa el centro/i, f: function () { return { k: 'centro', ic: 'centro', t: 'Ocupa el centro', idea: 'Control del centro' }; } },
+    { re: /vigila el centro/i, f: function () { return { k: 'centro', ic: 'centro', t: 'Vigila el centro', idea: 'Control del centro' }; } },
+    { re: /captura/i, f: function () { return { k: 'captura', ic: 'captura', t: 'Captura', idea: 'Cambios' }; } }
   ];
   function analizar(txt) {
     // «3... Ac5 — El alfil va a c5, …. Tras c3, el plan sigue con Cf6: …»
@@ -117,9 +118,9 @@
     var res = resp[firma];
     card.innerHTML = (res ? '<p class="ap-res ' + res + '">' + (res === 'ok' ? '¡Bien visto!' : 'Casi. La idea era: ' + buena.t) + '</p>' : '') +
       '<div class="ap-mov"><b>' + movTxt + '</b><span>' + a.principal + '.</span></div>' +
-      (a.chips.length ? '<div class="ap-chips">' + a.chips.map(function (c, i) { return '<span class="ap-chip ap-' + c.k + '" style="--d:' + (i * 0.05) + 's"><i>' + c.ic + '</i>' + c.t + '</span>'; }).join('') + '</div>' : '') +
+      (a.chips.length ? '<div class="ap-chips">' + a.chips.map(function (c, i) { return '<span class="ap-chip ap-' + c.k + '" style="--d:' + (i * 0.05) + 's"><i>' + ico(c.ic) + '</i>' + c.t + '</span>'; }).join('') + '</div>' : '') +
       (a.resto.length ? '<p class="ap-resto">' + a.resto.join(' ') + '</p>' : '') +
-      (a.plan ? '<p class="ap-plan"><i>→</i>' + a.plan + '</p>' : '') + interruptor();
+      (a.plan ? '<p class="ap-plan"><i>' + ico('presiona') + '</i>' + a.plan + '</p>' : '') + interruptor();
     conectar(card);
     marcar(cb, a.chips);
     pintarIdeas(runner);
@@ -136,13 +137,13 @@
     var box = L.querySelector(':scope > .ap-ideas');
     if (!ses.orden.yo.length && !ses.orden.el.length) { if (box) box.remove(); return; }
     if (!box) { box = document.createElement('div'); box.className = 'ap-ideas'; L.appendChild(box); }
-    var grupo = function (q, tit) { return ses.orden[q].length ? '<small>' + tit + '</small><div class="ap-g-' + q + '">' + ses.orden[q].map(function (k) { return '<span><i>' + ses.ideas[q][k] + '</i>' + k + '</span>'; }).join('') + '</div>' : ''; };
+    var grupo = function (q, tit) { return ses.orden[q].length ? '<small>' + tit + '</small><div class="ap-g-' + q + '">' + ses.orden[q].map(function (k) { return '<span><i>' + ico(ses.ideas[q][k]) + '</i>' + k + '</span>'; }).join('') + '</div>' : ''; };
     var html = grupo('yo', 'Tus ideas en esta línea') + grupo('el', 'Lo que busca el rival');
     if (box.innerHTML !== html) box.innerHTML = html;
   }
 
   /* ---------- Mapa de secciones del curso ---------- */
-  var TIPOS = { 'k-teoría': ['📖', 'Teoría'], 'k-planes': ['🎯', 'Planes y golpes'], 'k-castigo': ['⚔', 'Castiga sus errores'], 'k-trampas': ['⚠', 'Trampas'] };
+  var TIPOS = { 'k-teoría': ['libro', 'Teoría'], 'k-planes': ['diana', 'Planes y golpes'], 'k-castigo': ['espadas', 'Castiga sus errores'], 'k-trampas': ['aviso', 'Trampas'] };
   function curso() {
     var secs = document.querySelectorAll('.main .sections > .sec'); if (!secs.length) return;
     secs.forEach(function (s) {
@@ -152,7 +153,7 @@
       var tipo = small ? small.textContent.split('·')[0].trim() : '';
       if (!t) { t = /castig/i.test(tipo) ? TIPOS['k-castigo'] : /plan|golpe/i.test(tipo) ? TIPOS['k-planes'] : /trampa/i.test(tipo) ? TIPOS['k-trampas'] : TIPOS['k-teoría']; }
       s.classList.add('ap-sec', 'ap-t-' + (/castig/i.test(t[1]) ? 'castigo' : /plan/i.test(t[1]) ? 'planes' : /trampa/i.test(t[1]) ? 'trampas' : 'teoria'));
-      var n = s.querySelector('.sec-n'); if (n && !n.querySelector('.ap-tipo')) n.insertAdjacentHTML('beforeend', '<i class="ap-tipo" aria-hidden="true">' + t[0] + '</i>');
+      var n = s.querySelector('.sec-n'); if (n && !n.querySelector('.ap-tipo')) n.insertAdjacentHTML('beforeend', '<i class="ap-tipo" aria-hidden="true">' + ico(t[0]) + '</i>');
     });
   }
 

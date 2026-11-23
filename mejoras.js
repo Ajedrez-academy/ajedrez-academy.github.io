@@ -182,7 +182,7 @@
       var bloq = '';
       if (x.g === 'Lecciones' && window.AA_UI && window.AA_UI.canOpen) {
         var c = window.AA_UI.canOpen(x.r.slice(8));
-        if (c && c.ok === false) bloq = '<i class="aa-pal-lock" title="' + esc(c.why || 'Bloqueada') + '">🔒 bloqueada</i>';
+        if (c && c.ok === false) bloq = '<i class="aa-pal-lock" title="' + esc(c.why || 'Bloqueada') + '">' + (window.AA_ICONO ? window.AA_ICONO('candado') : '') + ' bloqueada</i>';
       }
       h += '<li role="option" id="aa-pal-' + i + '" data-i="' + i + '"><b>' + esc(x.t) + bloq + '</b><small>' + esc(x.d).slice(0, 90) + '</small></li>';
     });

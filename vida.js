@@ -142,7 +142,7 @@
     var over = pg.querySelector('.over'), fin = !!over, res = '';
     if (over) { var ot = over.textContent.toLowerCase(); res = /ganad|victoria/.test(ot) ? 'win' : /perdid|derrota/.test(ot) ? 'loss' : 'draw'; over.classList.add('vx-over', 'vx-' + res); }
     var mood = fin ? (res === 'win' ? 'preocupado' : res === 'loss' ? 'feliz' : 'normal') : mio > 1.5 ? 'preocupado' : mio < -1.5 ? 'feliz' : (b.p === 'rey' || b.p === 'torre' ? 'serio' : 'normal');
-    var frase = fin ? (res === 'win' ? '¡Me has ganado! Pide la revancha cuando quieras.' : res === 'loss' ? '¡Buena partida! Revísala y busca tu revancha.' : 'Tablas. Muy igualado, ¿otra?') : turnoBot ? 'Pensando' : mio > 3 ? '¡Uf! Me estás dando una lección…' : mio > 1.5 ? 'Hmm… esto se complica.' : mio < -3 ? 'Ríndete, no tienes escapatoria.' : mio < -1.5 ? 'Creo que voy ganando 😏' : 'Tu turno. Te estoy vigilando.';
+    var frase = fin ? (res === 'win' ? '¡Me has ganado! Pide la revancha cuando quieras.' : res === 'loss' ? '¡Buena partida! Revísala y busca tu revancha.' : 'Tablas. Muy igualado, ¿otra?') : turnoBot ? 'Pensando' : mio > 3 ? '¡Uf! Me estás dando una lección…' : mio > 1.5 ? 'Hmm… esto se complica.' : mio < -3 ? 'Ríndete, no tienes escapatoria.' : mio < -1.5 ? 'Creo que voy ganando.' : 'Tu turno. Te estoy vigilando.';
     var firma = lv + mood + frase;
     var box = side.querySelector(':scope > .vx-rival');
     if (!box) { box = document.createElement('div'); box.className = 'vx-rival'; side.insertBefore(box, side.firstChild); rivalFirma = ''; }
@@ -189,7 +189,7 @@
       var ys = D.map(function (d) { return d.y; }).filter(Boolean), y0 = Math.floor(Math.min.apply(null, ys) / 10) * 10, y1 = Math.ceil((Math.max.apply(null, ys) + 1) / 10) * 10;
       var jug = {}; D.forEach(function (d) { jug[apellido(d.w)] = 1; jug[apellido(d.b)] = 1; });
       var hero = document.createElement('section'); hero.className = 'vx-lib-hero';
-      hero.innerHTML = '<div class="vx-lib-deco" aria-hidden="true">♜♞♝♛♚♝♞♜</div>' +
+      hero.innerHTML = '<div class="vx-lib-deco" aria-hidden="true">' + ['torre', 'caballo', 'alfil', 'dama', 'rey', 'alfil', 'caballo', 'torre'].map(function (n) { return window.AA_ICONO ? window.AA_ICONO(n) : ''; }).join('') + '</div>' +
         '<div class="vx-lib-top"><div><small>Biblioteca</small><h1>Partidas inmortales</h1><p>' + y0 + '–' + (y1 - 1) + ': las partidas que enseñaron a jugar a generaciones, comentadas jugada a jugada.</p></div>' +
         '<div class="vx-lib-nums"><span><b>' + D.length + '</b><small>partidas</small></span><span><b>' + Object.keys(jug).length + '</b><small>jugadores</small></span><span><b>' + (y1 - y0) + '</b><small>años de historia</small></span></div></div>';
       lib.insertBefore(hero, lib.firstChild);
@@ -231,7 +231,7 @@
     if (tab && !L.querySelector('.vx-claves')) {
       var filas = Array.prototype.map.call(tab.querySelectorAll('tbody tr'), function (tr) { var td = tr.querySelectorAll('td'); return { n: td[0].textContent, v: parseFloat((td[2] || td[1]).textContent.replace('−', '-')) || 0, tot: tr.classList.contains('tot') }; });
       var mx = Math.max(1, Math.max.apply(null, filas.map(function (f) { return Math.abs(f.v); })));
-      var html = '<div class="vx-claves" aria-hidden="true"><div class="vx-cl-h"><span>♚ Negras</span><span>Blancas ♔</span></div>' + filas.map(function (f, i) {
+      var html = '<div class="vx-claves" aria-hidden="true"><div class="vx-cl-h"><span>Negras</span><span>Blancas</span></div>' + filas.map(function (f, i) {
         var w = Math.abs(f.v) / mx * 50;
         return '<div class="vx-cl-f' + (f.tot ? ' tot' : '') + '" style="--d:' + (i * 0.07) + 's"><span class="vx-cl-n">' + f.n + '</span><span class="vx-cl-b"><i class="' + (f.v >= 0 ? 'w' : 'n') + '" style="--w:' + w + '%"></i></span><b>' + (f.v > 0 ? '+' : '') + f.v.toFixed(1) + '</b></div>';
       }).join('') + '</div>';

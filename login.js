@@ -53,7 +53,7 @@ html.aa-lock body>*:not(#aa-login){visibility:hidden!important}
 #aa-login .aa-steps li::before{content:counter(s);width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:var(--a-sf2);color:var(--a-ink2);font-size:.78rem;transition:background .2s,color .2s}
 #aa-login .aa-steps li.on{color:var(--a-ink);border-color:var(--a-lined)}
 #aa-login .aa-steps li.on::before{background:var(--a-g);color:#fff}
-#aa-login .aa-steps li.ok::before{content:"✓";background:var(--a-gs);color:var(--a-gd)}
+#aa-login .aa-steps li.ok::before{content:"";background:var(--a-gs);color:var(--a-gd);background-image:var(--icc-check-v);background-position:center;background-size:62%;background-repeat:no-repeat}
 #aa-login h1{font:800 clamp(1.8rem,3vw,2.25rem)/1.1 "Bricolage Grotesque",Nunito,sans-serif;letter-spacing:-.03em;margin:0 0 8px;text-wrap:balance}
 #aa-login .aa-sub{color:var(--a-ink2);margin:0 0 26px;font-weight:600}
 #aa-login .aa-sub b{color:var(--a-ink);font-weight:800}

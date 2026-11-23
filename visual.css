@@ -47,7 +47,7 @@
 .vs-fin-on > h1, .vs-fin-on > p.muted, .vs-fin-on > .ex-fin-prog { display: none; }
 .vs-fin-hero { position: relative; margin: 0 0 20px; padding: 22px 24px 18px; border-radius: 28px; color: #fff; overflow: hidden; isolation: isolate;
   background: radial-gradient(90% 120% at 100% 0%, #b48cff 0%, transparent 55%), linear-gradient(135deg, #4c2a9e, #6a3fd1 55%, #7c4ddb); box-shadow: 0 24px 46px -30px #4c2a9e; }
-.vs-fin-hero::before { content: "♚"; position: absolute; left: -18px; bottom: -60px; z-index: -1; font-size: 220px; line-height: 1; opacity: .08; }
+.vs-fin-hero::before { content: ""; display: inline-block; width: 230px; height: 230px; background: currentColor; -webkit-mask: var(--ic-rey) center / contain no-repeat; mask: var(--ic-rey) center / contain no-repeat; position: absolute; left: -26px; bottom: -64px; z-index: -1; opacity: .1; }
 .vs-fh-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .vs-fh-top h1 { margin: 0 0 6px; color: #fff; }
 .vs-fh-top p { margin: 0; max-width: 460px; color: rgba(255,255,255,.88); }

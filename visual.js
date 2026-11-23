@@ -7,6 +7,7 @@
   function store() { try { return JSON.parse(localStorage.getItem('chess-academy/v1')) || {}; } catch (e) { return {}; } }
   function iso(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   var reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  function ic(n) { return window.AA_ICONO ? window.AA_ICONO(n) : ''; }
 
   /* Ráfaga de estrellas (al resolver) */
   function rafaga(el, n, cols) {
@@ -88,12 +89,12 @@
 
   /* ================= FINALES: familias, medallas y objetivo ================= */
   var FAM = {
-    mates: { n: 'Mates básicos', corto: 'Mates', ic: '♛', c: '#8b5cf6', ids: ['kqk', 'kq-k-borde', 'krk', 'krrk'] },
-    peones: { n: 'Peones', ic: '♟', c: '#2bb45c', ids: ['kpk', 'cuadrado', 'rey-activo'] },
-    torres: { n: 'Torres', ic: '♜', c: '#2fa8ff', ids: ['lucena', 'philidor', 'peon-torre'] },
-    estudios: { n: 'Estudios', ic: '★', c: '#ff9600', ids: ['saavedra', 'reti'] }
+    mates: { n: 'Mates básicos', corto: 'Mates', ic: 'dama', c: '#8b5cf6', ids: ['kqk', 'kq-k-borde', 'krk', 'krrk'] },
+    peones: { n: 'Peones', ic: 'peon', c: '#2bb45c', ids: ['kpk', 'cuadrado', 'rey-activo'] },
+    torres: { n: 'Torres', ic: 'torre', c: '#2fa8ff', ids: ['lucena', 'philidor', 'peon-torre'] },
+    estudios: { n: 'Estudios', ic: 'estrella', c: '#ff9600', ids: ['saavedra', 'reti'] }
   };
-  var OBJ = { win: ['Dar mate', '♚'], promote: ['Coronar', '♛'], draw: ['Hacer tablas', '½'] };
+  var OBJ = { win: ['Dar mate', 'rey'], promote: ['Coronar', 'corona'], draw: ['Hacer tablas', 'tablas'] };
   function famDe(id) { for (var k in FAM) if (FAM[k].ids.indexOf(id) >= 0) return k; return null; }
   function finPorTitulo() { var m = {}; ((window.AA_UI && window.AA_UI.endgames) || []).forEach(function (f) { m[f.title.trim()] = f; }); return m; }
   var finFirma = '';
@@ -107,7 +108,7 @@
       if (k) { cuenta[k].t++; if (ok) cuenta[k].d++; }
       c.dataset.fam = k || ''; if (k) c.style.setProperty('--fc', FAM[k].c);
       var tx = c.querySelector('.drill-txt');
-      if (k && tx && !tx.querySelector('.vs-fam')) tx.insertAdjacentHTML('afterbegin', '<span class="vs-fam"><i>' + FAM[k].ic + '</i>' + (FAM[k].corto || FAM[k].n) + '</span>');
+      if (k && tx && !tx.querySelector('.vs-fam')) tx.insertAdjacentHTML('afterbegin', '<span class="vs-fam"><i>' + ic(FAM[k].ic) + '</i>' + (FAM[k].corto || FAM[k].n) + '</span>');
       var med = c.querySelector('.vs-medalla');
       if (ok && !med) c.insertAdjacentHTML('beforeend', '<span class="vs-medalla" title="Final dominado" aria-label="Final dominado"><svg viewBox="0 0 40 48"><path d="M10 0h8l4 12-6 4zM30 0h-8l-4 12 6 4z" fill="#e0453b"/><circle cx="20" cy="30" r="15" fill="#ffcf3f" stroke="#d99a00" stroke-width="3"/><path d="M13.5 30.5l4.5 4.5 8.5-9" fill="none" stroke="#8a5a00" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
       if (!ok && med) med.remove();
@@ -132,7 +133,7 @@
       '<div class="vs-fh-anillo" aria-label="' + dom + ' de ' + total + ' finales dominados"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" class="f"/><circle cx="48" cy="48" r="40" class="p" style="stroke-dasharray:' + circ + ';stroke-dashoffset:' + circ * (1 - p) + '"/></svg><b>' + dom + '<small>/' + total + '</small></b><span>dominados</span></div></div>' +
       '<div class="vs-fh-fams">' + Object.keys(FAM).map(function (k) {
         var f = FAM[k], c = cuenta[k];
-        return '<button type="button" class="vs-fh-fam' + (c.t && c.d === c.t ? ' completa' : '') + '" data-f="' + k + '" style="--fc:' + f.c + '"><i>' + f.ic + '</i><span><b>' + f.n + '</b><small>' + c.d + ' de ' + c.t + '</small></span><em><u style="width:' + (c.t ? Math.round(c.d / c.t * 100) : 0) + '%"></u></em></button>';
+        return '<button type="button" class="vs-fh-fam' + (c.t && c.d === c.t ? ' completa' : '') + '" data-f="' + k + '" style="--fc:' + f.c + '"><i>' + ic(f.ic) + '</i><span><b>' + f.n + '</b><small>' + c.d + ' de ' + c.t + '</small></span><em><u style="width:' + (c.t ? Math.round(c.d / c.t * 100) : 0) + '%"></u></em></button>';
       }).join('') + '</div>';
   }
   var finJuego = { id: null, ok: null };
@@ -142,7 +143,7 @@
     var k = famDe(id), t = pg.querySelector('.drill-title');
     if (t && !t.classList.contains('vs-obj')) {
       t.classList.add('vs-obj'); if (k) t.style.setProperty('--fc', FAM[k].c);
-      t.insertAdjacentHTML('afterbegin', '<i class="vs-obj-ic" aria-hidden="true">' + (OBJ[f.goal] || OBJ.win)[1] + '</i>');
+      t.insertAdjacentHTML('afterbegin', '<i class="vs-obj-ic" aria-hidden="true">' + ic((OBJ[f.goal] || OBJ.win)[1]) + '</i>');
     }
     var ok = !!(store().endgames || {})[id];
     if (finJuego.id !== id) { finJuego.id = id; finJuego.ok = ok; return; }
@@ -191,29 +192,29 @@
 
   /* ================= TÁCTICA: pista por niveles y la idea del problema ================= */
   var TEMAS = {
-    'mate en 1': ['♚', 'Mate en 1', 'Hay un jaque mate inmediato. Revisa todos los jaques posibles.'],
-    'mate en 2': ['♚', 'Mate en 2', 'Una jugada fuerza la respuesta y la siguiente da mate. Empieza por los jaques.'],
-    'mate en 3': ['♚', 'Mate en 3', 'Una secuencia forzada de jaques y amenazas termina en mate.'],
-    'mate del pasillo': ['▭', 'Mate del pasillo', 'El rey está encerrado por sus propios peones en la última fila: una torre o la dama en esa fila da mate.'],
-    'ataque doble': ['⑂', 'Ataque doble', 'Una pieza ataca dos objetivos a la vez y el rival solo puede salvar uno.'],
-    'jaque doble': ['⑂', 'Jaque doble', 'Dos piezas dan jaque a la vez: el rey tiene que moverse y no puede tapar ni capturar las dos.'],
-    'clavada': ['📌', 'Clavada', 'Una pieza no puede moverse sin dejar expuesta otra más valiosa (o al rey) detrás.'],
-    'enfilada': ['➶', 'Enfilada', 'Atacas una pieza valiosa que, al apartarse, deja otra detrás sin defensa.'],
-    'descubierta': ['↯', 'Ataque descubierto', 'Al mover una pieza, otra que estaba detrás ataca de repente.'],
-    'sacrificio': ['✦', 'Sacrificio', 'Entregas material para conseguir algo mayor: el mate o más material.'],
-    'desviación': ['↪', 'Desviación', 'Obligas a una pieza defensora a abandonar la casilla o la pieza que protegía.'],
-    'atracción': ['⤓', 'Atracción', 'Atraes al rey o a una pieza a una casilla donde sufre un golpe.'],
-    'intermedia': ['⏸', 'Jugada intermedia', 'Antes de la jugada que el rival espera, metes otra con una amenaza más fuerte.'],
-    'despeje': ['⇥', 'Despeje', 'Apartas una pieza propia para abrir una línea o liberar una casilla.'],
-    'interferencia': ['⊣', 'Interferencia', 'Pones una pieza entre la defensora y lo que defiende.'],
-    'rayos X': ['⟿', 'Rayos X', 'Una pieza actúa a través de otra sobre la casilla de detrás.'],
-    'pieza atrapada': ['⛓', 'Pieza atrapada', 'Una pieza rival no tiene casillas a donde huir: atácala y gánala.'],
-    'jugada tranquila': ['…', 'Jugada tranquila', 'Sin jaque ni captura, una jugada silenciosa crea una amenaza que no se puede parar.'],
-    'mate de la coz': ['♞', 'Mate de la coz', 'El caballo da mate a un rey rodeado de sus propias piezas, que le quitan todas las casillas.'],
-    'coronación': ['♛', 'Coronación', 'Un peón llega a la última fila y se convierte en dama: a veces vale la pena sacrificar para abrirle paso.'],
-    'jaque': ['+', 'Jaque con idea', 'Un jaque que obliga al rival y te deja ganar algo en la jugada siguiente.'],
-    'final': ['♔', 'Técnica de final', 'Rey activo, peones pasados y precisión: cada tiempo cuenta.'],
-    'material': ['⚖', 'Ganar material', 'Busca piezas sin defensa o mal defendidas y captúralas.']
+    'mate en 1': ['rey', 'Mate en 1', 'Hay un jaque mate inmediato. Revisa todos los jaques posibles.'],
+    'mate en 2': ['rey', 'Mate en 2', 'Una jugada fuerza la respuesta y la siguiente da mate. Empieza por los jaques.'],
+    'mate en 3': ['rey', 'Mate en 3', 'Una secuencia forzada de jaques y amenazas termina en mate.'],
+    'mate del pasillo': ['pasillo', 'Mate del pasillo', 'El rey está encerrado por sus propios peones en la última fila: una torre o la dama en esa fila da mate.'],
+    'ataque doble': ['tenedor', 'Ataque doble', 'Una pieza ataca dos objetivos a la vez y el rival solo puede salvar uno.'],
+    'jaque doble': ['tenedor', 'Jaque doble', 'Dos piezas dan jaque a la vez: el rey tiene que moverse y no puede tapar ni capturar las dos.'],
+    'clavada': ['clava', 'Clavada', 'Una pieza no puede moverse sin dejar expuesta otra más valiosa (o al rey) detrás.'],
+    'enfilada': ['enfilada', 'Enfilada', 'Atacas una pieza valiosa que, al apartarse, deja otra detrás sin defensa.'],
+    'descubierta': ['descubierta', 'Ataque descubierto', 'Al mover una pieza, otra que estaba detrás ataca de repente.'],
+    'sacrificio': ['regalo', 'Sacrificio', 'Entregas material para conseguir algo mayor: el mate o más material.'],
+    'desviación': ['desvia', 'Desviación', 'Obligas a una pieza defensora a abandonar la casilla o la pieza que protegía.'],
+    'atracción': ['iman', 'Atracción', 'Atraes al rey o a una pieza a una casilla donde sufre un golpe.'],
+    'intermedia': ['pausa', 'Jugada intermedia', 'Antes de la jugada que el rival espera, metes otra con una amenaza más fuerte.'],
+    'despeje': ['despeja', 'Despeje', 'Apartas una pieza propia para abrir una línea o liberar una casilla.'],
+    'interferencia': ['interfiere', 'Interferencia', 'Pones una pieza entre la defensora y lo que defiende.'],
+    'rayos X': ['rayosx', 'Rayos X', 'Una pieza actúa a través de otra sobre la casilla de detrás.'],
+    'pieza atrapada': ['jaula', 'Pieza atrapada', 'Una pieza rival no tiene casillas a donde huir: atácala y gánala.'],
+    'jugada tranquila': ['pluma', 'Jugada tranquila', 'Sin jaque ni captura, una jugada silenciosa crea una amenaza que no se puede parar.'],
+    'mate de la coz': ['caballo', 'Mate de la coz', 'El caballo da mate a un rey rodeado de sus propias piezas, que le quitan todas las casillas.'],
+    'coronación': ['corona', 'Coronación', 'Un peón llega a la última fila y se convierte en dama: a veces vale la pena sacrificar para abrirle paso.'],
+    'jaque': ['jaque', 'Jaque con idea', 'Un jaque que obliga al rival y te deja ganar algo en la jugada siguiente.'],
+    'final': ['rey', 'Técnica de final', 'Rey activo, peones pasados y precisión: cada tiempo cuenta.'],
+    'material': ['balanza', 'Ganar material', 'Busca piezas sin defensa o mal defendidas y captúralas.']
   };
   var pzCache = { fen: null, p: null }, pzMiss = {}, pistaDada = null;
   function problemaActual() {
@@ -235,7 +236,7 @@
   function tarjetaIdea(L, temas, titulo) {
     var box = L.querySelector(':scope > .vs-idea');
     if (!temas.length) { if (box) box.remove(); return; }
-    var html = '<small>' + titulo + '</small>' + temas.map(function (t) { return '<div class="vs-idea-t"><i>' + t[0] + '</i><span><b>' + t[1] + '</b>' + t[2] + '</span></div>'; }).join('');
+    var html = '<small>' + titulo + '</small>' + temas.map(function (t) { return '<div class="vs-idea-t"><i>' + ic(t[0]) + '</i><span><b>' + t[1] + '</b>' + t[2] + '</span></div>'; }).join('');
     if (!box) { box = document.createElement('div'); box.className = 'vs-idea'; var tu = L.querySelector('.tutor'); if (tu) tu.insertAdjacentElement('afterend', box); else L.appendChild(box); }
     if (box.innerHTML !== html) box.innerHTML = html;
   }

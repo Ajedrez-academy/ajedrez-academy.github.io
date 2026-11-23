@@ -92,9 +92,9 @@
     }
     function compartir() {
       var o = leer(), r = racha(o), d = fecha, reg = o[K] || { fallos: g.fallos };
-      var txt = '♟️ Ajedrez Academy · Problema del día ' + d.getDate() + ' ' + MESES[d.getMonth()] + '\n' +
-        (reg.fallos ? '✅ Resuelto (' + (reg.fallos + 1) + ' intentos)' : '✅ ¡A la primera!') + (r > 1 ? '  🔥 ' + r + ' días seguidos' : '') +
-        '\n' + '🟩'.repeat(1) + '🟥'.repeat(Math.min(5, reg.fallos || 0)) + '\n' + URL_SITIO;
+      var txt = 'Ajedrez Academy · Problema del día ' + d.getDate() + ' ' + MESES[d.getMonth()] + '\n' +
+        (reg.fallos ? 'Resuelto en ' + (reg.fallos + 1) + ' intentos' : '¡Resuelto a la primera!') + (r > 1 ? ' · racha de ' + r + ' días' : '') +
+        '\n' + URL_SITIO;
       var hecho = function () { setCop('¡Copiado! Pégalo donde quieras.'); setTimeout(function () { setCop(''); }, 2500); };
       if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { navigator.share({ text: txt }).catch(function () {}); return; }
       if (navigator.clipboard) navigator.clipboard.writeText(txt).then(hecho, function () { prompt('Copia tu resultado:', txt); });
@@ -111,7 +111,7 @@
         h('div', null, h('small', { className: 'pd-kicker' }, (off ? 'Archivo · problema del ' : 'Problema del día · ') + fecha.getDate() + ' ' + MESES[fecha.getMonth()]),
           h('h1', null, 'Juegan las ' + turno + (p.mate ? ' y dan mate en ' + p.mate : '')),
           h('p', { className: 'muted' }, (off ? 'Problema de un día anterior: cuenta para practicar, no para la racha. ' : 'El mismo problema para todos hoy. ') + 'Encuentra la mejor jugada' + (p.sol.length > 1 ? ' y sigue hasta el final.' : '.'))),
-        h('div', { className: 'pd-racha', title: 'Días seguidos resolviendo el problema del día' }, h('b', null, '🔥 ', r), h('small', null, r === 1 ? 'día seguido' : 'días seguidos'))),
+        h('div', { className: 'pd-racha', title: 'Días seguidos resolviendo el problema del día' }, h('b', null, h('i', { className: 'pd-llama', 'aria-hidden': 'true', dangerouslySetInnerHTML: { __html: window.AA_ICONO ? window.AA_ICONO('llama') : '' } }), ' ', r), h('small', null, r === 1 ? 'día seguido' : 'días seguidos'))),
       h('div', { className: 'nv-stage' },
         h('div', { className: 'nv-board' }, h(UI.Board, { fen: g.fen, interactive: g.estado === 'jugando', onMove: onMove, lastMove: g.last, orientation: inicio.color, allowColor: inicio.color, hint: pistaSq, flash: g.flash })),
         h('div', { className: 'nv-side' },
@@ -131,7 +131,7 @@
                 h('button', { className: 'btn', onClick: function () { set(Object.assign({}, g, { pista: true })); } }, h('span', null, 'Pista: ¿qué pieza muevo?'))),
           h('div', { className: 'card pd-semana', 'aria-label': 'Últimos 14 días' },
             h('small', null, 'Últimos 14 días · toca uno para jugarlo'),
-            h('div', { className: 'pd-dias' }, dias.map(function (s) { return h('button', { key: s.off, type: 'button', className: 'pd-d ' + s.s + (s.off === off ? ' sel' : ''), 'aria-current': s.off === off ? 'date' : undefined, title: (s.s === 'ok' ? 'Resuelto' : s.s === 'ko' ? 'Intentado' : 'Sin jugar') + ' · día ' + s.n, onClick: function () { if (s.off !== off) props.irA(s.off); } }, h('i', null, s.s === 'ok' ? '✓' : s.s === 'ko' ? '·' : s.n), s.off === 0 ? 'hoy' : s.l); }))))));
+            h('div', { className: 'pd-dias' }, dias.map(function (s) { return h('button', { key: s.off, type: 'button', className: 'pd-d ' + s.s + (s.off === off ? ' sel' : ''), 'aria-current': s.off === off ? 'date' : undefined, title: (s.s === 'ok' ? 'Resuelto' : s.s === 'ko' ? 'Intentado' : 'Sin jugar') + ' · día ' + s.n, onClick: function () { if (s.off !== off) props.irA(s.off); } }, s.s === 'ok' ? h('i', { dangerouslySetInnerHTML: { __html: window.AA_ICONO ? window.AA_ICONO('check') : '' } }) : h('i', null, s.s === 'ko' ? '·' : s.n), s.off === 0 ? 'hoy' : s.l); }))))));
   }
   PAGES['problema-del-dia'] = Diario;
 
@@ -152,9 +152,9 @@
     var ref = enLado ? (side.querySelector(':scope > .quests') || side.firstChild) : col.querySelector(':scope > .unit');
     if (el.parentElement !== cont || el.nextSibling !== ref) cont.insertBefore(el, ref);
     el.dataset.f = firma; el.classList.toggle('hecho', ok);
-    el.innerHTML = '<span class="pd-ico" aria-hidden="true">' + (ok ? '✓' : '♞') + '</span>' +
+    el.innerHTML = '<span class="pd-ico" aria-hidden="true">' + (window.AA_ICONO ? window.AA_ICONO(ok ? 'check' : 'caballo') : '') + '</span>' +
       '<span class="pd-tx"><small>Problema del día</small><b>' + (ok ? 'Resuelto. Vuelve mañana' : reg ? 'Inténtalo otra vez' : 'Uno nuevo te espera') + '</b></span>' +
-      (r ? '<span class="pd-fire" title="Días seguidos">🔥 ' + r + '</span>' : '');
+      (r ? '<span class="pd-fire" title="Días seguidos">' + (window.AA_ICONO ? window.AA_ICONO('llama') : '') + ' ' + r + '</span>' : '');
   }
   var pend = false;
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; tarjeta(); }); } })
