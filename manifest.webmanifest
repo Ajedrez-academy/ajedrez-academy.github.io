@@ -19,5 +19,43 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "description": "Escuela de ajedrez gratuita en español: lecciones, táctica, aperturas, finales y bots que explican cada jugada.",
+  "id": "./",
+  "categories": [
+    "education",
+    "games"
+  ],
+  "shortcuts": [
+    {
+      "name": "Problema del día",
+      "url": "./#problema-del-dia",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Táctica",
+      "url": "./#tactica",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Jugar contra un bot",
+      "url": "./#jugar",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

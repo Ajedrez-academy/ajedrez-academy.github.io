@@ -1,4 +1,7 @@
-const C='aa-site-v3';
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'])).then(()=>self.skipWaiting()))});
+const C='aa-site-v4';
+const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','auth-config.js','login.js','retoques.css','retoques.js','retos.css','retos.js','nivel.css','nivel.js','evaluar-posiciones.js','memoria-posiciones.js','admin.css','admin.js','lecciones-datos.js','lecciones.js','partidas-tomo2.js','partidas-tomo3.js','apoyo.js','mejoras.css','mejoras.js','diario.js','actividad.js'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||/ads-config.js|ads.txt/.test(u.pathname))return;e.respondWith(caches.match(e.request).then(hit=>{const net=fetch(e.request).then(r=>{if(r.ok||r.type==='opaque'){const cl=r.clone();caches.open(C).then(c=>c.put(e.request,cl))}return r}).catch(()=>hit);return hit||net}))});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||/ads-config.js|ads.txt/.test(u.pathname))return;
+const nav=e.request.mode==='navigate';
+e.respondWith(caches.match(e.request,{ignoreSearch:nav}).then(hit=>{const net=fetch(e.request).then(r=>{if(r.ok||r.type==='opaque'){const cl=r.clone();caches.open(C).then(c=>c.put(e.request,cl))}return r}).catch(()=>hit||(nav?caches.match('index.html'):undefined));return hit||net}))});

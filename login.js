@@ -11,7 +11,7 @@
   if (!(CFG.url && CFG.anonKey) && !DEMO) return;
 
   var LEN = Math.min(10, Math.max(6, CFG.codeLength || 6));
-  var KEYS = ['chess-academy/v1', 'chess-academy/vet'];
+  var KEYS = ['chess-academy/v1', 'chess-academy/vet', 'aa-diario'];
   var SYNC_AT = 'chess-academy/sync-at', OWNER = 'chess-academy/owner', GUEST = 'aa-guest';
   /* Abre la pantalla de acceso desde cualquier sitio (modo invitado → crear cuenta). El progreso local se conserva. */
   window.AA_ENTRAR = function () { try { localStorage.removeItem(GUEST); } catch (e) {} location.reload(); };
