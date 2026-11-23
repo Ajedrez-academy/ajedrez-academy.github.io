@@ -21,6 +21,8 @@
     if (moves < 12) e -= (12 - moves) * 20;                          // partidas muy cortas: menos fiables
     return Math.max(400, Math.min(2200, Math.round(e / 50) * 50)); }
   function go(h) { location.hash = h; window.scrollTo(0, 0); }
+  function esSan(s) { var n = 'es'; try { n = (JSON.parse(localStorage.getItem('chess-academy/v1')) || {}).settings.notation || 'es'; } catch (e) {} if (n === 'en') return s;
+    var M = { K: 'R', Q: 'D', R: 'T', B: 'A', N: 'C' }; return s.replace(/^([KQRBN])/, function (a, d) { return M[d]; }).replace(/=([QRBN])/, function (a, d) { return '=' + M[d]; }); }
 
   /* Tarjeta en el inicio (sustituye a «¿Cuál es tu nivel?») */
   window.AA_NIVEL = function () {
@@ -104,7 +106,7 @@
             : h('div', { className: 'card nv-box' },
                 h('b', null, g.thinking ? BOT.name + ' está pensando…' : 'Tu turno'),
                 h('p', { className: 'muted small' }, 'Jugada ' + Math.max(1, moves) + ' de ' + MAX_MOVES + ' como máximo. Se evalúa al terminar la partida o al llegar a ' + MAX_MOVES + ' jugadas.'),
-                h('div', { className: 'nv-moves' }, g.sans.map(function (s, i) { return h('span', { key: i }, i % 2 === 0 ? (i / 2 + 1) + '. ' : '', s); })),
+                h('div', { className: 'nv-moves' }, g.sans.map(function (s, i) { return h('span', { key: i }, i % 2 === 0 ? (i / 2 + 1) + '. ' : '', esSan(s)); })),
                 h('button', { className: 'btn', disabled: moves < MIN_MOVES || g.thinking, onClick: function () { finish(g, 'none', 'evaluada antes del final'); } },
                   h('span', null, moves < MIN_MOVES ? 'Evaluar (desde la jugada ' + MIN_MOVES + ')' : 'Terminar y evaluar')),
                 h('button', { className: 'nv-skip', onClick: function () { finish(g, 'loss', 'abandono'); } }, 'Rendirse')))));

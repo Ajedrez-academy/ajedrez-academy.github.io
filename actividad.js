@@ -10,7 +10,8 @@
     try { dia = JSON.parse(localStorage.getItem('aa-diario')) || {}; } catch (e) {}
     var set = {};
     (s.days || []).forEach(function (d) { set[d] = (set[d] || 0) + 2; });
-    Object.keys(dia).forEach(function (d) { if (dia[d] && dia[d].ok) set[d] = (set[d] || 0) + 1; });
+    try { var H = JSON.parse(localStorage.getItem('aa-historial')) || {}; Object.keys(H).forEach(function (d) { if (!set[d]) set[d] = 2; }); } catch (e) {}
+    Object.keys(dia).forEach(function (d) { if (dia[d] && dia[d].ok && !dia[d].tarde) set[d] = (set[d] || 0) + 1; });
     return set;
   }
   function pintar(sec) {
@@ -48,7 +49,57 @@
     }
     sec.dataset.f = firma; pintar(sec);
   }
+  /* ---------- Tu evolución: foto diaria de tu nivel de táctica, XP y lecciones ---------- */
+  var HK = 'aa-historial', ultFoto = 0;
+  function foto() {
+    if (Date.now() - ultFoto < 4000) return; ultFoto = Date.now();
+    var s; try { s = JSON.parse(localStorage.getItem('chess-academy/v1')); } catch (e) {}
+    if (!s || !s.puzzle) return;
+    var l = 0; Object.keys(s.lessons || {}).forEach(function (k) { if (s.lessons[k] && s.lessons[k].done) l++; });
+    var hoy = iso(new Date()), H = {};
+    try { H = JSON.parse(localStorage.getItem(HK)) || {}; } catch (e) {}
+    var v = { t: s.puzzle.rating, x: s.xp || 0, l: l }, ant = H[hoy];
+    if (ant && ant.t === v.t && ant.x === v.x && ant.l === v.l) return;
+    if (!ant && !s.puzzle.solved && !s.xp) return; // aún no ha hecho nada
+    H[hoy] = v;
+    var ks = Object.keys(H).sort(); while (ks.length > 400) delete H[ks.shift()];
+    try { localStorage.setItem(HK, JSON.stringify(H)); } catch (e) {}
+  }
+  function grafica(sec) {
+    var H = {}; try { H = JSON.parse(localStorage.getItem(HK)) || {}; } catch (e) {}
+    var ks = Object.keys(H).sort().slice(-90), pts = ks.map(function (k) { return { k: k, v: H[k].t }; });
+    if (pts.length < 2) {
+      sec.innerHTML = '<div class="ac-head"><h2>Tu evolución</h2></div><p class="muted small ac-pie">Aquí verás cómo sube tu nivel de táctica día a día. Resuelve problemas hoy y vuelve mañana para ver la primera línea.</p>';
+      return;
+    }
+    var W = Math.max(280, Math.min(760, (sec.clientWidth || 680) - 40)), Hh = W < 500 ? 150 : 180, P = 28, min = Math.min.apply(null, pts.map(function (p) { return p.v; })), max = Math.max.apply(null, pts.map(function (p) { return p.v; }));
+    if (max - min < 100) { var m = (max + min) / 2; min = m - 50; max = m + 50; }
+    var X = function (i) { return P + i * (W - 2 * P) / (pts.length - 1); }, Y = function (v) { return Hh - P - (v - min) * (Hh - 2 * P) / (max - min); };
+    var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1); }).join(' ');
+    var area = d + ' L' + X(pts.length - 1) + ' ' + (Hh - P) + ' L' + P + ' ' + (Hh - P) + ' Z';
+    var ini = pts[0].v, fin = pts[pts.length - 1].v, dif = fin - ini, l0 = H[ks[0]].l, l1 = H[ks[ks.length - 1]].l;
+    var f = function (k) { var a = k.split('-'); return +a[2] + '/' + +a[1]; };
+    sec.innerHTML = '<div class="ac-head"><h2>Tu evolución</h2><div class="ac-nums">' +
+      '<span><b>' + fin + '</b><small>táctica hoy</small></span>' +
+      '<span><b class="' + (dif >= 0 ? 'ev-up' : 'ev-down') + '">' + (dif >= 0 ? '+' : '') + dif + '</b><small>desde el ' + f(ks[0]) + '</small></span>' +
+      '<span><b>+' + Math.max(0, l1 - l0) + '</b><small>lecciones</small></span></div></div>' +
+      '<svg class="ev-svg" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Nivel de táctica: de ' + ini + ' a ' + fin + '">' +
+      '<line x1="' + P + '" x2="' + (W - P) + '" y1="' + Y(max) + '" y2="' + Y(max) + '" class="ev-grid"/><line x1="' + P + '" x2="' + (W - P) + '" y1="' + Y(min) + '" y2="' + Y(min) + '" class="ev-grid"/>' +
+      '<text x="' + (W - P) + '" y="' + (Y(max) - 6) + '" text-anchor="end" class="ev-t">' + Math.round(max) + '</text><text x="' + (W - P) + '" y="' + (Y(min) - 6) + '" text-anchor="end" class="ev-t">' + Math.round(min) + '</text>' +
+      '<path d="' + area + '" class="ev-area"/><path d="' + d + '" class="ev-line"/>' +
+      pts.map(function (p, i) { return '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(p.v).toFixed(1) + '" r="' + (i === pts.length - 1 ? 5 : 3) + '" class="ev-dot"><title>' + f(p.k) + ': ' + p.v + '</title></circle>'; }).join('') +
+      '<text x="' + P + '" y="' + (Hh - 6) + '" class="ev-t">' + f(ks[0]) + '</text><text x="' + (W - P) + '" y="' + (Hh - 6) + '" text-anchor="end" class="ev-t">' + f(ks[ks.length - 1]) + '</text></svg>';
+  }
+  function montarEvo() {
+    var act = document.querySelector('.progress > .aa-actividad'); if (!act) return;
+    var sec = act.parentElement.querySelector(':scope > .aa-evolucion');
+    var firma = (localStorage.getItem(HK) || '').length + iso(new Date());
+    if (sec && sec.dataset.f === firma) return;
+    if (!sec) { sec = document.createElement('section'); sec.className = 'card aa-actividad aa-evolucion'; act.parentElement.insertBefore(sec, act.nextSibling); }
+    sec.dataset.f = firma; grafica(sec);
+  }
+
   var pend = false;
-  new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; montar(); }); } })
+  new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; foto(); montar(); montarEvo(); }); } })
     .observe(document.documentElement, { childList: true, subtree: true });
 })();

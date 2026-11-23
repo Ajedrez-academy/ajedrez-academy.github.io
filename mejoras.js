@@ -16,6 +16,7 @@
     trophy: svg('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>'),
     eye: svg('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
     users: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>'),
+    grid: svg('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>'),
     target: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'),
     gear: svg('<path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.4"/><circle cx="10" cy="12" r="2.4"/><circle cx="18" cy="18" r="2.4"/>'),
     cup: svg('<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/>'),
@@ -32,6 +33,7 @@
     { r: 'progreso', l: 'Progreso', i: 'chart', c: 'orange' },
     { r: 'entrenadores', l: 'Entrenadores', i: 'users', c: 'blue' },
     { r: 'nivel', l: 'Prueba de nivel', i: 'target', c: 'green' },
+    { r: 'coordenadas', l: 'Coordenadas', i: 'grid', c: 'teal' },
     { r: '@ajustes', l: 'Ajustes', i: 'gear', c: 'gray' },
     { r: '@buscar', l: 'Buscar', i: 'search', c: 'blue' },
     { r: '@apoyo', l: 'Apoyar', i: 'cup', c: 'red' },
@@ -45,7 +47,7 @@
     if (r === '@buscar') { if (window.AA_BUSCAR) window.AA_BUSCAR(); return; }
     if (r === '@instalar') { instalar(); return; }
     if (r === '@apoyo') { window.open('https://ko-fi.com/cleygonzalez', '_blank', 'noopener'); return; }
-    if (window.AA_UI && window.AA_UI.go && !/^(memoria|clasificacion|nivel)$/.test(r)) { try { window.AA_UI.go(r); } catch (e) { location.hash = r; } }
+    if (window.AA_UI && window.AA_UI.go && !/^(memoria|clasificacion|nivel|coordenadas|problema-del-dia)$/.test(r)) { try { window.AA_UI.go(r); } catch (e) { location.hash = r; } }
     else location.hash = r;
     window.scrollTo(0, 0);
   }
@@ -172,7 +174,7 @@
     ['aperturas', 'Aperturas', 'Cursos y repertorio'], ['finales', 'Finales', 'Practica contra el motor'], ['partidas', 'Partidas', 'Partidas históricas comentadas'],
     ['analisis', 'Análisis', 'Analiza una posición con Stockfish'], ['evaluar', 'Evaluar posiciones', '¿Quién está mejor?'], ['memoria', 'Memoria relámpago', 'Recuerda y coloca las piezas'],
     ['clasificacion', 'Clasificación', 'Liga semanal'], ['progreso', 'Progreso', 'Tus estadísticas y logros'], ['entrenadores', 'Entrenadores', 'Conoce a los personajes'],
-    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
+    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['coordenadas', 'Coordenadas', 'Entrena a leer el tablero en 30 segundos'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
   ];
   var indice = null;
   function crearIndice() {
@@ -270,8 +272,8 @@
   }
 
   /* ---------- Atajos de teclado: «?» ayuda · g + letra para ir a una sección ---------- */
-  var IRA = { i: 'inicio', t: 'tactica', j: 'jugar', a: 'aperturas', f: 'finales', p: 'partidas', n: 'analisis', e: 'evaluar', m: 'memoria', c: 'clasificacion', r: 'progreso', d: 'problema-del-dia' };
-  var NOMBRES = { i: 'Aprender', t: 'Táctica', j: 'Jugar', a: 'Aperturas', f: 'Finales', p: 'Partidas', n: 'Análisis', e: 'Evaluar', m: 'Memoria', c: 'Clasificación', r: 'Progreso', d: 'Problema del día' };
+  var IRA = { i: 'inicio', t: 'tactica', j: 'jugar', a: 'aperturas', f: 'finales', p: 'partidas', n: 'analisis', e: 'evaluar', m: 'memoria', c: 'clasificacion', r: 'progreso', d: 'problema-del-dia', o: 'coordenadas' };
+  var NOMBRES = { i: 'Aprender', t: 'Táctica', j: 'Jugar', a: 'Aperturas', f: 'Finales', p: 'Partidas', n: 'Análisis', e: 'Evaluar', m: 'Memoria', c: 'Clasificación', r: 'Progreso', d: 'Problema del día', o: 'Coordenadas' };
   var gPend = 0, ayuda = null;
   function abrirAyuda() {
     if (!ayuda) {
@@ -280,6 +282,7 @@
         '<dt><kbd>Ctrl</kbd> + <kbd>K</kbd> o <kbd>/</kbd></dt><dd>Buscar lecciones, aperturas, finales y partidas</dd>' +
         '<dt><kbd>?</kbd></dt><dd>Mostrar esta ayuda</dd>' +
         Object.keys(IRA).map(function (k) { return '<dt><kbd>g</kbd> <kbd>' + k + '</kbd></dt><dd>Ir a ' + NOMBRES[k] + '</dd>'; }).join('') +
+        '<dt><kbd>e</kbd><kbd>4</kbd>, <kbd>C</kbd><kbd>f</kbd><kbd>3</kbd>…</dt><dd>En un tablero: escribe la jugada y se hace sola (Enter si hay dudas)</dd>' +
         '<dt><kbd>Esc</kbd></dt><dd>Cerrar ventanas</dd></dl></div>';
       ayuda.addEventListener('click', function (e) { if (e.target.closest('[data-cerrar]')) cerrarAyuda(); });
       ayuda.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarAyuda(); });
