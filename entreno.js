@@ -1,5 +1,4 @@
 /* Ajedrez Academy · mejoras de uso en Táctica, Finales y Análisis.
-   - Táctica: cuánto sube o baja tu nivel tras cada problema y lo resuelto hoy.
    - Finales: progreso de finales dominados, aviso si la teoría está bloqueada y consejo propio de cada final.
    - Análisis: evaluaciones coloreadas por bando y botón «Pegar» para cargar una partida copiada. */
 (function () {
@@ -7,33 +6,6 @@
   function iso(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function store() { try { return JSON.parse(localStorage.getItem('chess-academy/v1')) || {}; } catch (e) { return {}; } }
   function toast(m) { if (window.AA_TOAST) window.AA_TOAST(m); }
-
-  /* ---------------- TÁCTICA ---------------- */
-  var ultRating = null, tDelta = 0;
-  function tactica() {
-    var head = document.querySelector('.tac-head'); if (!head) { ultRating = null; return; }
-    var pill = head.querySelector('.rating-pill'), b = pill && pill.querySelector('b'); if (!b) return;
-    var r = parseInt(b.textContent, 10);
-    if (ultRating !== null && !isNaN(r) && r !== ultRating) {
-      var d = r - ultRating, el = pill.querySelector('.ex-delta');
-      if (!el) { el = document.createElement('i'); el.className = 'ex-delta'; pill.appendChild(el); }
-      el.textContent = (d > 0 ? '+' : '−') + Math.abs(d);
-      el.className = 'ex-delta ' + (d > 0 ? 'up' : 'down');
-      void el.offsetWidth; el.classList.add('ver');
-      clearTimeout(tDelta); tDelta = setTimeout(function () { el.classList.remove('ver'); }, 2600);
-    }
-    if (!isNaN(r)) ultRating = r;
-    // lo resuelto hoy (se guarda una foto de los contadores al empezar el día)
-    var s = store(), pz = s.puzzle || {}, hoy = iso(), foto = {};
-    try { foto = JSON.parse(localStorage.getItem('aa-tac-dia')) || {}; } catch (e) {}
-    if (foto.d !== hoy) { foto = { d: hoy, s: pz.solved || 0, f: pz.failed || 0 }; try { localStorage.setItem('aa-tac-dia', JSON.stringify(foto)); } catch (e) {} }
-    var ok = Math.max(0, (pz.solved || 0) - foto.s), ko = Math.max(0, (pz.failed || 0) - foto.f), racha = pz.streak || 0;
-    var txt = (ok || ko) ? 'Hoy: ' + ok + ' resuelto' + (ok === 1 ? '' : 's') + (ko ? ' · ' + ko + ' fallado' + (ko === 1 ? '' : 's') : '') + (racha >= 2 ? ' · racha de ' + racha : '') : '';
-    var lin = head.querySelector('.ex-hoy');
-    if (!txt) { if (lin) lin.remove(); return; }
-    if (!lin) { lin = document.createElement('p'); lin.className = 'ex-hoy'; pill.insertAdjacentElement('afterend', lin); }
-    if (lin.textContent !== txt) lin.textContent = txt;
-  }
 
   /* ---------------- FINALES ---------------- */
   function finPorTitulo() { var m = {}; ((window.AA_UI && window.AA_UI.endgames) || []).forEach(function (f) { m[f.title.trim()] = f; }); return m; }
@@ -93,7 +65,7 @@
   }
 
   var pend = false;
-  function tick() { pend = false; try { tactica(); finales(); finalEnJuego(); analisis(); } catch (e) { if (window.console) console.warn('entreno', e); } }
+  function tick() { pend = false; try { finales(); finalEnJuego(); analisis(); } catch (e) { if (window.console) console.warn('entreno', e); } }
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(tick); } })
     .observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 })();

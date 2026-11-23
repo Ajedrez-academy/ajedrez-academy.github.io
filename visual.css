@@ -1,0 +1,123 @@
+/* Ajedrez Academy · Táctica, Finales y Análisis más visuales (ver visual.js) */
+
+/* ---------- Ráfaga al resolver ---------- */
+.vs-rafaga { position: fixed; z-index: 2147483400; width: 0; height: 0; pointer-events: none; }
+.vs-rafaga i { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; animation: vs-estrella .9s cubic-bezier(.15, .8, .3, 1) both; }
+.vs-rafaga svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+@keyframes vs-estrella { 0% { transform: translate(0, 0) scale(0) rotate(0); opacity: 1; } 60% { opacity: 1; } 100% { transform: translate(var(--x), var(--y)) scale(var(--s)) rotate(160deg); opacity: 0; } }
+
+/* ---------- TÁCTICA: tarjeta de nivel ---------- */
+.tac-head.vs-on .rating-pill { display: none; }
+.vs-nivel { --vc: var(--red, #ff4b4b); position: relative; display: flex; overflow: visible; align-items: center; gap: 16px; padding: 14px 18px 14px 14px; border-radius: 22px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--vc) 14%, var(--surface)), var(--surface) 70%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vc) 25%, var(--line)), var(--lift); }
+.vs-nivel[data-rango="0"] { --vc: #8a94a6; } .vs-nivel[data-rango="1"] { --vc: #2bb45c; } .vs-nivel[data-rango="2"] { --vc: #14b8a6; }
+.vs-nivel[data-rango="3"] { --vc: #2fa8ff; } .vs-nivel[data-rango="4"] { --vc: #8b5cf6; } .vs-nivel[data-rango="5"] { --vc: #f0509b; }
+.vs-nivel[data-rango="6"] { --vc: #ff9600; } .vs-nivel[data-rango="7"] { --vc: #e0a800; }
+.vs-anillo { position: relative; flex: none; width: 78px; height: 78px; display: grid; place-items: center; }
+.vs-anillo svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.vs-an-f { fill: none; stroke: color-mix(in srgb, var(--vc) 16%, var(--gray, #e3e8e1)); stroke-width: 7; }
+.vs-an-p { fill: none; stroke: var(--vc); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.3, .9, .3, 1), stroke .4s; }
+.vs-num { position: relative; font: 900 1.35rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: var(--ink); }
+.vs-delta { position: absolute; bottom: -6px; left: 50%; margin-left: -20px; min-width: 40px; text-align: center; padding: 2px 7px; border-radius: 999px; font: 900 .78rem/1.3 'Nunito', system-ui, sans-serif; font-style: normal; opacity: 0; transform: translateY(6px) scale(.8); pointer-events: none; }
+.vs-delta.up { background: var(--green); color: #fff; } .vs-delta.down { background: var(--red, #ff4b4b); color: #fff; }
+.vs-delta.ver { animation: vs-delta 2.4s ease-out both; }
+@keyframes vs-delta { 0% { opacity: 0; transform: translateY(6px) scale(.8); } 12% { opacity: 1; transform: translateY(-4px) scale(1.08); } 20% { transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
+.vs-nv-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vs-nv-tx > small { font: 900 .68rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.vs-rango { font: 800 1.2rem/1.15 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: var(--vc); }
+.vs-falta { font: 700 .8rem/1.3 'Nunito', system-ui, sans-serif; color: var(--ink-2); }
+.vs-llamas { display: flex; align-items: center; gap: 2px; margin-top: 6px; }
+.vs-llamas > i { width: 20px; height: 22px; color: var(--gray-d, #c8d1c6); transition: color .3s, transform .3s; }
+.vs-llamas > i svg { width: 100%; height: 100%; }
+.vs-llamas > i.on { color: #ff8a00; filter: drop-shadow(0 0 4px rgba(255, 138, 0, .55)); animation: vs-flama 1.6s ease-in-out infinite; transform-origin: 50% 90%; }
+.vs-llamas > i.on:nth-child(2) { animation-delay: .2s; } .vs-llamas > i.on:nth-child(3) { animation-delay: .4s; } .vs-llamas > i.on:nth-child(4) { animation-delay: .1s; } .vs-llamas > i.on:nth-child(5) { animation-delay: .3s; }
+.vs-llamas > i.nueva { animation: vs-enciende .55s cubic-bezier(.2, 1.4, .4, 1), vs-flama 1.6s .55s ease-in-out infinite; }
+@keyframes vs-flama { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(.94, 1.08); } }
+@keyframes vs-enciende { 0% { transform: scale(0); } 70% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.vs-racha-n { margin-left: 8px; font: 700 .76rem/1.2 'Nunito', system-ui, sans-serif; font-style: normal; color: var(--ink-2); }
+.vs-nivel.vs-sube { animation: vs-sube .6s ease-out; }
+@keyframes vs-sube { 30% { box-shadow: inset 0 0 0 2px var(--green), 0 0 0 6px color-mix(in srgb, var(--green) 25%, transparent); } }
+.vs-nivel.vs-baja { animation: vs-baja .45s ease-out; }
+@keyframes vs-baja { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+.vs-nivel.vs-apaga .vs-llamas > i { animation: vs-apaga .6s ease-out; }
+@keyframes vs-apaga { 0% { color: #ff8a00; transform: scale(1); } 50% { transform: scale(.6) translateY(4px); } 100% { color: var(--gray-d, #c8d1c6); transform: none; } }
+@media (max-width: 760px) { .vs-nivel { gap: 12px; padding: 10px 14px 10px 10px; } .vs-anillo { width: 64px; height: 64px; } .vs-num { font-size: 1.1rem; } .vs-rango { font-size: 1.05rem; } }
+
+/* ---------- FINALES: portada con familias ---------- */
+.vs-fin-on > h1, .vs-fin-on > p.muted, .vs-fin-on > .ex-fin-prog { display: none; }
+.vs-fin-hero { position: relative; margin: 0 0 20px; padding: 22px 24px 18px; border-radius: 28px; color: #fff; overflow: hidden; isolation: isolate;
+  background: radial-gradient(90% 120% at 100% 0%, #b48cff 0%, transparent 55%), linear-gradient(135deg, #4c2a9e, #6a3fd1 55%, #7c4ddb); box-shadow: 0 24px 46px -30px #4c2a9e; }
+.vs-fin-hero::before { content: "♚"; position: absolute; left: -18px; bottom: -60px; z-index: -1; font-size: 220px; line-height: 1; opacity: .08; }
+.vs-fh-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.vs-fh-top h1 { margin: 0 0 6px; color: #fff; }
+.vs-fh-top p { margin: 0; max-width: 460px; color: rgba(255,255,255,.88); }
+.vs-fh-anillo { position: relative; flex: none; width: 108px; height: 108px; display: grid; place-items: center; text-align: center; }
+.vs-fh-anillo svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.vs-fh-anillo .f { fill: none; stroke: rgba(255,255,255,.18); stroke-width: 9; }
+.vs-fh-anillo .p { fill: none; stroke: #ffcf3f; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.3, .9, .3, 1); animation: vs-anillo 1.2s cubic-bezier(.3, .9, .3, 1) both; }
+@keyframes vs-anillo { from { stroke-dashoffset: 251.3; } }
+.vs-fh-anillo b { position: relative; margin-top: 18px; font: 900 1.9rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+.vs-fh-anillo b small { font-size: .9rem; opacity: .8; }
+.vs-fh-anillo span { position: relative; margin-top: -22px; font: 800 .66rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.vs-fh-fams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.vs-fh-fam { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; gap: 2px 10px; padding: 10px 12px; border: 0; border-radius: 16px; text-align: left; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); transition: background .2s, transform .2s; }
+.vs-fh-fam:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
+.vs-fh-fam > i { grid-row: 1 / span 2; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--fc); font: 400 1.35rem/1 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif; font-style: normal; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
+.vs-fh-fam b { display: block; font: 800 .86rem/1.15 'Nunito', system-ui, sans-serif; }
+.vs-fh-fam small { font: 700 .72rem/1.2 'Nunito', system-ui, sans-serif; opacity: .85; }
+.vs-fh-fam em { grid-column: 2; display: block; height: 5px; border-radius: 3px; background: rgba(255,255,255,.18); overflow: hidden; }
+.vs-fh-fam u { display: block; height: 100%; border-radius: 3px; background: #ffcf3f; text-decoration: none; transition: width .8s ease; }
+.vs-fh-fam.completa { box-shadow: inset 0 0 0 2px #ffcf3f; }
+
+/* ---------- FINALES: tarjetas ---------- */
+.vs-fin-on .drill { position: relative; overflow: visible; box-shadow: inset 4px 0 0 var(--fc, transparent), var(--lift); transition: transform .2s ease, box-shadow .2s ease; }
+.vs-fin-on .drill:hover { transform: translateY(-3px); }
+.vs-fin-on .drill .drill-board { transition: transform .25s ease; }
+.vs-fin-on .drill:hover .drill-board { transform: scale(1.04) rotate(-1deg); }
+.vs-fam { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; margin-bottom: 4px; padding: 2px 8px 2px 4px; border-radius: 999px;
+  background: color-mix(in srgb, var(--fc) 14%, var(--surface)); color: color-mix(in srgb, var(--fc) 75%, var(--ink)); font: 800 .68rem/1.5 'Nunito', system-ui, sans-serif; }
+.vs-fam i { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: var(--fc); color: #fff; font: 400 .7rem/1 'Segoe UI Symbol', serif; font-style: normal; }
+.vs-medalla { position: absolute; top: -8px; right: 10px; width: 34px; height: 41px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.25)); animation: vs-medalla .6s cubic-bezier(.2, 1.5, .4, 1) both; }
+.vs-medalla svg { width: 100%; height: 100%; }
+@keyframes vs-medalla { 0% { transform: translateY(-14px) scale(.5) rotate(-20deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.vs-fin-on .drill.ex-dom { box-shadow: inset 4px 0 0 var(--fc, transparent), var(--lift); }
+.vs-resalta { animation: vs-resalta 1.3s ease-out; }
+@keyframes vs-resalta { 0%, 40% { box-shadow: inset 4px 0 0 var(--fc), 0 0 0 4px color-mix(in srgb, var(--fc) 55%, transparent); } }
+
+/* ---------- FINALES: objetivo en la partida ---------- */
+.drill-title.vs-obj { position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center;
+  border-left: 4px solid var(--fc, var(--purple, #ce82ff)); }
+.drill-title.vs-obj > b, .drill-title.vs-obj > small { grid-column: 2; }
+.vs-obj-ic { grid-row: 1 / span 2; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--fc, #8b5cf6); color: #fff;
+  font: 700 1.3rem/1 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif; font-style: normal; box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+.drill-title.vs-logrado { animation: vs-logrado .8s ease-out; }
+@keyframes vs-logrado { 30% { transform: scale(1.04); box-shadow: 0 0 0 5px color-mix(in srgb, #ffcf3f 60%, transparent); } }
+
+@media (max-width: 760px) {
+  .vs-fin-hero { padding: 18px 16px 14px; border-radius: 22px; }
+  .vs-fh-top p { font-size: .88rem; }
+  .vs-fh-anillo { width: 86px; height: 86px; } .vs-fh-anillo b { font-size: 1.5rem; }
+  .vs-fh-fams { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .vs-fh-fam { padding: 8px 10px; } .vs-fh-fam > i { width: 32px; height: 32px; font-size: 1.1rem; }
+}
+
+/* ---------- ANÁLISIS: probabilidad de victoria y razones ---------- */
+.vs-prob { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin: 2px 0 10px; font: 800 .78rem/1 'Nunito', system-ui, sans-serif; color: var(--ink-2); }
+.vs-prob > i { position: relative; height: 12px; border-radius: 6px; background: #2a2d35; overflow: hidden; box-shadow: inset 0 0 0 1.5px rgba(0,0,0,.25); }
+.vs-prob u { position: absolute; inset: 0 auto 0 0; display: block; width: 50%; background: linear-gradient(180deg, #fff, #e8eae7); box-shadow: 2px 0 0 #9aa09a; transition: width .9s cubic-bezier(.3, .9, .3, 1); }
+.vs-prob > i::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--ink-2); opacity: .5; }
+.vs-prob .w { color: var(--ink); } .vs-prob.lado-n .n { color: var(--ink); } .vs-prob.lado-n .w { color: var(--ink-2); }
+.eng-line { position: relative; transition: background .2s, transform .15s; }
+.eng-line:hover { transform: translateX(3px); }
+.eng-line.vs-mejor::after { content: "mejor"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 1px 7px; border-radius: 999px;
+  background: color-mix(in srgb, var(--green) 16%, var(--surface)); color: var(--green-d, #1b8a45); font: 800 .64rem/1.5 'Nunito', system-ui, sans-serif; }
+ul.reasons > li.vs-razon { display: flex; align-items: flex-start; gap: 10px; list-style: none; animation: vs-razon .35s both ease-out; }
+ul.reasons > li.vs-razon:nth-child(2) { animation-delay: .06s; } ul.reasons > li.vs-razon:nth-child(3) { animation-delay: .12s; } ul.reasons > li.vs-razon:nth-child(4) { animation-delay: .18s; }
+@keyframes vs-razon { from { opacity: 0; transform: translateX(-6px); } }
+ul.reasons > li.vs-razon > .dot { display: none; }
+.vs-r-ic { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; }
+.vs-r-ic svg { width: 17px; height: 17px; }
+.vs-r-ic.w { background: #fff; color: #1f2229; box-shadow: inset 0 0 0 1.5px #d0d4cf; }
+.vs-r-ic.n { background: #2a2d35; color: #fff; }
+.eng-line.vs-mejor > span { padding-right: 52px; }
