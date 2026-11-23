@@ -238,7 +238,7 @@
     if (!temas.length) { if (box) box.remove(); return; }
     var html = '<small>' + titulo + '</small>' + temas.map(function (t) { return '<div class="vs-idea-t"><i>' + ic(t[0]) + '</i><span><b>' + t[1] + '</b>' + t[2] + '</span></div>'; }).join('');
     if (!box) { box = document.createElement('div'); box.className = 'vs-idea'; var tu = L.querySelector('.tutor'); if (tu) tu.insertAdjacentElement('afterend', box); else L.appendChild(box); }
-    if (box.innerHTML !== html) box.innerHTML = html;
+    if (box.dataset.k !== html) { box.dataset.k = html; box.innerHTML = html; }
   }
   function tacticaIdea() {
     var head = document.querySelector('.tac-head'); if (!head) { pistaDada = null; return; }

@@ -94,7 +94,7 @@
   function jugar() {
     var setup = document.querySelector('.play-setup'); if (!setup) { arenaSel = -1; return; }
     var bots = setup.querySelectorAll('.bots > .bot'); if (!bots.length) return;
-    setup.classList.add('vx-on');
+    setup.classList.toggle('vx-on', true);
     // personajes en las tarjetas
     bots.forEach(function (bt, i) {
       bt.style.setProperty('--vc', BOTS[i].c); bt.style.setProperty('--vd', BOTS[i].d); bt.style.setProperty('--vl', BOTS[i].l);
@@ -131,7 +131,7 @@
     if (!/^#partida-/.test(location.hash)) { var vx = pg.querySelector('.vx-rival'); if (vx) vx.remove(); pg.classList.remove('vx-on'); rivalFirma = ''; return; }
     var side = pg.querySelector('.pg-side'), av = pg.querySelector('.pg-player .bot-av:not(.you)'); if (!side || !av) return;
     var lv = +((av.className.match(/lv(\d)/) || [])[1] || 0), b = BOTS[lv];
-    pg.classList.add('vx-on'); pg.style.setProperty('--vc', b.c); pg.style.setProperty('--vd', b.d); pg.style.setProperty('--vl', b.l);
+    pg.classList.toggle('vx-on', true); pg.style.setProperty('--vc', b.c); pg.style.setProperty('--vd', b.d); pg.style.setProperty('--vl', b.l);
     if (!av.querySelector('.vx-pj')) av.insertAdjacentHTML('beforeend', personaje(b));
     var yoBlancas = !/-b$/.test(location.hash);
     var lbl = pg.querySelector('.eb-lbl'), txt = lbl ? lbl.textContent.trim() : '0', v = 0;
@@ -140,7 +140,7 @@
     var mio = yoBlancas ? v : -v;
     var turnoBot = !window.AA_TABLERO || !window.AA_TABLERO.el || !window.AA_TABLERO.el.current || !document.contains(window.AA_TABLERO.el.current);
     var over = pg.querySelector('.over'), fin = !!over, res = '';
-    if (over) { var ot = over.textContent.toLowerCase(); res = /ganad|victoria/.test(ot) ? 'win' : /perdid|derrota/.test(ot) ? 'loss' : 'draw'; over.classList.add('vx-over', 'vx-' + res); }
+    if (over) { var ot = over.textContent.toLowerCase(); res = /ganad|victoria/.test(ot) ? 'win' : /perdid|derrota/.test(ot) ? 'loss' : 'draw'; over.classList.toggle('vx-over', true); over.classList.toggle('vx-' + res, true); }
     var mood = fin ? (res === 'win' ? 'preocupado' : res === 'loss' ? 'feliz' : 'normal') : mio > 1.5 ? 'preocupado' : mio < -1.5 ? 'feliz' : (b.p === 'rey' || b.p === 'torre' ? 'serio' : 'normal');
     var frase = fin ? (res === 'win' ? '¡Me has ganado! Pide la revancha cuando quieras.' : res === 'loss' ? '¡Buena partida! Revísala y busca tu revancha.' : 'Tablas. Muy igualado, ¿otra?') : turnoBot ? 'Pensando' : mio > 3 ? '¡Uf! Me estás dando una lección…' : mio > 1.5 ? 'Hmm… esto se complica.' : mio < -3 ? 'Ríndete, no tienes escapatoria.' : mio < -1.5 ? 'Creo que voy ganando.' : 'Tu turno. Te estoy vigilando.';
     var firma = lv + mood + frase;
@@ -182,7 +182,7 @@
   function partidas() {
     var lib = document.querySelector('.library'); if (!lib || !window.AA_UI) return;
     var D = datosPartidas(); if (!D.length) return;
-    lib.classList.add('vx-on');
+    lib.classList.toggle('vx-on', true);
     var porT = {}; D.forEach(function (d) { porT[d.t] = d; });
     // portada
     if (!lib.querySelector(':scope > .vx-lib-hero')) {
@@ -216,7 +216,7 @@
   function evaluar() {
     var ev = document.querySelector('.evaltr'); if (!ev) { evFirma = ''; return; }
     var L = ev.querySelector('.stage-l'), opts = ev.querySelector('.quiz-opts.five'); if (!L || !opts) return;
-    ev.classList.add('vx-on');
+    ev.classList.toggle('vx-on', true);
     var lbar = ev.querySelector('.lbar'), txt = lbar ? lbar.innerText : '', m = txt.match(/Motor:\s*([+\-−]?\d+(?:[.,]\d+)?|[+\-−]?M\d+)/);
     var respondido = !!opts.querySelector('.quiz-opt:disabled') && !!m;
     var firma = respondido ? m[1] : 'q' + (ev.querySelector('.ev-turn') || {}).className + (ev.querySelector('.lprog i') || { style: {} }).style.cssText;

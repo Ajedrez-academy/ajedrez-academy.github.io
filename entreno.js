@@ -30,7 +30,7 @@
     var head = drills.parentElement.querySelector(':scope > .ex-fin-prog');
     if (!head) { head = document.createElement('div'); head.className = 'ex-fin-prog'; drills.parentElement.insertBefore(head, drills); }
     var html = '<span><b>' + dom + '</b> de ' + total + ' finales dominados</span><i><em style="width:' + Math.round(dom / total * 100) + '%"></em></i>';
-    if (head.innerHTML !== html) head.innerHTML = html;
+    if (head.dataset.k !== html) { head.dataset.k = html; head.innerHTML = html; }
   }
   var GENERICO = 'Tu turno. Desarrolla tus piezas y controla el centro.';
   function finalEnJuego() {

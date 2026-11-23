@@ -65,7 +65,7 @@
         html += '<i class="ap-m ap-' + c.k + '" style="left:' + x * 12.5 + '%;top:' + y * 12.5 + '%"></i>';
       });
     });
-    if (capa.innerHTML !== html) capa.innerHTML = html;
+    if (capa.dataset.k !== html) { capa.dataset.k = html; capa.innerHTML = html; }
   }
 
   /* ---------- Pantalla de aprender ---------- */
@@ -140,8 +140,11 @@
     if (!mira || (!ses.orden.yo.length && !ses.orden.el.length)) { if (box) box.remove(); return; }
     if (!box) { box = document.createElement('div'); box.className = 'ap-ideas'; L.appendChild(box); }
     var grupo = function (q, tit) { return ses.orden[q].length ? '<small>' + tit + '</small><div class="ap-g-' + q + '">' + ses.orden[q].map(function (k) { return '<span><i>' + ico(ses.ideas[q][k]) + '</i>' + k + '</span>'; }).join('') + '</div>' : ''; };
-    var html = grupo('yo', 'Tus ideas en esta línea') + grupo('el', 'Lo que busca el rival');
-    if (box.innerHTML !== html) box.innerHTML = html;
+    // se compara una clave propia: el HTML que devuelve el navegador (con los SVG) nunca es idéntico al escrito
+    var clave = ses.orden.yo.join('|') + '#' + ses.orden.el.join('|');
+    if (box.dataset.k === clave) return;
+    box.dataset.k = clave;
+    box.innerHTML = grupo('yo', 'Tus ideas en esta línea') + grupo('el', 'Lo que busca el rival');
   }
 
   /* ---------- Mapa de secciones del curso ---------- */
