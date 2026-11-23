@@ -1,0 +1,111 @@
+/* Ajedrez Academy · Aperturas más visuales (ver repertorio.js) */
+
+/* ---------- Tablero animado ---------- */
+.fam-board, .or-demo-b { position: relative; }
+.or-anim { position: absolute; inset: 0; z-index: 2; opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+.or-anim.ver { opacity: 1; }
+.or-anim .cb { width: 100%; height: 100%; }
+
+/* ---------- Lista: cabecera ---------- */
+.op-hero.or-on { align-items: stretch; overflow: hidden; }
+.op-hero.or-on > div:first-child > p:not(.or-sub) { display: none; }
+.or-sub { margin: 4px 0 14px; color: var(--ink-2); font: 700 1rem/1.4 'Nunito', system-ui, sans-serif; }
+.or-pasos { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.or-pasos::before { content: ""; position: absolute; left: 10%; right: 10%; top: 21px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #ff9600, #2bb45c); opacity: .35; }
+.or-pasos li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; animation: or-paso .45s both cubic-bezier(.2, 1.3, .4, 1); animation-delay: var(--d); }
+@keyframes or-paso { from { opacity: 0; transform: translateY(10px) scale(.9); } }
+.or-pasos i { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); color: #e07a00; box-shadow: 0 0 0 2px color-mix(in srgb, #ff9600 45%, var(--line)), 0 4px 0 color-mix(in srgb, #ff9600 30%, transparent); }
+.or-pasos i .aa-ic { width: 22px; height: 22px; }
+.or-pasos li:nth-child(4) i, .or-pasos li:nth-child(5) i { color: var(--green-d, #1b8a45); box-shadow: 0 0 0 2px color-mix(in srgb, var(--green) 45%, var(--line)), 0 4px 0 color-mix(in srgb, var(--green) 30%, transparent); }
+.or-pasos b { font: 800 .8rem/1.15 'Nunito', system-ui, sans-serif; color: var(--ink); }
+.or-pasos small { font: 600 .68rem/1.2 'Nunito', system-ui, sans-serif; color: var(--ink-2); }
+.op-hero.or-on .op-continue { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 280px; }
+.or-demo { display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 18px; background: color-mix(in srgb, var(--surface) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line); }
+.or-demo-b { flex: none; width: 132px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 18px -10px rgba(0,0,0,.45); background: var(--gray, #e3e8e1); }
+.or-demo-b .or-anim { opacity: 1; }
+.or-demo-j { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; min-width: 0; }
+.or-demo-j b { flex-basis: 100%; margin-bottom: 2px; font: 800 .95rem/1.2 'Nunito', system-ui, sans-serif; }
+
+/* ---------- Jugadas escritas (tarjetas, demo y curso) ---------- */
+.or-jug { display: flex; flex-wrap: wrap; gap: 3px; margin: 6px 0 8px; }
+.or-jug span, .or-demo-j span { padding: 1px 5px; border-radius: 6px; background: var(--bg); color: var(--ink-2); font: 700 .74rem/1.45 ui-monospace, Consolas, monospace; transition: background .2s, color .2s, transform .2s; }
+.or-jug span.on, .or-demo-j span.on { background: #ff9600; color: #fff; transform: translateY(-1px); }
+.or-jug.grande span { font-size: .86rem; padding: 2px 7px; }
+.or-jug.grande span.on { background: #2a2d35; }
+
+/* ---------- Lista: tarjetas ---------- */
+.openings .fam.or-c { position: relative; transition: transform .2s ease, box-shadow .2s ease; }
+.openings .fam.or-c::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; border-radius: 4px 4px 0 0; background: linear-gradient(90deg, #ff9600, #ffcf3f); z-index: 1; }
+.openings .fam.or-negras::before { background: linear-gradient(90deg, #2a2d35, #6b7280); }
+.openings .fam.or-c:hover, .openings .fam.or-jugando { transform: translateY(-4px); box-shadow: 0 20px 34px -22px rgba(0,0,0,.45); }
+.or-lado { position: absolute; left: 8px; top: 8px; z-index: 3; padding: 2px 8px; border-radius: 999px; font: 800 .66rem/1.5 'Nunito', system-ui, sans-serif; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.or-blancas .or-lado { background: #fff; color: #1f2229; } .or-negras .or-lado { background: #2a2d35; color: #fff; }
+.or-play { position: absolute; right: 8px; bottom: 8px; z-index: 3; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.92); color: #e07a00;
+  box-shadow: 0 3px 10px rgba(0,0,0,.3); transition: opacity .2s, transform .2s; }
+.or-play .aa-ic { width: 14px; height: 14px; margin-left: 2px; }
+.or-jugando .or-play { opacity: 0; transform: scale(.6); }
+
+/* ---------- Curso: portada ---------- */
+.fam-head.or-on > div > p.muted, .fam-head.or-on > .mastery-big { display: none; }
+.or-hero { display: grid; grid-template-columns: 150px 1fr auto auto; align-items: center; gap: 20px; margin: 4px 0 18px; padding: 16px 20px; border-radius: 24px; color: #fff; overflow: hidden; position: relative; isolation: isolate;
+  background: radial-gradient(90% 140% at 100% 0%, #ffb547 0%, transparent 55%), linear-gradient(135deg, #c4580a, #e07a00 55%, #f59e0b); box-shadow: 0 22px 40px -28px #c4580a; animation: or-entra .45s ease-out; }
+@keyframes or-entra { from { opacity: 0; transform: translateY(8px); } }
+.or-hero-b { width: 150px; aspect-ratio: 1; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 22px -10px rgba(0,0,0,.5), 0 0 0 3px rgba(255,255,255,.35); transform: perspective(600px) rotateY(8deg); }
+.or-hero-tx { min-width: 0; }
+.or-lado2 { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.2); font: 800 .76rem/1.3 'Nunito', system-ui, sans-serif; }
+.or-hero-tx p { margin: 8px 0 0; color: rgba(255,255,255,.92); font: 700 .95rem/1.4 'Nunito', system-ui, sans-serif; }
+.or-hero .or-jug span { background: rgba(255,255,255,.18); color: #fff; }
+.or-hero .or-jug span.on { background: #fff; color: #c4580a; }
+.or-maes { position: relative; width: 96px; height: 96px; display: grid; place-items: center; text-align: center; }
+.or-maes svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.or-maes .f { fill: none; stroke: rgba(255,255,255,.22); stroke-width: 9; }
+.or-maes .p { fill: none; stroke: #fff; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.3, .9, .3, 1); }
+.or-maes b { margin-top: 14px; font: 900 1.4rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+.or-maes small { margin-top: -18px; font: 800 .62rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; opacity: .9; }
+.or-cifras { display: flex; flex-direction: column; gap: 8px; }
+.or-cifras span { display: flex; flex-direction: column; font: 700 .85rem/1.1 'Nunito', system-ui, sans-serif; }
+.or-cifras b { font: 900 1.4rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+.or-cifras small { font: 700 .7rem/1.2 'Nunito', system-ui, sans-serif; opacity: .85; }
+
+/* ---------- Curso: casillas clave ---------- */
+.plan-card.or-con-clave { display: grid; grid-template-columns: 1fr 150px; column-gap: 16px; }
+.plan-card.or-con-clave > * { grid-column: 1; }
+.plan-card.or-con-clave > .or-clave { grid-column: 2; grid-row: 1 / span 5; align-self: start; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.or-clave-b { width: 150px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; box-shadow: var(--lift); }
+.or-clave-b .sq-mark { fill: none; stroke: #ef4444; stroke-width: 7; animation: or-clave 1.8s ease-in-out infinite; }
+@keyframes or-clave { 50% { stroke-opacity: .35; } }
+.or-clave small { font: 800 .7rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+
+/* ---------- Curso: secciones como recorrido ---------- */
+.main .sections { position: relative; }
+.main .sections::before { content: ""; position: absolute; left: 31px; top: 24px; bottom: 24px; width: 3px; border-radius: 2px; background: linear-gradient(180deg, #ff9600, var(--line) 30%); z-index: 0; }
+.main .sections > .sec { position: relative; z-index: 1; }
+.main .sections > .sec .sec-n { box-shadow: 0 0 0 4px var(--bg); }
+
+/* ---------- Explorador ---------- */
+.tree.or-on .tree-mv { position: relative; overflow: hidden; isolation: isolate; transition: transform .15s ease, box-shadow .15s ease; }
+.tree.or-on .tree-mv:hover, .tree.or-on .tree-mv:focus-visible { transform: translateX(4px); }
+.or-barra { position: absolute; left: 0; top: 0; bottom: 0; z-index: -1; border-radius: inherit; background: color-mix(in srgb, #2fa8ff 13%, transparent); transition: width .6s cubic-bezier(.3, .9, .3, 1); }
+.tree-mv.or-cast .or-barra { background: color-mix(in srgb, #ef4444 12%, transparent); }
+.tree-mv.or-teo { box-shadow: inset 3px 0 0 #2fa8ff; } .tree-mv.or-cast { box-shadow: inset 3px 0 0 #ef4444; }
+.tree-book { display: inline-flex; vertical-align: -.15em; margin-right: 4px; color: #2fa8ff; }
+.tree-book .aa-ic { width: 1em; height: 1em; }
+.main .stage-b .cb { position: relative; }
+.or-flecha { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.or-flecha svg { width: 100%; height: 100%; animation: or-flecha .25s ease-out; }
+@keyframes or-flecha { from { opacity: 0; } }
+
+@media (max-width: 760px) {
+  .or-pasos { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .or-pasos i { width: 36px; height: 36px; border-radius: 11px; } .or-pasos small { display: none; } .or-pasos b { font-size: .68rem; }
+  .or-pasos::before { top: 17px; }
+  .op-hero.or-on .op-continue { min-width: 0; }
+  .or-demo-b { width: 108px; }
+  .or-hero { grid-template-columns: 96px 1fr; gap: 12px; padding: 14px; }
+  .or-hero-b { width: 96px; }
+  .or-maes { width: 78px; height: 78px; } .or-maes b { font-size: 1.15rem; }
+  .or-cifras { flex-direction: row; gap: 16px; }
+  .plan-card.or-con-clave { grid-template-columns: 1fr 110px; } .or-clave-b { width: 110px; }
+}
+.or-cifras b em { font-size: .8rem; font-style: normal; opacity: .8; }
+.or-cifras span { white-space: nowrap; }

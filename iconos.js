@@ -52,7 +52,12 @@
     pluma: '<path d="M20 4C11 4 6.5 9.5 6.5 17.5L4 20"/><path d="M6.5 17.5c6.5 0 12-4.2 13.5-13.5M10 14h5"/>',
     balanza: '<path d="M12 3.5v17M7.5 20.5h9M5 7h14M5 7l-2.8 6.5a2.8 2.8 0 0 0 5.6 0zM19 7l-2.8 6.5a2.8 2.8 0 0 0 5.6 0z"/>',
     corona: '<path d="M3.5 8l4.2 4.8L12 5.5l4.3 7.3L20.5 8l-2 11h-13z"/><path d="M6 21h12"/>',
-    jaque: '<path d="M12 5v14M5 12h14"/>'
+    jaque: '<path d="M12 5v14M5 12h14"/>',
+    ojo: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    bombilla: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.8.6 1.1 1.4 1.1 2.2h5c0-.8.3-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
+    mente: '<path d="M9.5 20.5v-3.2A7 7 0 1 1 18 11c0 1 .5 1.8 1.2 2.6l.8.9-1.6.8v2.2a1.6 1.6 0 0 1-1.6 1.6h-2.3v1.4"/><path d="M10.5 9.5a2 2 0 1 1 3 1.7c-.6.4-1 .9-1 1.6"/><circle cx="12.5" cy="15" r=".9" fill="currentColor" stroke="none"/>',
+    tarjetas: '<rect x="3.5" y="7" width="12" height="13.5" rx="2"/><path d="M8 7V5.5a2 2 0 0 1 2-2h8.5a2 2 0 0 1 2 2V15a2 2 0 0 1-2 2h-3"/>',
+    calendario: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.4"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8.5 14.5l2.2 2.2 4.6-4.6"/>'
   };
   function svg(n, cls) {
     var d = P[n]; if (!d) return '';
