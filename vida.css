@@ -1,0 +1,300 @@
+/* Ajedrez Academy · «Vida»: ilustración y animación (ver vida.js) */
+
+/* ---------- Personajes ---------- */
+.vx-pj { display: block; width: 100%; height: auto; overflow: visible; }
+.vx-cuerpo { transform-origin: 60px 140px; animation: vx-respira 3.2s ease-in-out infinite; }
+.vx-ojos { animation: vx-parpadeo 4.6s infinite; }
+.vx-pupilas { animation: vx-mira 7s ease-in-out infinite; }
+.vx-brote { transform-origin: 60px 26px; animation: vx-brote 2.6s ease-in-out infinite; }
+.vx-crin { transform-origin: 50px 60px; animation: vx-brote 3s ease-in-out infinite; }
+.vx-corona { transform-origin: 60px 40px; }
+@keyframes vx-respira { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-3px) scale(1.012, .985); } }
+@keyframes vx-parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.08); } }
+@keyframes vx-mira { 0%, 40%, 100% { transform: translateX(0); } 50%, 65% { transform: translateX(2.2px); } 75%, 88% { transform: translateX(-2px); } }
+@keyframes vx-brote { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(7deg); } }
+@keyframes vx-salta { 0% { transform: translateY(0) scale(1); } 30% { transform: translateY(-14px) scale(1.04, .96); } 55% { transform: translateY(0) scale(1.06, .92); } 75% { transform: translateY(-4px); } 100% { transform: none; } }
+@keyframes vx-pop { 0% { opacity: 0; transform: translateY(18px) scale(.7) rotate(-6deg); } 60% { opacity: 1; transform: translateY(-6px) scale(1.06) rotate(2deg); } 100% { transform: none; } }
+
+/* ---------- JUGAR: elenco ---------- */
+.play-setup.vx-on .bots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.play-setup.vx-on .bot {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 10px 14px; overflow: hidden;
+  text-align: center; border: 2px solid transparent; border-radius: 20px; background: var(--surface);
+  box-shadow: var(--lift); transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
+}
+.play-setup.vx-on .bot::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 62%;
+  background: radial-gradient(120% 90% at 50% 100%, var(--vl), color-mix(in srgb, var(--vc) 30%, var(--vl)));
+  opacity: .85; transition: opacity .2s;
+}
+.play-setup.vx-on .bot > * { position: relative; }
+.play-setup.vx-on .bot-av { width: 82px; height: 96px; background: none !important; box-shadow: none !important; border-radius: 0; display: block; }
+.play-setup.vx-on .bot-av > svg:not(.vx-pj) { display: none; }
+.play-setup.vx-on .bot-txt { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.play-setup.vx-on .bot-txt b { font-size: .95rem; line-height: 1.15; }
+.play-setup.vx-on .bot-txt small { font-size: .72rem; line-height: 1.3; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vx-pips { display: flex; gap: 3px; margin-top: 4px; }
+.vx-pips i { width: 9px; height: 9px; border-radius: 3px; background: var(--gray, #e3e8e1); transform: rotate(45deg) scale(.8); }
+.vx-pips i.on { background: var(--vc); }
+.play-setup.vx-on .bot:hover { transform: translateY(-4px); box-shadow: 0 18px 30px -18px color-mix(in srgb, var(--vc) 80%, transparent); }
+.play-setup.vx-on .bot:hover .vx-cuerpo { animation: vx-salta .6s ease-out; }
+.play-setup.vx-on .bot.on { border-color: var(--vc); background: color-mix(in srgb, var(--vc) 9%, var(--surface)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc) 22%, transparent), 0 18px 30px -18px var(--vc); transform: translateY(-4px); }
+.play-setup.vx-on .bot.on::after { content: "✓"; position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--vc); color: #fff; font: 900 13px/22px system-ui, sans-serif; animation: vx-pop .35s ease-out; }
+
+/* ---------- JUGAR: arena ---------- */
+.vx-arena {
+  position: relative; display: grid; grid-template-columns: 1fr auto 1.5fr; align-items: center; gap: 12px; overflow: hidden;
+  margin: 4px 0 18px; padding: 22px 26px; min-height: 250px; border-radius: 28px; color: #fff; isolation: isolate;
+  background: radial-gradient(70% 120% at 78% 40%, color-mix(in srgb, var(--vc) 85%, #fff) 0%, var(--vc) 35%, var(--vd) 75%, color-mix(in srgb, var(--vd) 70%, #000) 100%);
+  box-shadow: 0 24px 50px -30px var(--vd); transition: background .5s;
+}
+.vx-fondo { position: absolute; inset: 0; z-index: -1; opacity: .5;
+  background-image: linear-gradient(45deg, rgba(255,255,255,.07) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.07) 75%), linear-gradient(45deg, rgba(255,255,255,.07) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.07) 75%);
+  background-size: 56px 56px; background-position: 0 0, 28px 28px; animation: vx-tablero 30s linear infinite; }
+@keyframes vx-tablero { to { background-position: 560px 0, 588px 28px; } }
+.vx-fondo i { position: absolute; bottom: -40px; width: 18px; height: 18px; border-radius: 5px; background: rgba(255,255,255,.22); animation: vx-sube 9s linear infinite; }
+.vx-fondo i:nth-child(1) { left: 8%; animation-delay: 0s; } .vx-fondo i:nth-child(2) { left: 22%; animation-delay: -3s; width: 10px; height: 10px; }
+.vx-fondo i:nth-child(3) { left: 45%; animation-delay: -6s; } .vx-fondo i:nth-child(4) { left: 63%; animation-delay: -1.5s; width: 12px; height: 12px; }
+.vx-fondo i:nth-child(5) { left: 80%; animation-delay: -4.5s; } .vx-fondo i:nth-child(6) { left: 92%; animation-delay: -7.5s; width: 9px; height: 9px; }
+@keyframes vx-sube { 0% { transform: translateY(0) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-340px) rotate(260deg); opacity: 0; } }
+.vx-lado { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; }
+.vx-lado b { font: 800 1.25rem/1.15 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+.vx-lado small { font: 700 .82rem/1.3 'Nunito', system-ui, sans-serif; opacity: .9; }
+.vx-avatar-tu { width: 92px; height: 92px; margin-bottom: 8px; padding: 14px; border-radius: 50%; color: #fff;
+  background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 3px rgba(255,255,255,.55), 0 10px 24px -10px rgba(0,0,0,.4); }
+.vx-avatar-tu svg { width: 100%; height: 100%; }
+.vx-vs span { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #fff; color: var(--vd);
+  font: 900 1.4rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 12px 26px -8px rgba(0,0,0,.45); animation: vx-latido 1.8s ease-in-out infinite; }
+@keyframes vx-latido { 0%, 100% { transform: scale(1) rotate(-6deg); } 50% { transform: scale(1.1) rotate(4deg); } }
+.vx-bot { position: relative; }
+.vx-foco { position: absolute; top: -10px; left: 50%; width: 220px; height: 210px; transform: translateX(-50%); z-index: -1;
+  background: radial-gradient(closest-side, rgba(255,255,255,.55), rgba(255,255,255,0)); filter: blur(4px); animation: vx-foco 3.2s ease-in-out infinite; }
+@keyframes vx-foco { 50% { opacity: .65; transform: translateX(-50%) scale(1.06); } }
+.vx-pj-w { width: 138px; filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+.vx-pj-w.vx-entra { animation: vx-pop .5s cubic-bezier(.2,.9,.3,1.3); }
+.vx-bocadillo { position: relative; max-width: 300px; margin: 4px 0 8px; padding: 9px 14px; border-radius: 16px; background: #fff; color: #23302a;
+  font: 700 .86rem/1.35 'Nunito', system-ui, sans-serif; box-shadow: 0 10px 22px -12px rgba(0,0,0,.45); animation: vx-pop .45s .1s both ease-out; }
+.vx-bocadillo::before { content: ""; position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
+.vx-medidor { width: min(240px, 90%); height: 8px; margin-top: 8px; border-radius: 4px; background: rgba(0,0,0,.2); overflow: hidden; }
+.vx-medidor i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #fff, #ffe27a); animation: vx-llena .9s ease-out both; }
+@keyframes vx-llena { from { width: 0 !important; } }
+
+/* ---------- JUGAR: color y botón ---------- */
+.play-setup.vx-on .tc-opt .seg button { position: relative; padding-left: 34px; }
+.play-setup.vx-on .tc-opt .seg button::before { position: absolute; left: 12px; top: 50%; transform: translateY(-52%); font-size: 1.15rem; line-height: 1; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(1)::before { content: "♔"; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(2)::before { content: "🎲"; font-size: .95rem; }
+.play-setup.vx-on .tc-opt .seg button:nth-child(3)::before { content: "♚"; }
+.play-setup.vx-on .tc-go .btn-primary { position: relative; overflow: hidden; min-width: 220px; }
+.play-setup.vx-on .tc-go .btn-primary::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); animation: vx-brillo 2.8s ease-in-out infinite; }
+@keyframes vx-brillo { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+
+@media (max-width: 1100px) { .play-setup.vx-on .bots { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .vx-arena { grid-template-columns: 1fr auto 1.4fr; padding: 16px 12px; min-height: 0; border-radius: 22px; gap: 6px; }
+  .vx-avatar-tu { width: 58px; height: 58px; padding: 9px; }
+  .vx-vs span { width: 42px; height: 42px; font-size: 1rem; }
+  .vx-pj-w { width: 96px; }
+  .vx-lado b { font-size: 1rem; } .vx-lado small { font-size: .7rem; }
+  .vx-bocadillo { position: absolute; top: auto; bottom: 100%; display: none; }
+  .vx-arena .vx-bocadillo { display: block; position: static; font-size: .76rem; padding: 7px 10px; }
+  .play-setup.vx-on .bots { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .play-setup.vx-on .bot { padding: 8px 4px 10px; border-radius: 16px; }
+  .play-setup.vx-on .bot-av { width: 62px; height: 72px; }
+  .play-setup.vx-on .bot-txt b { font-size: .8rem; }
+  .play-setup.vx-on .bot-txt small { display: none; }
+}
+.vx-pj-w { width: 150px; }
+@media (max-width: 760px) {
+  .vx-pj-w { width: 100px; }
+  .play-setup.vx-on .tc-go { position: sticky; bottom: calc(var(--navh, 66px) + 10px); z-index: 5; }
+  .play-setup.vx-on .tc-go .btn-primary { width: 100%; box-shadow: 0 12px 26px -12px rgba(0,0,0,.45); }
+}
+
+/* ---------- PARTIDA: rival ---------- */
+.playgame.vx-on .pg-player .bot-av:not(.you) { background: color-mix(in srgb, var(--vc) 18%, var(--surface)) !important; overflow: hidden; }
+.playgame.vx-on .pg-player .bot-av:not(.you) > svg:not(.vx-pj) { display: none; }
+.playgame.vx-on .pg-player .bot-av .vx-pj { width: 120%; margin: -2px -10% 0; }
+.playgame.vx-on .pg-player .bot-av .vx-cuerpo { animation: none; }
+.vx-rival { position: relative; display: flex; align-items: center; gap: 14px; margin-bottom: 12px; padding: 12px 16px 12px 10px; overflow: hidden; border-radius: 22px; color: #fff;
+  background: radial-gradient(90% 140% at 15% 50%, color-mix(in srgb, var(--vc) 80%, #fff), var(--vc) 45%, var(--vd)); box-shadow: 0 16px 30px -20px var(--vd); }
+.vx-rival::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+  background-image: linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.08) 75%), linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.08) 75%);
+  background-size: 36px 36px; background-position: 0 0, 18px 18px; }
+.vx-rival-pj { flex: none; width: 84px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.25)); animation: vx-pop .4s ease-out; }
+.vx-m-preocupado .vx-cuerpo { animation: vx-tiembla .35s ease-in-out infinite; }
+.vx-m-feliz .vx-cuerpo { animation: vx-salta 1.6s ease-in-out infinite; }
+@keyframes vx-tiembla { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-1.5px) rotate(-1deg); } 75% { transform: translateX(1.5px) rotate(1deg); } }
+.vx-gota { animation: vx-gota 1.4s ease-in infinite; }
+@keyframes vx-gota { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+.vx-rival-tx { position: relative; z-index: 1; min-width: 0; }
+.vx-rival-tx small { font: 800 .7rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+.vx-rival-tx b { display: block; margin: 3px 0 6px; font: 800 1.2rem/1.1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+.vx-rival-dice { position: relative; display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 7px 12px; border-radius: 14px 14px 14px 4px; background: #fff; color: #23302a;
+  font: 700 .84rem/1.3 'Nunito', system-ui, sans-serif; animation: vx-pop .3s ease-out; }
+.vx-puntos { display: inline-flex; gap: 3px; }
+.vx-puntos i { width: 6px; height: 6px; border-radius: 50%; background: var(--vc); animation: vx-punto 1s ease-in-out infinite; }
+.vx-puntos i:nth-child(2) { animation-delay: .15s; } .vx-puntos i:nth-child(3) { animation-delay: .3s; }
+@keyframes vx-punto { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-4px); opacity: 1; } }
+@media (max-width: 760px) { .vx-rival { padding: 8px 12px 8px 6px; border-radius: 18px; } .vx-rival-pj { width: 62px; } .vx-rival-tx b { font-size: 1rem; margin-bottom: 4px; } }
+
+/* ---------- PARTIDAS: portada y línea del tiempo ---------- */
+.library.vx-on > h1 { display: none; }
+.vx-lib-hero { position: relative; overflow: hidden; margin: 0 0 22px; padding: 26px 28px 18px; border-radius: 28px; color: #fdf6e8; isolation: isolate;
+  background: radial-gradient(80% 120% at 90% 0%, #6b3f1f 0%, transparent 60%), linear-gradient(135deg, #2a1a10 0%, #3d2614 45%, #24170e 100%);
+  box-shadow: 0 24px 50px -30px #2a1a10; }
+.vx-lib-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .25;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px), repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 3px, transparent 3px 92px); }
+.vx-lib-deco { position: absolute; right: -10px; top: -18px; z-index: -1; font-size: 64px; letter-spacing: 6px; opacity: .08; white-space: nowrap; transform: rotate(-8deg); animation: vx-deco 26s linear infinite; }
+@keyframes vx-deco { 50% { transform: rotate(-8deg) translateX(-60px); } }
+.vx-lib-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px 28px; }
+.vx-lib-top small { font: 900 .72rem/1 'Nunito', system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #ffcf3f; }
+.vx-lib-top h1 { margin: 6px 0 6px; color: #fff; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.vx-lib-top p { margin: 0; max-width: 520px; color: #eadcc5; }
+.vx-lib-nums { display: flex; gap: 22px; }
+.vx-lib-nums span { display: flex; flex-direction: column; align-items: flex-end; }
+.vx-lib-nums b { font: 800 1.9rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: #ffcf3f; }
+.vx-lib-nums small { font: 700 .74rem 'Nunito', system-ui, sans-serif; color: #eadcc5; }
+.vx-tl { position: relative; height: 92px; margin: 22px 10px 0; }
+.vx-tl-eje { position: absolute; left: 0; right: 0; bottom: 22px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, rgba(255,207,63,.2), #ffcf3f, rgba(255,207,63,.2)); }
+.vx-tl > span { position: absolute; bottom: 0; transform: translateX(-50%); font: 700 .7rem 'Nunito', system-ui, sans-serif; color: #cdb896; }
+.vx-tl > span::before { content: ""; position: absolute; left: 50%; bottom: 17px; width: 1px; height: 9px; background: #cdb896; }
+.vx-tl-p { position: absolute; bottom: calc(30px + var(--f) * 18px); width: 14px; height: 14px; margin-left: -7px; padding: 0; border: 2px solid #2a1a10; border-radius: 50%; cursor: pointer;
+  background: var(--tc); box-shadow: 0 0 10px var(--tc); animation: vx-pop .5s both ease-out; animation-delay: calc(var(--f) * .08s); transition: transform .15s; }
+.vx-tl-p::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: calc(var(--f) * 18px + 8px); background: rgba(255,255,255,.18); }
+.vx-tl-p:hover, .vx-tl-p:focus-visible { transform: scale(1.6); z-index: 2; }
+.g-ms { --tc: #ff9a3c; } .g-clas { --tc: #ffcf3f; } .g-grau { --tc: #7cc8ff; }
+.vx-tl-ley { display: flex; gap: 16px; margin-top: 10px; font: 700 .74rem 'Nunito', system-ui, sans-serif; color: #eadcc5; }
+.vx-tl-ley span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; background: var(--tc); }
+
+/* ---------- PARTIDAS: tarjetas ---------- */
+.library.vx-on .game-card.vx-c { position: relative; overflow: hidden; padding-top: 0; transition: transform .2s ease, box-shadow .2s ease; }
+.library.vx-on .game-card.vx-c:hover { transform: translateY(-5px) rotate(-.3deg); box-shadow: 0 24px 40px -26px var(--gd); }
+.vx-c-top { position: relative; display: flex; align-items: center; gap: 14px; margin: 0 -18px 12px; padding: 14px 18px; overflow: hidden;
+  background: linear-gradient(135deg, var(--gc), var(--gd)); color: #fff; }
+.vx-c-top::after { content: ""; position: absolute; right: -30px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.12); }
+.vx-mini { flex: none; width: 96px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,.2);
+  box-shadow: 0 10px 18px -8px rgba(0,0,0,.5), 0 0 0 3px rgba(255,255,255,.35); transform: perspective(500px) rotateY(10deg) rotateX(4deg); transition: transform .3s ease; }
+.vx-mini .cb { pointer-events: none; } .vx-mini .cb-svg { display: block; }
+.game-card.vx-c:hover .vx-mini { transform: perspective(500px) rotateY(0) rotateX(0) scale(1.06); }
+.vx-c-meta { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vx-c-y { font: 800 2rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; letter-spacing: -.02em; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+.vx-c-meta small { font: 700 .76rem/1.2 'Nunito', system-ui, sans-serif; opacity: .9; }
+.vx-duelo { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.vx-duelo i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font: 900 .78rem/1 'Nunito', system-ui, sans-serif; font-style: normal; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.vx-duelo .vx-bl { background: #fff; color: #222; } .vx-duelo .vx-ng { background: #1f2229; color: #fff; }
+.vx-duelo em { font: 900 .7rem 'Nunito', system-ui, sans-serif; font-style: normal; opacity: .85; }
+.library.vx-on .game-card.vx-c .ms-chap { color: var(--gd); }
+.vx-destello { animation: vx-destello 1.4s ease-out; }
+@keyframes vx-destello { 0%, 40% { box-shadow: 0 0 0 6px color-mix(in srgb, #ffcf3f 70%, transparent); } 100% { box-shadow: var(--lift); } }
+@media (max-width: 760px) {
+  .vx-lib-hero { padding: 20px 16px 14px; border-radius: 22px; }
+  .vx-lib-nums { gap: 14px; } .vx-lib-nums span { align-items: flex-start; } .vx-lib-nums b { font-size: 1.4rem; }
+  .vx-tl { margin: 16px 4px 0; height: 84px; }
+  .vx-tl-p { width: 11px; height: 11px; margin-left: -5.5px; }
+  .vx-c-top { margin: 0 -16px 10px; padding: 12px 16px; }
+  .vx-mini { width: 84px; }
+}
+
+/* ---------- EVALUAR: balanza ---------- */
+.evaltr.vx-on .stage-l { position: relative; }
+.vx-balanza { position: relative; display: flex; justify-content: center; margin: 4px 0 6px; padding: 10px 0 4px; border-radius: 22px;
+  background: radial-gradient(70% 90% at 50% 100%, color-mix(in srgb, #ffcf3f 22%, transparent), transparent 70%); }
+.vx-bal-svg { width: min(280px, 100%); height: auto; overflow: visible; }
+.vx-bal-brazo { transform-origin: 150px 44px; animation: vx-oscila 2.6s ease-in-out infinite; transition: transform .9s cubic-bezier(.3, 1.6, .5, 1); }
+.vx-plato { transition: transform .9s cubic-bezier(.3, 1.6, .5, 1); }
+.vx-plato-b { transform-origin: 58px 48px; } .vx-plato-n { transform-origin: 242px 48px; }
+.vx-balanza:not(.fija) .vx-plato { animation: vx-oscila-inv 2.6s ease-in-out infinite; }
+@keyframes vx-oscila { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes vx-oscila-inv { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(-5deg); } }
+.vx-balanza.fija .vx-bal-brazo { animation: none; transform: rotate(var(--ang, 0deg)); }
+.vx-balanza.fija .vx-plato { animation: none; transform: rotate(calc(var(--ang, 0deg) * -1)); }
+.vx-rey-b, .vx-rey-n { font: 30px/1 'Segoe UI Symbol', 'Noto Sans Symbols 2', serif; }
+.vx-rey-b { fill: #2a2d35; } .vx-rey-n { fill: #fff; }
+.vx-bal-v { position: absolute; left: 50%; top: 0; transform: translate(-50%, -30%); min-width: 54px; padding: 5px 10px; border-radius: 999px; text-align: center;
+  background: var(--surface); color: var(--ink); box-shadow: var(--lift), inset 0 0 0 2px var(--line); font: 900 1rem/1 'Nunito', system-ui, sans-serif; }
+.vx-balanza:not(.fija) .vx-bal-v { animation: vx-latido-s 1.6s ease-in-out infinite; }
+@keyframes vx-latido-s { 50% { transform: translate(-50%, -30%) scale(1.1); } }
+.vx-balanza.fija .vx-bal-v { animation: vx-pop-c .5s ease-out; }
+@keyframes vx-pop-c { 0% { transform: translate(-50%, -30%) scale(.4); } 70% { transform: translate(-50%, -30%) scale(1.2); } 100% { transform: translate(-50%, -30%); } }
+.vx-bal-v.w { background: #fff; color: #1f2229; box-shadow: 0 6px 16px -6px rgba(0,0,0,.4), inset 0 0 0 2px #e5e5e5; }
+.vx-bal-v.n { background: #1f2229; color: #fff; box-shadow: 0 6px 16px -6px rgba(0,0,0,.4); }
+.vx-bal-v.i { background: var(--green); color: #fff; }
+
+/* ---------- EVALUAR: opciones como termómetro ---------- */
+.evaltr.vx-on .quiz-opts.five { gap: 7px; }
+.evaltr.vx-on .quiz-opt { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; transition: transform .15s ease, box-shadow .15s ease, border-color .15s; }
+.evaltr.vx-on .quiz-opt:not(:disabled):hover { transform: translateX(5px); border-color: var(--ink-2); }
+.evaltr.vx-on .qo-n { min-width: 34px; text-align: center; }
+.vx-ob { position: relative; width: 64px; height: 12px; border-radius: 6px; overflow: hidden; background: #2a2d35; box-shadow: inset 0 0 0 1.5px rgba(0,0,0,.25); }
+.vx-ob i { position: absolute; inset: 0 auto 0 0; background: #fff; box-shadow: 2px 0 0 #c9c9c9; transition: width .4s ease; }
+.evaltr.vx-on .quiz-opt:not(:disabled):hover .vx-ob i { animation: vx-ob 1s ease-in-out infinite alternate; }
+@keyframes vx-ob { to { filter: brightness(.9); transform: scaleX(1.04); transform-origin: left; } }
+.evaltr.vx-on .quiz-opt.right { animation: vx-correcta .6s ease-out; box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 45%, transparent), var(--lift); }
+.evaltr.vx-on .quiz-opt.right::after { content: "✓"; position: absolute; right: -8px; top: -8px; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: #fff; font: 900 13px/22px system-ui, sans-serif; text-align: center; animation: vx-pop .35s ease-out; }
+@keyframes vx-correcta { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+.evaltr.vx-on .quiz-opt:disabled:not(.right) { opacity: .6; }
+
+/* ---------- EVALUAR: claves en barras ---------- */
+.evaltr.vx-on .keys-table table { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.vx-claves { margin: 10px 0 4px; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.vx-cl-h { display: flex; justify-content: space-between; margin: 0 0 8px 40%; font: 800 .7rem/1 'Nunito', system-ui, sans-serif; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+.vx-cl-f { display: grid; grid-template-columns: 40% 1fr 40px; align-items: center; gap: 8px; padding: 4px 0; animation: vx-sube-f .4s both ease-out; animation-delay: var(--d); }
+@keyframes vx-sube-f { from { opacity: 0; transform: translateY(6px); } }
+.vx-cl-f.tot { margin-top: 4px; padding-top: 7px; border-top: 1px dashed var(--line); font-weight: 800; }
+.vx-cl-n { font: 700 .8rem/1.2 'Nunito', system-ui, sans-serif; color: var(--ink-2); }
+.vx-cl-f.tot .vx-cl-n { color: var(--ink); }
+.vx-cl-b { position: relative; height: 12px; border-radius: 6px; background: var(--gray, #e3e8e1); }
+.vx-cl-b::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); opacity: .4; }
+.vx-cl-b i { position: absolute; top: 0; bottom: 0; width: var(--w); border-radius: 6px; animation: vx-crece .7s both cubic-bezier(.2, .9, .3, 1.2); animation-delay: calc(var(--d) + .15s); }
+.vx-cl-b i.w { left: 50%; background: linear-gradient(90deg, #f3f3f3, #fff); box-shadow: inset 0 0 0 1.5px #bdbdbd; transform-origin: left; }
+.vx-cl-b i.n { right: 50%; background: linear-gradient(90deg, #111, #3a3d45); transform-origin: right; }
+@keyframes vx-crece { from { transform: scaleX(0); } }
+.vx-cl-f b { font: 800 .82rem 'Nunito', system-ui, sans-serif; text-align: right; }
+.vx-confeti { position: fixed; z-index: 2147483500; width: 0; height: 0; pointer-events: none; }
+.vx-confeti i { position: absolute; width: 9px; height: 13px; border-radius: 2px; animation: vx-confeti 1.2s cubic-bezier(.15, .7, .3, 1) both; }
+@keyframes vx-confeti { 0% { transform: translate(0, 0) rotate(0) scale(.6); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--x), calc(var(--y) + 160px)) rotate(var(--r)) scale(1); opacity: 0; } }
+@media (max-width: 760px) { .vx-bal-svg { width: 220px; } .vx-ob { width: 46px; } }
+
+/* ajustes ronda 3 */
+.vx-ob { background: #2a2d35; box-shadow: 0 0 0 1.5px #8a9099; }
+.vx-ob i { background: linear-gradient(180deg, #fff, #e9ecef); box-shadow: 1px 0 0 #8a9099; }
+.vx-rey-b, .vx-rey-n { font-size: 40px; }
+@media (min-width: 761px) { .vx-bal-svg { width: 210px; } .vx-balanza { margin: 0 0 2px; padding-top: 8px; } .evaltr.vx-on .quiz-opts.five { gap: 6px; } }
+
+/* ---------- Ronda 4: final de partida, visor y entradas ---------- */
+.over.vx-over { position: relative; overflow: hidden; border: 0; color: #fff; animation: vx-pop .5s ease-out;
+  background: linear-gradient(135deg, #6b7280, #374151); box-shadow: 0 18px 34px -20px rgba(0,0,0,.6); }
+.over.vx-over.vx-win { background: radial-gradient(120% 140% at 0% 0%, #7be495, #2bb45c 45%, #1d8a44); }
+.over.vx-over.vx-loss { background: radial-gradient(120% 140% at 0% 0%, #ff9a9a, #ff4b4b 45%, #b42323); }
+.over.vx-over > b { display: block; font: 800 1.6rem/1.1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; color: #fff; }
+.over.vx-over > b::before { margin-right: 8px; }
+.over.vx-over.vx-win > b::before { content: "🏆"; } .over.vx-over.vx-loss > b::before { content: "♟️"; } .over.vx-over.vx-draw > b::before { content: "🤝"; }
+.over.vx-over > small { color: rgba(255,255,255,.85); font-weight: 700; }
+.over.vx-over .btn:not(.btn-primary) { background: rgba(255,255,255,.16); color: #fff; border-color: rgba(255,255,255,.5); }
+.over.vx-over .btn-primary { background: #fff; color: #1f2933; border-color: #fff; box-shadow: 0 4px 0 rgba(0,0,0,.18); }
+.over.vx-over::after { content: ""; position: absolute; right: -40px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: rgba(255,255,255,.14); }
+
+.rv-head.vx-rv { position: relative; flex-wrap: wrap; overflow: hidden; margin-bottom: 14px; padding: 16px 20px; border-radius: 22px; color: #fff;
+  background: linear-gradient(120deg, var(--gc), var(--gd)); box-shadow: 0 18px 34px -22px var(--gd); }
+.rv-head.vx-rv::after { content: "♚"; position: absolute; right: 18px; bottom: -34px; font-size: 140px; line-height: 1; opacity: .12; pointer-events: none; }
+.rv-head.vx-rv h1 { color: #fff; } .rv-head.vx-rv p.muted { color: rgba(255,255,255,.88); }
+.rv-head.vx-rv .hero-back { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.4); }
+.vx-rv-meta { display: flex; align-items: center; gap: 10px; margin-left: auto; position: relative; z-index: 1; }
+.vx-rv-jug { display: flex; align-items: center; gap: 7px; font: 800 .95rem 'Nunito', system-ui, sans-serif; }
+.vx-rv-jug i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font: 900 .9rem/1 'Nunito', system-ui, sans-serif; font-style: normal; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.vx-rv-jug .vx-bl { background: #fff; color: #222; } .vx-rv-jug .vx-ng { background: #1f2229; color: #fff; }
+.vx-rv-meta em { font: 900 .78rem 'Nunito', system-ui, sans-serif; font-style: normal; opacity: .85; }
+.vx-rv-y { margin-left: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.18); font: 800 1.1rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; }
+@media (max-width: 760px) { .vx-rv-meta { margin-left: 0; width: 100%; } .rv-head.vx-rv { padding: 12px 14px; } }
+
+/* entradas escalonadas */
+.play-setup.vx-on .bot { animation: vx-entra-c .45s both ease-out; }
+.play-setup.vx-on .bot:nth-child(2) { animation-delay: .05s; } .play-setup.vx-on .bot:nth-child(3) { animation-delay: .1s; }
+.play-setup.vx-on .bot:nth-child(4) { animation-delay: .15s; } .play-setup.vx-on .bot:nth-child(5) { animation-delay: .2s; } .play-setup.vx-on .bot:nth-child(6) { animation-delay: .25s; }
+.library.vx-on .games-grid > .game-card { animation: vx-entra-c .45s both ease-out; }
+.library.vx-on .games-grid > .game-card:nth-child(3n+2) { animation-delay: .07s; } .library.vx-on .games-grid > .game-card:nth-child(3n+3) { animation-delay: .14s; }
+.vx-arena, .vx-lib-hero, .vx-rival { animation: vx-entra-c .5s both ease-out; }
+@keyframes vx-entra-c { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+.play-setup.vx-on .bot.on { animation: vx-entra-c .45s both ease-out; }
