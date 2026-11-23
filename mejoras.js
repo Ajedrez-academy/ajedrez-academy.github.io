@@ -113,57 +113,13 @@
   }
   window.addEventListener('hashchange', function () { marcar(); cerrarMas(); });
 
-  /* ---------- Índice de tomos en Inicio ---------- */
-  function indiceTomos() {
-    var col = document.querySelector('.home .path-col');
-    if (!col) return;
-    var units = col.querySelectorAll(':scope > .unit');
-    if (units.length < 2) return;
-    var idx = col.querySelector(':scope > .aa-tomos');
-    var dato = function (u) {
-      var h = u.querySelector('.unit-banner h2'), c = u.querySelector('.unit-banner .ub-count');
-      return { n: h ? h.textContent.trim() : '', c: c ? c.textContent.trim() : '' };
-    };
-    var firma = Array.prototype.map.call(units, function (u) { var d = dato(u); return d.n + d.c; }).join('|');
-    if (idx && idx.dataset.firma === firma) return;
-    if (!idx) {
-      idx = document.createElement('nav'); idx.className = 'aa-tomos'; idx.setAttribute('aria-label', 'Tomos');
-      idx.addEventListener('click', function (e) {
-        var b = e.target.closest('[data-u]'); if (!b) return;
-        var u = document.querySelectorAll('.home .path-col > .unit')[+b.dataset.u];
-        if (u) { var y = u.getBoundingClientRect().top + window.scrollY - (MQ.matches ? 120 : 70); window.scrollTo({ top: y, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
-      });
-      var ref = col.querySelector(':scope > .unit');
-      col.insertBefore(idx, ref);
-    }
-    idx.dataset.firma = firma;
-    idx.innerHTML = Array.prototype.map.call(units, function (u, i) {
-      var d = dato(u);
-      var nombre = d.n || ('Tomo ' + (i + 1));
-      if (nombre.length > 16 && nombre.indexOf(' y ') > 0) nombre = nombre.split(' y ')[0];
-      var prog = (d.c.match(/(\d+)\s*\/\s*(\d+)/) || []);
-      var pct = prog[2] ? Math.round(100 * prog[1] / prog[2]) : 0;
-      var color = (u.className.match(/c-(\w+)/) || [])[1] || 'green';
-      return '<button type="button" class="aa-tomo c-' + color + '" data-u="' + i + '" title="' + nombre + (prog[2] ? ' · ' + prog[1] + ' de ' + prog[2] + ' lecciones' : '') + '">' +
-        '<i style="--p:' + pct + '%"></i><span>' + nombre + '</span>' + (prog[2] ? '<small>' + prog[1] + '/' + prog[2] + '</small>' : '') + '</button>';
-    }).join('');
-    // marca el tomo visible
-    vigilarTomos();
-  }
-  var io = null;
-  function vigilarTomos() {
-    if (!('IntersectionObserver' in window)) return;
-    if (io) io.disconnect();
-    var units = document.querySelectorAll('.home .path-col > .unit');
-    io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        var i = Array.prototype.indexOf.call(units, e.target);
-        document.querySelectorAll('.aa-tomo').forEach(function (b) { b.classList.toggle('on', +b.dataset.u === i); });
-        var on = document.querySelector('.aa-tomo.on'); if (on && on.scrollIntoView && on.parentElement.scrollWidth > on.parentElement.clientWidth) on.parentElement.scrollTo({ left: on.offsetLeft - 16, behavior: 'smooth' });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    units.forEach(function (u) { io.observe(u); });
+  /* ---------- Inicio: «Prueba para saltarlo» solo en el tomo en curso ---------- */
+  function tomoActual() {
+    var units = document.querySelectorAll('.home .path-col > .unit'); if (!units.length) return;
+    var act = null;
+    for (var i = 0; i < units.length && !act; i++) if (units[i].querySelector('.pnode.open, .pnode.current, .pnode.next')) act = units[i];
+    if (!act) act = units[0];
+    units.forEach(function (u) { u.classList.toggle('aa-actual', u === act); });
   }
 
   /* ---------- Buscador global (Ctrl+K o «/») ---------- */
@@ -321,7 +277,7 @@
   var pend = false;
   function tick() {
     pend = false;
-    asegurarMas(); asegurarBuscar(); indiceTomos(); apoyo();
+    asegurarMas(); asegurarBuscar(); tomoActual(); apoyo();
   }
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(tick); } })
     .observe(document.documentElement, { childList: true, subtree: true });

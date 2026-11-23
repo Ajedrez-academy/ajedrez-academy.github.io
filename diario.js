@@ -137,21 +137,24 @@
 
   /* Tarjeta en Inicio (DOM simple; se reinyecta si React repinta) */
   function tarjeta() {
-    var col = document.querySelector('.home .path-col'); if (!col || !window.AA_UI || !window.AA_UI.puzzles) return;
+    var home = document.querySelector('.home'); if (!home || !window.AA_UI || !window.AA_UI.puzzles) return;
+    var side = home.querySelector('.side-col'), col = home.querySelector('.path-col');
+    var enLado = side && side.offsetParent !== null; // en el ordenador va en la columna lateral
+    var cont = enLado ? side : col; if (!cont) return;
     var o = leer(), reg = o[hoyISO()], r = racha(o), ok = !!(reg && reg.ok);
-    var firma = hoyISO() + (ok ? 'ok' : reg ? 'ko' : '') + r;
-    var el = col.querySelector(':scope > .pd-card');
-    if (el && el.dataset.f === firma) return;
+    var firma = hoyISO() + (ok ? 'ok' : reg ? 'ko' : '') + r + (enLado ? 'L' : 'C');
+    var el = home.querySelector('.pd-card');
+    if (el && el.dataset.f === firma && el.parentElement === cont) return;
     if (!el) {
       el = document.createElement('button'); el.type = 'button'; el.className = 'card pd-card';
       el.addEventListener('click', function () { location.hash = 'problema-del-dia'; window.scrollTo(0, 0); });
-      var ref = col.querySelector(':scope > .aa-tomos') || col.querySelector(':scope > .unit');
-      col.insertBefore(el, ref);
     }
+    var ref = enLado ? (side.querySelector(':scope > .quests') || side.firstChild) : col.querySelector(':scope > .unit');
+    if (el.parentElement !== cont || el.nextSibling !== ref) cont.insertBefore(el, ref);
     el.dataset.f = firma; el.classList.toggle('hecho', ok);
     el.innerHTML = '<span class="pd-ico" aria-hidden="true">' + (ok ? '✓' : '♞') + '</span>' +
-      '<span class="pd-tx"><small>Problema del día</small><b>' + (ok ? 'Resuelto. Vuelve mañana' : reg ? 'Te falta poco: inténtalo otra vez' : 'Un problema nuevo te espera') + '</b></span>' +
-      '<span class="pd-fire" title="Días seguidos">🔥 ' + r + '</span>';
+      '<span class="pd-tx"><small>Problema del día</small><b>' + (ok ? 'Resuelto. Vuelve mañana' : reg ? 'Inténtalo otra vez' : 'Uno nuevo te espera') + '</b></span>' +
+      (r ? '<span class="pd-fire" title="Días seguidos">🔥 ' + r + '</span>' : '');
   }
   var pend = false;
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(function () { pend = false; tarjeta(); }); } })

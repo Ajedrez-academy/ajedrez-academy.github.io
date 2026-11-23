@@ -1,6 +1,6 @@
 /* Ajedrez Academy · «Vida»: más ilustración y animación en Jugar, Partidas y Evaluar.
    Todo se añade encima de lo que pinta la app (sin tocar su lógica): personajes de los bots,
-   arena del duelo, miniaturas de partidas, línea del tiempo y la balanza de Evaluar. */
+   arena del duelo, miniaturas de partidas y las claves de Evaluar en barras. */
 (function () {
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
@@ -100,10 +100,6 @@
       bt.style.setProperty('--vc', BOTS[i].c); bt.style.setProperty('--vd', BOTS[i].d); bt.style.setProperty('--vl', BOTS[i].l);
       var av = bt.querySelector('.bot-av');
       if (av && !av.querySelector('.vx-pj')) { av.insertAdjacentHTML('beforeend', personaje(BOTS[i])); }
-      if (!bt.querySelector('.vx-pips')) {
-        var pips = '<span class="vx-pips" aria-label="Dificultad ' + (i + 1) + ' de 6">' + [0, 1, 2, 3, 4, 5].map(function (k) { return '<i class="' + (k <= i ? 'on' : '') + '"></i>'; }).join('') + '</span>';
-        var tx = bt.querySelector('.bot-txt'); if (tx) tx.insertAdjacentHTML('beforeend', pips);
-      }
     });
     var sel = Array.prototype.findIndex.call(bots, function (b) { return b.classList.contains('on'); });
     if (sel < 0) sel = 2;
@@ -119,11 +115,10 @@
     var dif = b.elo - yo, txtDif = Math.abs(dif) < 150 ? 'Rival a tu altura' : dif > 0 ? (dif > 500 ? 'Un reto muy duro' : 'Un poco más fuerte que tú') : (dif < -500 ? 'Ideal para calentar' : 'Algo más flojo que tú');
     arena.style.setProperty('--vc', b.c); arena.style.setProperty('--vd', b.d); arena.style.setProperty('--vl', b.l);
     arena.innerHTML =
-      '<div class="vx-fondo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
       '<div class="vx-lado vx-tu"><div class="vx-avatar-tu" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="24" r="12" fill="currentColor"/><path d="M10 58c2-14 11-20 22-20s20 6 22 20z" fill="currentColor"/></svg></div>' +
         '<b>Tú</b><small>Nivel ~' + yo + '</small></div>' +
       '<div class="vx-vs" aria-hidden="true"><span>VS</span></div>' +
-      '<div class="vx-lado vx-bot"><div class="vx-foco" aria-hidden="true"></div><div class="vx-pj-w' + (prev >= 0 ? ' vx-entra' : '') + '">' + personaje(b) + '</div>' +
+      '<div class="vx-lado vx-bot"><div class="vx-pj-w' + (prev >= 0 ? ' vx-entra' : '') + '">' + personaje(b) + '</div>' +
         '<div class="vx-bocadillo">' + b.q + '</div>' +
         '<b>' + b.n + '</b><small>~' + b.elo + ' Elo · ' + txtDif + '</small>' +
         '<div class="vx-medidor" aria-label="Fuerza ' + b.elo + '"><i style="width:' + pct + '%"></i></div></div>';
@@ -158,8 +153,6 @@
   }
 
   /* ================= PARTIDAS: biblioteca ilustrada ================= */
-  var PAL = [['#ff9600', '#c46a00'], ['#2fa8ff', '#1b7fd1'], ['#8b5cf6', '#6a3fd1'], ['#14b8a6', '#0e8a7d'], ['#f0509b', '#c42f76'], ['#2bb45c', '#1d8a44'], ['#ff4b4b', '#c92f2f']];
-  function colorDe(txt) { var h = 0; for (var i = 0; i < txt.length; i++) h = (h * 31 + txt.charCodeAt(i)) >>> 0; return PAL[h % PAL.length]; }
   var fenCache = {};
   function fenFinal(moves) {
     if (fenCache[moves]) return fenCache[moves];
@@ -175,8 +168,6 @@
     try { (U.grauGames || []).forEach(function (g) { out.push({ t: g.theme, w: g.white, b: g.black, y: g.year, ev: g.place, mv: g.moves, grupo: 'grau', cap: g.opening }); }); } catch (e) {}
     return out;
   }
-  function apellido(n) { n = String(n || '').replace(/\(.*?\)/g, '').trim(); var p = n.split(/\s+y\s+|\s*,\s*/)[0].split(/\s+/); return p[p.length - 1] || n; }
-  function inicial(n) { return apellido(n).charAt(0).toUpperCase(); }
   var ioMini = null;
   function pintarMini(el) {
     var U = window.AA_UI; if (!U || !U.createRoot || el.dataset.r) return;
@@ -188,81 +179,35 @@
     var D = datosPartidas(); if (!D.length) return;
     lib.classList.add('vx-on');
     var porT = {}; D.forEach(function (d) { porT[d.t] = d; });
-    // portada con línea del tiempo
-    if (!lib.querySelector(':scope > .vx-lib-hero')) {
-      var ys = D.map(function (d) { return d.y; }).filter(Boolean), y0 = Math.floor(Math.min.apply(null, ys) / 10) * 10, y1 = Math.ceil((Math.max.apply(null, ys) + 1) / 10) * 10;
-      var jug = {}; D.forEach(function (d) { jug[apellido(d.w)] = 1; jug[apellido(d.b)] = 1; });
-      var marcas = ''; var paso = lib.clientWidth < 600 ? (y1 - y0 > 120 ? 50 : 25) : (y1 - y0 > 80 ? 20 : 10); for (var y = Math.ceil(y0 / paso) * paso; y <= y1; y += paso) marcas += '<span style="left:' + ((y - y0) / (y1 - y0) * 100) + '%">' + y + '</span>';
-      var pts = D.filter(function (d) { return d.y; }).map(function (d, i) {
-        var x = (d.y - y0) / (y1 - y0) * 100, fila = i % 3;
-        return '<button type="button" class="vx-tl-p g-' + d.grupo + '" style="left:' + x + '%;--f:' + fila + '" data-t="' + d.t.replace(/"/g, '&quot;') + '" title="' + d.y + ' · ' + d.t.replace(/"/g, '&quot;') + ' (' + apellido(d.w) + ' – ' + apellido(d.b) + ')"></button>';
-      }).join('');
-      var hero = document.createElement('section'); hero.className = 'vx-lib-hero';
-      hero.innerHTML = '<div class="vx-lib-deco" aria-hidden="true">♜♞♝♛♚♝♞♜</div>' +
-        '<div class="vx-lib-top"><div><small>Biblioteca</small><h1>Partidas inmortales</h1><p>' + y0 + '–' + (y1 - 1) + ': las partidas que enseñaron a jugar a generaciones, comentadas jugada a jugada.</p></div>' +
-        '<div class="vx-lib-nums"><span><b>' + D.length + '</b><small>partidas</small></span><span><b>' + Object.keys(jug).length + '</b><small>jugadores</small></span><span><b>' + (y1 - y0) + '</b><small>años de historia</small></span></div></div>' +
-        '<div class="vx-tl" role="group" aria-label="Línea del tiempo"><div class="vx-tl-eje"></div>' + marcas + pts + '</div>' +
-        '<div class="vx-tl-ley"><span class="g-ms">Mi Sistema</span><span class="g-clas">Clásicas</span><span class="g-grau">Tratado de Grau</span></div>';
-      hero.addEventListener('click', function (e) {
-        var p = e.target.closest('.vx-tl-p'); if (!p) return;
-        var t = p.dataset.t, card = Array.prototype.find.call(document.querySelectorAll('.library .game-card, .library .mrow'), function (c) { return (c.querySelector('b') || {}).textContent === t || (c.textContent || '').indexOf(t) >= 0; });
-        if (card) { var det = card.closest('details'); if (det) det.open = true; card.scrollIntoView({ behavior: 'smooth', block: 'center' }); card.classList.remove('vx-destello'); void card.offsetWidth; card.classList.add('vx-destello'); }
-      });
-      lib.insertBefore(hero, lib.firstChild);
-    }
     // tarjetas
     if (!ioMini && 'IntersectionObserver' in window) ioMini = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { pintarMini(e.target); ioMini.unobserve(e.target); } }); }, { rootMargin: '300px' });
     lib.querySelectorAll('.game-card:not(.vx-c)').forEach(function (card) {
       var t = (card.querySelector(':scope > b') || {}).textContent, d = porT[t]; if (!d) return;
       card.classList.add('vx-c');
-      var col = colorDe(d.cap || d.t);
-      card.style.setProperty('--gc', col[0]); card.style.setProperty('--gd', col[1]);
       var fen = ''; try { fen = fenFinal(d.mv || ''); } catch (e) {}
       var top = document.createElement('div'); top.className = 'vx-c-top';
-      top.innerHTML = '<div class="vx-mini" data-fen="' + fen + '"></div><div class="vx-c-meta"><b class="vx-c-y">' + (d.y || '') + '</b><small>' + (d.ev || '') + '</small>' +
-        '<span class="vx-duelo"><i class="vx-bl" title="' + d.w + '">' + inicial(d.w) + '</i><em>vs</em><i class="vx-ng" title="' + d.b + '">' + inicial(d.b) + '</i></span></div>';
+      top.innerHTML = '<div class="vx-mini" data-fen="' + fen + '" aria-hidden="true"></div>';
       card.insertBefore(top, card.firstChild);
       var mini = top.querySelector('.vx-mini');
       if (ioMini) ioMini.observe(mini); else pintarMini(mini);
     });
   }
 
-  /* ================= EVALUAR: balanza, termómetro y claves ================= */
-  var PCT = [92, 72, 50, 28, 8], evFirma = '', confetiFirma = '';
-  function balanzaSVG() {
-    return '<svg viewBox="0 0 300 150" class="vx-bal-svg" aria-hidden="true">' +
-      '<defs><linearGradient id="vx-bal-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#d99a00"/></linearGradient></defs>' +
-      '<path d="M150 46 L132 138 H168 Z" fill="url(#vx-bal-m)"/><rect x="112" y="134" width="76" height="10" rx="5" fill="#c58a00"/>' +
-      '<g class="vx-bal-brazo"><rect x="40" y="40" width="220" height="8" rx="4" fill="url(#vx-bal-m)"/>' +
-        '<g class="vx-plato vx-plato-b"><path d="M58 48 L38 96 M58 48 L78 96" stroke="#c58a00" stroke-width="2"/><path d="M28 96 h60 a30 12 0 0 1 -60 0z" fill="#fff" stroke="#c9c9c9" stroke-width="2"/><text x="58" y="92" text-anchor="middle" class="vx-rey-b">♔</text></g>' +
-        '<g class="vx-plato vx-plato-n"><path d="M242 48 L222 96 M242 48 L262 96" stroke="#c58a00" stroke-width="2"/><path d="M212 96 h60 a30 12 0 0 1 -60 0z" fill="#2a2d35" stroke="#111" stroke-width="2"/><text x="242" y="92" text-anchor="middle" class="vx-rey-n">♚</text></g>' +
-      '</g><circle cx="150" cy="44" r="9" fill="#fff" stroke="#c58a00" stroke-width="3"/></svg>';
-  }
+  /* ================= EVALUAR: claves en barras ================= */
+  var evFirma = '', confetiFirma = '';
   function evaluar() {
     var ev = document.querySelector('.evaltr'); if (!ev) { evFirma = ''; return; }
     var L = ev.querySelector('.stage-l'), opts = ev.querySelector('.quiz-opts.five'); if (!L || !opts) return;
     ev.classList.add('vx-on');
-    // mini barras en las opciones
-    opts.querySelectorAll('.quiz-opt').forEach(function (o, i) {
-      if (!o.querySelector('.vx-ob')) o.insertAdjacentHTML('beforeend', '<span class="vx-ob" aria-hidden="true"><i style="width:' + PCT[i] + '%"></i></span>');
-    });
-    var bal = L.querySelector(':scope > .vx-balanza');
-    if (!bal) { bal = document.createElement('div'); bal.className = 'vx-balanza'; bal.innerHTML = balanzaSVG() + '<b class="vx-bal-v">?</b>'; L.insertBefore(bal, opts); }
     var lbar = ev.querySelector('.lbar'), txt = lbar ? lbar.innerText : '', m = txt.match(/Motor:\s*([+\-−]?\d+(?:[.,]\d+)?|[+\-−]?M\d+)/);
     var respondido = !!opts.querySelector('.quiz-opt:disabled') && !!m;
     var firma = respondido ? m[1] : 'q' + (ev.querySelector('.ev-turn') || {}).className + (ev.querySelector('.lprog i') || { style: {} }).style.cssText;
     if (firma === evFirma) return; evFirma = firma;
     if (!respondido) {
-      bal.classList.remove('fija'); bal.style.removeProperty('--ang'); bal.querySelector('.vx-bal-v').textContent = '?';
       // gráfico de claves anterior fuera
       var old = L.querySelector('.vx-claves'); if (old) old.remove();
       return;
     }
-    var raw = m[1].replace('−', '-').replace(',', '.'), v = /M/.test(raw) ? (raw.indexOf('-') >= 0 ? -9 : 9) : parseFloat(raw);
-    var ang = Math.max(-16, Math.min(16, v * 5));
-    bal.style.setProperty('--ang', (-ang) + 'deg'); bal.classList.add('fija');
-    var vb = bal.querySelector('.vx-bal-v'); vb.textContent = (v > 0 ? '+' : '') + (Math.abs(v) >= 9 ? 'M' : v.toFixed(1));
-    vb.className = 'vx-bal-v ' + (v > 0.3 ? 'w' : v < -0.3 ? 'n' : 'i');
     // claves como barras
     var tab = L.querySelector('.keys-table table');
     if (tab && !L.querySelector('.vx-claves')) {
@@ -275,7 +220,7 @@
       L.querySelector('.keys-table').insertAdjacentHTML('beforebegin', html);
     }
     // confeti si acierta
-    if (lbar && lbar.classList.contains('lbar-ok') && confetiFirma !== firma + txt.length) { confetiFirma = firma + txt.length; confeti(bal); }
+    if (lbar && lbar.classList.contains('lbar-ok') && confetiFirma !== firma + txt.length) { confetiFirma = firma + txt.length; confeti(opts.querySelector('.right') || opts); }
   }
   function confeti(cerca) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -292,21 +237,35 @@
     document.body.appendChild(cont); setTimeout(function () { cont.remove(); }, 1600);
   }
 
-  /* ================= VISOR de partidas: cabecera ================= */
-  function visor() {
-    var rv = document.querySelector('.review'), head = rv && rv.querySelector('.rv-head'); if (!head || head.classList.contains('vx-rv')) return;
-    var t = (head.querySelector('h1') || {}).textContent, D = datosPartidas(), d = null;
-    for (var i = 0; i < D.length; i++) if (D[i].t === t) { d = D[i]; break; }
-    if (!d) return;
-    head.classList.add('vx-rv'); var col = colorDe(d.cap || d.t);
-    head.style.setProperty('--gc', col[0]); head.style.setProperty('--gd', col[1]);
-    head.insertAdjacentHTML('beforeend', '<div class="vx-rv-meta"><span class="vx-rv-jug"><i class="vx-bl">' + inicial(d.w) + '</i><b>' + apellido(d.w) + '</b></span><em>vs</em>' +
-      '<span class="vx-rv-jug"><i class="vx-ng">' + inicial(d.b) + '</i><b>' + apellido(d.b) + '</b></span><span class="vx-rv-y">' + (d.y || '') + '</span></div>');
+  /* ================= REVISIÓN: guardar solo si quieres ================= */
+  function revision() {
+    var m = location.hash.match(/^#revision-(.+)$/), head = document.querySelector('.rv-head');
+    var old = document.querySelector('.vx-guardar');
+    if (!m || !head) { if (old) old.remove(); return; }
+    var st = {}; try { st = JSON.parse(localStorage.getItem('chess-academy/v1')) || {}; } catch (e) {}
+    var g = (st.games || []).filter(function (x) { return x.id === m[1]; })[0]; if (!g) return;
+    var sub = head.querySelector('p.muted'); if (sub && /^\*\s·\s/.test(sub.textContent)) sub.textContent = sub.textContent.replace(/^\*\s·\s/, '');
+    if (g.bot != null) { if (old) old.remove(); return; } // las partidas contra bots ya están en «Tus partidas»
+    var estado = g.tmp ? 'tmp' : 'ok';
+    if (old && old.dataset.e === estado && old.dataset.id === g.id) return;
+    if (old) old.remove();
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn vx-guardar' + (g.tmp ? ' btn-primary' : '');
+    b.dataset.e = estado; b.dataset.id = g.id;
+    b.innerHTML = '<span>' + (g.tmp ? 'Guardar en mis partidas' : 'Quitar de mis partidas') + '</span>';
+    b.addEventListener('click', function () {
+      var id = g.id, guardar = !!g.tmp;
+      window.AA_UI.update(function (a) {
+        if (guardar) a.games.forEach(function (x) { if (x.id === id) delete x.tmp; });
+        else a.games.forEach(function (x) { if (x.id === id) x.tmp = true; });
+      });
+      if (window.AA_TOAST) window.AA_TOAST(guardar ? 'Guardada en «Tus partidas».' : 'Quitada de «Tus partidas».');
+    });
+    head.appendChild(b);
   }
 
   /* ================= Bucle ================= */
   var pend = false;
-  function tick() { pend = false; try { jugar(); partida(); partidas(); evaluar(); visor(); } catch (e) { if (window.console) console.warn('vida', e); } }
+  function tick() { pend = false; try { jugar(); partida(); partidas(); evaluar(); revision(); } catch (e) { if (window.console) console.warn('vida', e); } }
   new MutationObserver(function () { if (!pend) { pend = true; requestAnimationFrame(tick); } })
     .observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();

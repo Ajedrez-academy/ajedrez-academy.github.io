@@ -68,10 +68,8 @@
   function grafica(sec) {
     var H = {}; try { H = JSON.parse(localStorage.getItem(HK)) || {}; } catch (e) {}
     var ks = Object.keys(H).sort().slice(-90), pts = ks.map(function (k) { return { k: k, v: H[k].t }; });
-    if (pts.length < 2) {
-      sec.innerHTML = '<div class="ac-head"><h2>Tu evolución</h2></div><p class="muted small ac-pie">Aquí verás cómo sube tu nivel de táctica día a día. Resuelve problemas hoy y vuelve mañana para ver la primera línea.</p>';
-      return;
-    }
+    sec.style.display = pts.length < 2 ? 'none' : ''; // sin datos todavía no se muestra
+    if (pts.length < 2) { sec.innerHTML = ''; return; }
     var W = Math.max(280, Math.min(760, (sec.clientWidth || 680) - 40)), Hh = W < 500 ? 150 : 180, P = 28, min = Math.min.apply(null, pts.map(function (p) { return p.v; })), max = Math.max.apply(null, pts.map(function (p) { return p.v; }));
     if (max - min < 100) { var m = (max + min) / 2; min = m - 50; max = m + 50; }
     var X = function (i) { return P + i * (W - 2 * P) / (pts.length - 1); }, Y = function (v) { return Hh - P - (v - min) * (Hh - 2 * P) / (max - min); };

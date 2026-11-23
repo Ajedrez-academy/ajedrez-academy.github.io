@@ -30,7 +30,7 @@
     return h('div', { className: 'level-pick card nv-card' },
       h('div', { className: 'nv-head' }, h(UI.Mascot, { kind: 'caballo', mood: 'point', size: 84 }),
         h('div', null, h('h2', null, 'Descubre tu nivel jugando'),
-          h('p', { className: 'muted' }, 'Juega una partida contra ' + BOT.name + ' (' + BOT.elo + '). Analizamos tus jugadas con el motor, estimamos tu Elo y desbloqueamos los tomos que ya dominas.'))),
+          h('p', { className: 'muted' }, 'Juega una partida y te decimos tu nivel. Saltarás lo que ya sabes.'))),
       h('div', { className: 'nv-actions' },
         h('button', { className: 'btn btn-primary btn-big', onClick: function () { go('nivel'); } }, h('span', null, 'Jugar la partida de nivel')),
         h('button', { className: 'nv-skip', onClick: function () { UI.update(function (a) { a.level = 'novato'; a.tomoPass = a.tomoPass || []; if (!a.puzzle.solved) a.puzzle.rating = 500; }); } }, 'Aún no sé jugar: empezar desde cero')));
