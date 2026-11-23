@@ -46,7 +46,6 @@
   }
 
   /* ================= LISTA DE APERTURAS ================= */
-  var PASOS = [['ojo', 'Mira', 'la línea explicada'], ['bombilla', 'Con ayuda', 'juégala con pistas'], ['mente', 'De memoria', 'sin ayuda'], ['tarjetas', 'Tarjetas', 'recuerda cada posición'], ['calendario', 'Repaso diario', 'para no olvidarla']];
   var demo = null;
   function lista() {
     var ops = document.querySelector('.openings'); if (!ops) { if (demo) { demo.parar(); demo = null; } return; }
@@ -54,15 +53,7 @@
     if (hero && !hero.classList.contains('or-on')) {
       hero.classList.add('or-on');
       var tx = hero.firstElementChild;
-      tx.insertAdjacentHTML('beforeend', '<p class="or-sub">Aprende la línea, entiende las ideas y repásala hasta que salga sola.</p><ol class="or-pasos">' +
-        PASOS.map(function (p, i) { return '<li style="--d:' + (i * 0.08) + 's"><i>' + ic(p[0]) + '</i><b>' + p[1] + '</b><small>' + p[2] + '</small></li>'; }).join('') + '</ol>');
-      var cont = hero.querySelector('.op-continue'), ita = porId('italiana');
-      if (cont && ita) {
-        var box = document.createElement('div'); box.className = 'or-demo'; box.innerHTML = '<div class="or-demo-b"></div><div class="or-demo-j"></div>';
-        cont.insertBefore(box, cont.firstChild);
-        var jj = box.querySelector('.or-demo-j'), jg = jugadas(ita.first);
-        demo = Animador(box.querySelector('.or-demo-b'), ita, { bucle: true, ritmo: 800, paso: function (k) { jj.innerHTML = '<b>Italiana</b>' + textoJugadas(jg, k); } });
-      }
+      tx.insertAdjacentHTML('beforeend', '<p class="or-sub">Aprende la línea, entiende las ideas y repásala hasta que salga sola.</p>');
     }
     ops.querySelectorAll('.fam:not(.or-c)').forEach(function (f) {
       var o = porNombre((f.querySelector('.fam-main > b') || {}).textContent); if (!o) return;

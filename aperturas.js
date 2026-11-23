@@ -84,7 +84,7 @@
     var card = tutor.querySelector(':scope > .ap-idea');
     var mini = runner.querySelector('.mini-moves'), nMov = mini ? mini.children.length : 0;
 
-    if (firma === ses.ult && card) return;
+    if (firma === ses.ult && card) { pintarIdeas(runner); return; }
     ses.ult = firma;
     var cb = runner.querySelector('.stage-b .cb');
     if (!movTxt || /—/.test(bub.textContent) === false) {
@@ -135,7 +135,9 @@
   function pintarIdeas(runner) {
     var L = runner.querySelector('.stage-l'); if (!L) return;
     var box = L.querySelector(':scope > .ap-ideas');
-    if (!ses.orden.yo.length && !ses.orden.el.length) { if (box) box.remove(); return; }
+    // solo en «Mira»: en las fases guiadas (con ayuda, de memoria) el cuadro no se actualiza y estorba
+    var fase = runner.querySelector('.phase-pills .on'), mira = !fase || /^\s*1/.test(fase.textContent);
+    if (!mira || (!ses.orden.yo.length && !ses.orden.el.length)) { if (box) box.remove(); return; }
     if (!box) { box = document.createElement('div'); box.className = 'ap-ideas'; L.appendChild(box); }
     var grupo = function (q, tit) { return ses.orden[q].length ? '<small>' + tit + '</small><div class="ap-g-' + q + '">' + ses.orden[q].map(function (k) { return '<span><i>' + ico(ses.ideas[q][k]) + '</i>' + k + '</span>'; }).join('') + '</div>' : ''; };
     var html = grupo('yo', 'Tus ideas en esta línea') + grupo('el', 'Lo que busca el rival');

@@ -109,3 +109,21 @@
 }
 .or-cifras b em { font-size: .8rem; font-style: normal; opacity: .8; }
 .or-cifras span { white-space: nowrap; }
+
+/* ---------- Botones de curso más sutiles ---------- */
+.openings .op-continue .card-cta, .family .course-cta, .course-top > .card-cta {
+  min-height: 0; padding: 10px 14px; gap: 10px; border-width: 1px; border-bottom-width: 1px; border-radius: 14px;
+  background: var(--surface); border-color: var(--line); color: var(--ink); box-shadow: none;
+}
+.openings .op-continue .card-cta b, .family .course-cta b, .course-top > .card-cta b { font-size: .92rem; color: var(--ink); }
+.openings .op-continue .card-cta small, .family .course-cta small, .course-top > .card-cta small { font-size: .76rem; color: var(--ink-2); }
+.openings .op-continue .card-cta svg, .family .course-cta svg, .course-top > .card-cta svg { width: 18px; height: 18px; color: var(--green-d, #1b8a45); }
+.openings .op-continue .card-cta:hover, .family .course-cta:hover, .course-top > .card-cta:not(:disabled):hover { background: color-mix(in srgb, var(--green) 7%, var(--surface)); border-color: var(--green); }
+.course-top > .card-cta:disabled { opacity: .65; }
+.op-hero.or-on .op-continue { min-width: 0; justify-content: center; }
+.family .course-cta { width: auto; max-width: 520px; margin: 6px 0 14px; }
+.openings .op-hero .op-continue .card-cta { background: var(--surface) !important; border: 1px solid var(--line) !important; color: var(--ink) !important; box-shadow: none !important; padding: 10px 14px !important; }
+.openings .op-hero .op-continue .card-cta span, .openings .op-hero .op-continue .card-cta b { color: var(--ink) !important; }
+.openings .op-hero .op-continue .card-cta small { color: var(--ink-2) !important; }
+.openings .op-hero .op-continue .card-cta svg { color: var(--green-d, #1b8a45) !important; }
+.openings .op-hero .op-continue .card-cta:hover { border-color: var(--green) !important; background: color-mix(in srgb, var(--green) 7%, var(--surface)) !important; }
