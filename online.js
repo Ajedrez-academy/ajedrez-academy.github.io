@@ -176,7 +176,7 @@
   var KP = 'aa-li-partida', KR = 'aa-li-ritmo', KRA = 'aa-li-puntua';
   function abrirPartida(id, color) { try { sessionStorage.setItem(KP, JSON.stringify({ id: id, color: color })); } catch (e) {} location.hash = 'lichess-partida'; window.scrollTo(0, 0); }
   var RITMOS = [
-    ['Bala', 'rayo', [[1, 0], [1, 1], [2, 1]]],
+    ['Bala', 'rayo', [[1, 0], [2, 1]]],
     ['Blitz', 'rayo', [[3, 0], [3, 2], [5, 0], [5, 3]]],
     ['Rápida', 'reloj', [[10, 0], [10, 5], [15, 10]]],
     ['Clásica', 'reloj', [[30, 0], [30, 20]]]
@@ -196,6 +196,7 @@
     var s9 = R.useState(!!leer(KRA, false)), puntua = s9[0], setPuntua = s9[1];
     var s10 = R.useState(false), amigoAbierto = s10[0], setAmigoAbierto = s10[1];
     var s11 = R.useState(''), amigo = s11[0], setAmigo = s11[1];
+    var s12 = R.useState(null), fuera = s12[0], setFuera = s12[1]; // partida que Lichess no deja jugar aquí
     var buscaRef = R.useRef(null);
     R.useEffect(function () { function f() { setTk(token()); } window.addEventListener('aa-lichess', f); return function () { window.removeEventListener('aa-lichess', f); }; }, []);
     R.useEffect(function () {
@@ -204,17 +205,27 @@
       api('/api/account/playing').then(function (r) { return r.ok ? r.json() : { nowPlaying: [] }; }).then(function (d) { setEnCurso((d.nowPlaying || []).filter(function (g) { return g.variant && g.variant.key === 'standard'; })); }).catch(function () {});
       var ctl = new AbortController();
       flujo('/api/stream/event', function (ev) {
-        if (ev.type === 'gameStart' && ev.game && (!ev.game.compat || ev.game.compat.board)) {
+        if (ev.type === 'gameStart' && ev.game) {
           if (buscaRef.current) { buscaRef.current.abort(); buscaRef.current = null; }
-          abrirPartida(ev.game.gameId || ev.game.id, ev.game.color === 'black' ? 'b' : 'w');
+          var gid = ev.game.gameId || ev.game.id;
+          if (!ev.game.compat || ev.game.compat.board) abrirPartida(gid, ev.game.color === 'black' ? 'b' : 'w');
+          else { setBusca(false); setFuera({ id: gid, rival: ev.game.opponent ? ev.game.opponent.username : '' }); } // no se puede jugar aquí: se ofrece abrirla en Lichess
         }
       }, ctl.signal).catch(function () {});
       return function () { ctl.abort(); if (buscaRef.current) buscaRef.current.abort(); };
     }, [tk]);
     function elegir(r) { setRitmo(r); guardar(KR, r); setMenu(false); }
+    // Lichess solo deja jugar con la API de tablero a ritmo rápido o más lento (bala y blitz solo en su web o apps autorizadas)
+    function enApp(r) { return r[0] * 60 + r[1] * 40 >= 480; }
+    function enLichess() {
+      // abre la búsqueda en lichess.org con el ritmo elegido; al terminar, la partida aparece en «Tus partidas»
+      window.open(LI + '/#pool/' + ritmo[0] + '+' + ritmo[1], '_blank', 'noopener');
+      setAviso('Abrimos lichess.org con ' + ritmo[0] + '+' + ritmo[1] + '. Al terminar, analiza la partida aquí en «Tus partidas».');
+    }
     function empezar() {
-      if (!tk) { conectarLichess(); return; }
-      setAviso(''); setBusca(true);
+      if (!tk && enApp(ritmo)) { conectarLichess(); return; }
+      if (!enApp(ritmo)) { enLichess(); return; }
+      setAviso(''); setFuera(null); setBusca(true);
       var ctl = new AbortController(); buscaRef.current = ctl;
       api('/api/board/seek', Object.assign({ signal: ctl.signal }, form({ rated: String(puntua), time: String(ritmo[0]), increment: String(ritmo[1]), variant: 'standard' })))
         .then(function (r) {
@@ -224,16 +235,19 @@
         .catch(function (e) {
           if (e && e.name === 'AbortError') return;
           setBusca(false);
-          setAviso(/blitz|bullet|speed|rapid|time/i.test(e.message || '') ? 'Lichess no permite este ritmo desde apps externas. Prueba uno más lento o reta a un amigo.' : 'Lichess no aceptó la búsqueda. Inténtalo de nuevo en unos segundos.');
+          var t = e.message || '';
+          setAviso(/too many games/i.test(t) ? 'Ya tienes demasiadas partidas en curso en Lichess. Termina alguna y vuelve a intentarlo.' : /must also play/i.test(t) ? 'Lichess te pide jugar también algunas partidas con el otro color.' : 'Lichess no aceptó la búsqueda. Inténtalo de nuevo en unos segundos.');
         });
     }
     function cancelar() { if (buscaRef.current) buscaRef.current.abort(); buscaRef.current = null; setBusca(false); }
     function retar(e) {
       e.preventDefault(); var u = amigo.trim(); if (!u) return; setAviso('');
       if (!tk) { conectarLichess(); return; }
-      api('/api/challenge/' + encodeURIComponent(u), form({ rated: String(puntua), 'clock.limit': String(ritmo[0] * 60), 'clock.increment': String(ritmo[1]), color: 'random', variant: 'standard' }))
+      // con amigos Lichess permite blitz aquí; la bala no, así que el reto se hace como mínimo a 3+0
+      var rr = ritmo[0] < 3 ? [3, ritmo[1] ? 2 : 0] : ritmo;
+      api('/api/challenge/' + encodeURIComponent(u), form({ rated: String(puntua), 'clock.limit': String(rr[0] * 60), 'clock.increment': String(rr[1]), color: 'random', variant: 'standard' }))
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); })
-        .then(function () { setAviso('Reto enviado a ' + u + ' (' + ritmo[0] + '+' + ritmo[1] + '). La partida empieza aquí en cuanto lo acepte.'); setAmigo(''); setAmigoAbierto(false); })
+        .then(function () { setAviso('Reto enviado a ' + u + ' (' + rr[0] + '+' + rr[1] + (rr !== ritmo ? ', la bala no se puede jugar fuera de lichess.org' : '') + '). La partida empieza aquí en cuanto lo acepte.'); setAmigo(''); setAmigoAbierto(false); })
         .catch(function (er) { setAviso('No se pudo retar a ' + u + ': ' + (er.message || er)); });
     }
     var tipo = tipoDe(ritmo);
@@ -252,14 +266,18 @@
             h('span', { className: 'jo-ritmo-ic', dangerouslySetInnerHTML: { __html: ic(tipo[1]) } }), h('b', null, ritmo[0] + ' + ' + ritmo[1]), h('span', { className: 'jo-flecha' + (menu ? ' arriba' : ''), 'aria-hidden': 'true' }))),
       menu && !busca ? h('div', { className: 'jo-menu', role: 'listbox', 'aria-label': 'Ritmo' }, RITMOS.map(function (g) {
         return h('div', { key: g[0], className: 'jo-grupo' }, h('small', null, h('span', { dangerouslySetInnerHTML: { __html: ic(g[1]) } }), g[0]),
-          h('div', null, g[2].map(function (r) { var on = r[0] === ritmo[0] && r[1] === ritmo[1]; return h('button', { key: r.join('+'), type: 'button', role: 'option', 'aria-selected': on, className: on ? 'on' : '', onClick: function () { elegir(r); } }, r[0] + '+' + r[1]); })));
+          h('div', null, g[2].map(function (r) { var on = r[0] === ritmo[0] && r[1] === ritmo[1]; return h('button', { key: r.join('+'), type: 'button', role: 'option', 'aria-selected': on, className: (on ? 'on' : '') + (enApp(r) ? '' : ' ext'), title: enApp(r) ? 'Se juega aquí' : 'Se juega en lichess.org', onClick: function () { elegir(r); } }, r[0] + '+' + r[1]); })));
       })) : null,
       ajustes && !busca ? h('div', { className: 'jo-menu jo-aj' },
         h('label', { className: 'jo-sw' }, h('span', null, h('b', null, 'Con puntuación'), h('small', null, 'La partida cuenta para tu Elo de Lichess')),
           h('input', { type: 'checkbox', checked: puntua, onChange: function (e) { setPuntua(e.target.checked); guardar(KRA, e.target.checked); } }), h('i', { 'aria-hidden': 'true' })),
         tk ? h('button', { type: 'button', className: 'jo-desc', onClick: function () { localStorage.removeItem(KT); setTk(null); setYo(null); setAjustes(false); } }, 'Desconectar Lichess') : null) : null,
       busca ? h('button', { type: 'button', className: 'jo-empezar cancelar', onClick: cancelar }, 'Cancelar')
-        : h('button', { type: 'button', className: 'jo-empezar', onClick: empezar }, tk ? 'Empezar' : 'Conectar con Lichess y empezar'),
+        : h('button', { type: 'button', className: 'jo-empezar' + (enApp(ritmo) ? '' : ' fuera'), onClick: empezar },
+            enApp(ritmo) ? (tk ? 'Empezar' : 'Conectar con Lichess y empezar') : h(R.Fragment, null, 'Empezar en lichess.org', h('span', { dangerouslySetInnerHTML: { __html: ic('presiona') } }))),
+      !busca && !enApp(ritmo) ? h('p', { className: 'jo-nota' }, 'Lichess solo permite bala y blitz en su web o en apps que autoriza (como Take Take Take). Se abre lichess.org con este ritmo; al terminar, analiza la partida aquí. Desde 10+0 se juega dentro de la academia.') : null,
+      fuera ? h('div', { className: 'jo-fuera' }, h('div', null, h('b', null, '¡Tu partida ha empezado!'), h('small', null, 'Lichess no deja jugar este ritmo aquí: ábrela en lichess.org' + (fuera.rival ? ' contra ' + fuera.rival : '') + '.')),
+        h('a', { className: 'jo-abrir', href: LI + '/' + fuera.id, target: '_blank', rel: 'noopener', onClick: function () { setFuera(null); } }, 'Abrir partida')) : null,
       aviso ? h('p', { className: 'jo-aviso', role: 'status' }, aviso) : null);
     var tile = function (cls, titulo, subt, arte, onClick, extra) {
       return h('div', { className: 'jo-tile ' + cls }, h('button', { type: 'button', className: 'jo-tile-btn', onClick: onClick }, h('b', null, titulo), subt ? h('small', null, subt) : null, h('div', { className: 'jo-arte', 'aria-hidden': 'true', dangerouslySetInnerHTML: { __html: arte } })), extra || null);
