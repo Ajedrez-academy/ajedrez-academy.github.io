@@ -96,9 +96,9 @@
   // Al volver de Lichess: ?code=…&state=…
   (function recogerCodigo() {
     var q = new URLSearchParams(location.search), code = q.get('code'), st = q.get('state');
-    if (!code) { if (q.get('error')) { history.replaceState(null, '', volverA() + '#online-jugar'); setTimeout(function () { if (window.AA_TOAST) window.AA_TOAST('No se conectó la cuenta de Lichess.'); }, 1500); } return; }
+    if (!code) { if (q.get('error')) { history.replaceState(null, '', volverA() + '#jugar'); setTimeout(function () { if (window.AA_TOAST) window.AA_TOAST('No se conectó la cuenta de Lichess.'); }, 1500); } return; }
     var pk = {}; try { pk = JSON.parse(sessionStorage.getItem(KV)) || {}; } catch (e) {}
-    history.replaceState(null, '', volverA() + '#online-jugar');
+    history.replaceState(null, '', volverA() + '#jugar');
     if (!pk.v || pk.s !== st) return;
     sessionStorage.removeItem(KV);
     fetch(LI + '/api/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -118,19 +118,6 @@
       function leerTrozo() { return rd.read().then(function (x) { if (x.done) return; buf += dec.decode(x.value, { stream: true }); var ls = buf.split('\n'); buf = ls.pop(); ls.forEach(function (l) { if (l.trim()) try { cb(JSON.parse(l)); } catch (e) {} }); return leerTrozo(); }); }
       return leerTrozo();
     });
-  }
-
-  /* ================= Página ================= */
-  function Online() {
-    var UI = window.AA_UI, R = UI.React, h = R.createElement;
-    var pest = R.useState(/jugar/.test(location.hash) ? 'jugar' : 'historial'), tab = pest[0], setTab = pest[1];
-    return h('div', { className: 'page-retos on-page' },
-      h('div', { className: 'on-top' },
-        h('div', null, h('h1', null, 'Online'), h('p', { className: 'muted' }, 'Tus partidas de Lichess y Chess.com, analizadas con el motor de la academia. Y partidas en Lichess sin salir de aquí.')),
-        h('div', { className: 'seg on-tabs', role: 'tablist' },
-          h('button', { role: 'tab', 'aria-selected': tab === 'historial', className: tab === 'historial' ? 'on' : '', onClick: function () { setTab('historial'); } }, 'Mis partidas'),
-          h('button', { role: 'tab', 'aria-selected': tab === 'jugar', className: tab === 'jugar' ? 'on' : '', onClick: function () { setTab('jugar'); } }, 'Jugar en Lichess'))),
-      tab === 'historial' ? h(Historial) : h(Jugar));
   }
 
   function Historial() {
@@ -185,68 +172,101 @@
       })));
   }
 
-  /* ---------- Jugar en Lichess ---------- */
-  function Jugar() {
+  /* ---------- Lichess: portada principal de Jugar ---------- */
+  var KP = 'aa-li-partida';
+  function abrirPartida(id, color) { try { sessionStorage.setItem(KP, JSON.stringify({ id: id, color: color })); } catch (e) {} location.hash = 'lichess-partida'; window.scrollTo(0, 0); }
+  var RITMOS = [[10, 0, 'Rápida'], [10, 5, 'Rápida'], [15, 10, 'Rápida'], [30, 0, 'Clásica'], [30, 20, 'Clásica']];
+  function LichessHero() {
     var UI = window.AA_UI, R = UI.React, h = R.createElement;
     var s1 = R.useState(token()), tk = s1[0], setTk = s1[1];
     var s2 = R.useState(null), yo = s2[0], setYo = s2[1];
-    var s3 = R.useState(null), partida = s3[0], setPartida = s3[1];
+    var s3 = R.useState([]), enCurso = s3[0], setEnCurso = s3[1];
     var s4 = R.useState(''), busca = s4[0], setBusca = s4[1];
     var s5 = R.useState(''), aviso = s5[0], setAviso = s5[1];
-    var buscaRef = R.useRef(null), evRef = R.useRef(null);
+    var s6 = R.useState(1), nivel = s6[0], setNivel = s6[1];
+    var s7 = R.useState(''), amigo = s7[0], setAmigo = s7[1];
+    var buscaRef = R.useRef(null);
     R.useEffect(function () { function f() { setTk(token()); } window.addEventListener('aa-lichess', f); return function () { window.removeEventListener('aa-lichess', f); }; }, []);
     R.useEffect(function () {
       if (!tk) return;
       api('/api/account').then(function (r) { if (r.status === 401) { localStorage.removeItem(KT); setTk(null); throw 0; } return r.json(); }).then(setYo).catch(function () {});
-      // escucha el inicio de partidas (también las que ya estaban en marcha)
-      var ctl = new AbortController(); evRef.current = ctl;
+      api('/api/account/playing').then(function (r) { return r.ok ? r.json() : { nowPlaying: [] }; }).then(function (d) { setEnCurso((d.nowPlaying || []).filter(function (g) { return g.variant && g.variant.key === 'standard'; })); }).catch(function () {});
+      var ctl = new AbortController();
       flujo('/api/stream/event', function (ev) {
-        if (ev.type === 'gameStart' && ev.game && (ev.game.compat ? ev.game.compat.board : true)) { setBusca(''); if (buscaRef.current) { buscaRef.current.abort(); buscaRef.current = null; } setPartida({ id: ev.game.gameId || ev.game.id, color: ev.game.color === 'black' ? 'b' : 'w' }); }
+        if (ev.type === 'gameStart' && ev.game && (!ev.game.compat || ev.game.compat.board)) {
+          if (buscaRef.current) { buscaRef.current.abort(); buscaRef.current = null; }
+          if (busca || ev.game.source === 'lobby' || ev.game.source === 'friend' || ev.game.source === 'ai') abrirPartida(ev.game.gameId || ev.game.id, ev.game.color === 'black' ? 'b' : 'w');
+        }
       }, ctl.signal).catch(function () {});
-      return function () { ctl.abort(); };
+      return function () { ctl.abort(); if (buscaRef.current) buscaRef.current.abort(); };
     }, [tk]);
-    if (!tk) return h('div', { className: 'card on-conectar' },
-      h('div', { className: 'on-li-logo', 'aria-hidden': 'true' }, 'li'),
-      h('h2', null, 'Juega en Lichess desde la academia'),
-      h('p', { className: 'muted' }, 'Conecta tu cuenta de Lichess: te llevamos a lichess.org para que des permiso y vuelves aquí. Nunca vemos tu contraseña y puedes quitar el permiso cuando quieras desde Lichess.'),
-      h('ul', { className: 'on-puntos' }, h('li', null, 'Partidas rápidas y clásicas contra rivales reales'), h('li', null, 'Partidas contra el Stockfish de Lichess (niveles 1 a 8)'), h('li', null, 'Al terminar, analízalas con el entrenador de la academia')),
-      h('button', { type: 'button', className: 'btn btn-primary btn-big', onClick: conectarLichess }, h('span', null, 'Conectar con Lichess')),
-      h('p', { className: 'muted small' }, 'Lichess solo permite jugar así a ritmo rápido o más lento (sin bala ni blitz). Chess.com no ofrece esta opción.'));
-    if (partida) return h(Partida, { id: partida.id, color: partida.color, yo: yo, salir: function () { setPartida(null); } });
     function buscar(min, inc) {
       setAviso(''); setBusca(min + '+' + inc);
       var ctl = new AbortController(); buscaRef.current = ctl;
       api('/api/board/seek', Object.assign({ signal: ctl.signal }, form({ rated: 'false', time: String(min), increment: String(inc), variant: 'standard' })))
         .then(function (r) {
           if (!r.ok) return r.text().then(function (t) { throw new Error(t); });
-          // la búsqueda sigue viva mientras la conexión esté abierta: se lee hasta que Lichess la cierre
-          var rd = r.body.getReader(); buscaRef.lector = rd;
-          var seguir = function () { return rd.read().then(function (x) { if (!x.done) return seguir(); }); };
-          return seguir();
+          var rd = r.body.getReader(); var seguir = function () { return rd.read().then(function (x) { if (!x.done) return seguir(); }); }; return seguir();
         })
-        .catch(function (e) { if (e && e.name !== 'AbortError') { setBusca(''); setAviso('Lichess no aceptó la búsqueda. ' + (e.message || '').slice(0, 120)); } });
+        .catch(function (e) { if (e && e.name !== 'AbortError') { setBusca(''); setAviso('Lichess no aceptó la búsqueda. Inténtalo de nuevo en unos segundos.'); } });
     }
     function cancelar() { if (buscaRef.current) buscaRef.current.abort(); buscaRef.current = null; setBusca(''); }
-    function contraIA(nivel) {
+    function contraIA() {
       setAviso('');
       api('/api/challenge/ai', form({ level: String(nivel), 'clock.limit': '600', 'clock.increment': '5', color: 'random', variant: 'standard' }))
         .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); })
-        .then(function (g) { setPartida({ id: g.id, color: g.player === 'black' || (g.color === 'black') ? 'b' : 'w', ia: true }); })
+        .then(function (g) { abrirPartida(g.id, g.player === 'black' ? 'b' : 'w'); })
         .catch(function (e) { setAviso('No se pudo crear la partida: ' + (e.message || e)); });
     }
-    return h('div', { className: 'on-jugar' },
-      h('div', { className: 'card on-yo' },
-        h('div', { className: 'on-li-logo pequeno', 'aria-hidden': 'true' }, 'li'),
-        h('div', null, h('small', null, 'Conectado a Lichess'), h('b', null, yo ? yo.username : '…'), yo && yo.perfs && yo.perfs.rapid ? h('small', null, 'Rápidas: ' + yo.perfs.rapid.rating) : null),
-        h('button', { type: 'button', className: 'btn btn-ghost', onClick: function () { localStorage.removeItem(KT); setTk(null); setYo(null); } }, h('span', null, 'Desconectar'))),
-      h('h3', { className: 'h-sub' }, 'Buscar rival'),
-      busca ? h('div', { className: 'card on-buscando' }, h('span', { className: 'on-radar', 'aria-hidden': 'true' }), h('div', null, h('b', null, 'Buscando rival · ' + busca), h('small', { className: 'muted' }, 'Lichess te emparejará con alguien de nivel parecido.')), h('button', { type: 'button', className: 'btn', onClick: cancelar }, h('span', null, 'Cancelar')))
-        : h('div', { className: 'on-ritmos' }, [[10, 0, 'Rápida'], [10, 5, 'Rápida'], [15, 10, 'Rápida'], [30, 0, 'Clásica']].map(function (x) {
-          return h('button', { key: x[0] + '+' + x[1], type: 'button', className: 'card on-ritmo', onClick: function () { buscar(x[0], x[1]); } }, h('b', null, x[0] + '+' + x[1]), h('small', null, x[2]));
-        })),
-      h('h3', { className: 'h-sub' }, 'Contra el Stockfish de Lichess'),
-      h('div', { className: 'on-niveles' }, [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return h('button', { key: n, type: 'button', className: 'on-nivel', onClick: function () { contraIA(n); } }, h('b', null, n), h('small', null, n <= 2 ? 'fácil' : n <= 5 ? 'medio' : 'difícil')); })),
-      aviso ? h('p', { className: 'on-error', role: 'alert' }, aviso) : null);
+    function retar(e) {
+      e.preventDefault(); var u = amigo.trim(); if (!u) return; setAviso('');
+      api('/api/challenge/' + encodeURIComponent(u), form({ rated: 'false', 'clock.limit': '600', 'clock.increment': '5', color: 'random', variant: 'standard' }))
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); })
+        .then(function () { setAviso('Reto enviado a ' + u + '. La partida empieza aquí en cuanto lo acepte.'); setAmigo(''); })
+        .catch(function (er) { setAviso('No se pudo retar a ' + u + ': ' + (er.message || er)); });
+    }
+    var fondo = h('div', { className: 'li-fondo', 'aria-hidden': 'true' }, ['rey', 'dama', 'torre', 'alfil', 'caballo', 'peon', 'caballo', 'torre'].map(function (p, i) { return h('i', { key: i, style: { '--i': i }, dangerouslySetInnerHTML: { __html: ic(p) } }); }));
+    var cabeza = h('div', { className: 'li-cabeza' },
+      h('div', { className: 'li-logo', 'aria-hidden': 'true' }, h('span', null, 'li')),
+      h('div', null, h('small', { className: 'li-kicker' }, h('i', { className: 'li-punto' }), 'En vivo · Lichess.org'),
+        h('h2', null, 'Juega contra personas reales'),
+        h('p', null, 'Rivales de todo el mundo en Lichess, sin salir de la academia. Al terminar, el entrenador te explica tu partida.')));
+    if (!tk) return h('section', { className: 'li-hero' }, fondo, cabeza,
+      h('div', { className: 'li-conectar' },
+        h('button', { type: 'button', className: 'li-btn', onClick: conectarLichess }, h('span', { className: 'li-btn-logo' }, 'li'), 'Conectar con Lichess'),
+        h('small', null, 'Gratis. Das permiso en lichess.org y vuelves aquí; nunca vemos tu contraseña. ¿No tienes cuenta? Se crea en un minuto en Lichess.')),
+      h('div', { className: 'li-ventajas' },
+        [['espadas', 'Rivales reales', 'Rápidas y clásicas'], ['rey', 'Stockfish', 'Ocho niveles'], ['peon', 'Reta a amigos', 'Con su usuario'], ['ojo', 'Análisis', 'Con el entrenador']].map(function (v) {
+          return h('div', { key: v[1], className: 'li-ventaja' }, h('i', { dangerouslySetInnerHTML: { __html: ic(v[0]) } }), h('b', null, v[1]), h('small', null, v[2]));
+        })));
+    var perf = yo && yo.perfs ? [['rapid', 'Rápidas'], ['classical', 'Clásicas'], ['blitz', 'Blitz']].filter(function (p) { return yo.perfs[p[0]] && yo.perfs[p[0]].games; }).slice(0, 2) : [];
+    return h('section', { className: 'li-hero conectado' }, fondo,
+      h('div', { className: 'li-top' }, cabeza,
+        h('div', { className: 'li-yo' },
+          h('div', { className: 'li-avatar', 'aria-hidden': 'true' }, yo ? yo.username.charAt(0).toUpperCase() : '·'),
+          h('div', null, h('b', null, yo ? yo.username : 'Conectando…'), h('small', null, perf.length ? perf.map(function (p) { return p[1] + ' ' + yo.perfs[p[0]].rating; }).join(' · ') : 'Cuenta de Lichess')),
+          h('button', { type: 'button', className: 'li-salir', title: 'Desconectar', 'aria-label': 'Desconectar Lichess', onClick: function () { localStorage.removeItem(KT); setTk(null); setYo(null); } }, '×'))),
+      enCurso.length ? h('div', { className: 'li-encurso' }, h('small', null, 'Partidas en curso'),
+        enCurso.slice(0, 3).map(function (g) {
+          return h('button', { key: g.gameId, type: 'button', className: 'li-curso' + (g.isMyTurn ? ' turno' : ''), onClick: function () { abrirPartida(g.gameId, g.color === 'black' ? 'b' : 'w'); } },
+            h('b', null, 'contra ' + (g.opponent ? g.opponent.username : '…')), h('small', null, g.isMyTurn ? 'Te toca' : 'Turno del rival'));
+        })) : null,
+      busca ? h('div', { className: 'li-buscando' }, h('span', { className: 'li-radar', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')),
+          h('div', null, h('b', null, 'Buscando rival · ' + busca), h('small', null, 'Lichess te empareja con alguien de nivel parecido. Suele tardar menos de un minuto.')),
+          h('button', { type: 'button', className: 'li-cancelar', onClick: cancelar }, 'Cancelar'))
+        : h('div', { className: 'li-ritmos', role: 'group', 'aria-label': 'Buscar rival' },
+          RITMOS.map(function (x, i) {
+            return h('button', { key: i, type: 'button', className: 'li-ritmo' + (i === 1 ? ' destacado' : ''), onClick: function () { buscar(x[0], x[1]); } },
+              h('i', { dangerouslySetInnerHTML: { __html: ic('reloj') } }), h('b', null, x[0] + '+' + x[1]), h('small', null, x[2]));
+          })),
+      h('div', { className: 'li-extra' },
+        h('div', { className: 'li-ia' }, h('small', null, 'Contra el Stockfish de Lichess · 10+5'),
+          h('div', { className: 'li-niveles' }, [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return h('button', { key: n, type: 'button', className: n === nivel ? 'on' : '', 'aria-pressed': n === nivel, onClick: function () { setNivel(n); } }, n); })),
+          h('button', { type: 'button', className: 'li-jugar-ia', onClick: contraIA }, 'Jugar contra el nivel ' + nivel)),
+        h('form', { className: 'li-amigo', onSubmit: retar }, h('small', null, 'Retar a un amigo · 10+5'),
+          h('div', null, h('input', { value: amigo, onChange: function (e) { setAmigo(e.target.value); }, placeholder: 'Su usuario de Lichess', 'aria-label': 'Usuario de Lichess a retar', autoComplete: 'off', spellCheck: false }),
+            h('button', { type: 'submit', disabled: !amigo.trim() }, 'Retar')))),
+      aviso ? h('p', { className: 'li-aviso', role: 'status' }, aviso) : null);
   }
 
   function Partida(props) {
@@ -291,7 +311,7 @@
         h('div', { className: 'card on-jugadas' }, sans.length ? sans.map(function (s, i) { return h('span', { key: i }, (i % 2 === 0 ? (i / 2 + 1) + '. ' : '') + s); }) : h('small', { className: 'muted' }, 'Aún no hay jugadas.')),
         fin ? h('div', { className: 'on-acciones' },
           h('button', { type: 'button', className: 'btn btn-primary', onClick: analizarEsta }, h('span', null, 'Analizar esta partida')),
-          h('button', { type: 'button', className: 'btn', onClick: props.salir }, h('span', null, 'Otra partida')))
+          h('button', { type: 'button', className: 'btn', onClick: props.salir }, h('span', null, 'Volver a Jugar')))
           : h('div', { className: 'on-acciones' },
             g.drawOffer && g.drawOffer !== props.color ? h('button', { type: 'button', className: 'btn btn-primary', onClick: function () { accion('draw/yes'); } }, h('span', null, 'Aceptar tablas')) : h('button', { type: 'button', className: 'btn', onClick: function () { accion('draw/yes'); } }, h('span', null, 'Ofrecer tablas')),
             g.moves.length < 2 ? h('button', { type: 'button', className: 'btn', onClick: function () { accion('abort'); } }, h('span', null, 'Anular'))
@@ -299,26 +319,55 @@
         h('a', { className: 'muted small on-verli', href: LI + '/' + props.id, target: '_blank', rel: 'noopener' }, 'Ver la partida en lichess.org')));
   }
 
-  PAGES.online = Online;
-  PAGES['online-jugar'] = Online;
+  /* ---------- Rutas ---------- */
+  function PartidaPagina() {
+    var R = window.AA_UI.React, h = R.createElement, d = null;
+    try { d = JSON.parse(sessionStorage.getItem(KP)); } catch (e) {}
+    var volver = function () { try { sessionStorage.removeItem(KP); } catch (e) {} location.hash = 'jugar'; window.scrollTo(0, 0); };
+    if (!d || !token()) { setTimeout(volver, 0); return null; }
+    return h('div', { className: 'page-retos on-page' }, h('button', { type: 'button', className: 'li-volver', onClick: volver }, h('span', { dangerouslySetInnerHTML: { __html: ic('volver') } }), 'Jugar'),
+      h(Partida, { id: d.id, color: d.color, salir: volver }));
+  }
+  PAGES['lichess-partida'] = PartidaPagina;
+  function aJugar() { setTimeout(function () { location.replace('#jugar'); }, 0); return null; }
+  PAGES.online = aJugar; PAGES['online-jugar'] = aJugar;
 
-  /* ---------- Accesos desde Partidas y Jugar ---------- */
-  function acceso(cont, antes, ruta, titulo, sub) {
-    if (!cont || cont.querySelector(':scope > .on-acceso')) return;
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'on-acceso';
-    b.innerHTML = '<span class="on-logos"><i class="on-logo f-lichess" style="background:#2a2d35">li</i><i class="on-logo" style="background:#6b9f3a">c</i></span><span><b>' + titulo + '</b><small>' + sub + '</small></span>' + ic('presiona');
-    b.addEventListener('click', function () { location.hash = ruta; window.scrollTo(0, 0); });
-    cont.insertBefore(b, antes || null);
+  /* ---------- Montaje en Jugar: Lichess arriba, bots en medio, tus partidas abajo ---------- */
+  var montados = [];
+  function montar(cont, antes, cls, Comp) {
+    var U = window.AA_UI; if (!U || !U.createRoot) return;
+    var el = cont.querySelector(':scope > .' + cls);
+    if (el) return;
+    el = document.createElement('div'); el.className = cls; cont.insertBefore(el, antes);
+    var root = U.createRoot(el); root.render(U.React.createElement(Comp)); montados.push({ el: el, root: root });
+  }
+  function Partidas() {
+    var R = window.AA_UI.React, h = R.createElement;
+    return h('section', { className: 'on-mias', id: 'mis-partidas-online' },
+      h('div', { className: 'on-mias-tit' }, h('h2', null, 'Tus partidas de Lichess y Chess.com'), h('p', { className: 'muted' }, 'Escribe tu usuario y analiza cualquier partida con el entrenador de la academia.')),
+      h(Historial));
   }
   var pend = false;
   new MutationObserver(function () {
     if (pend) return; pend = true;
     requestAnimationFrame(function () {
       pend = false;
-      var lib = document.querySelector('.library');
-      if (lib) { var h2 = lib.querySelector(':scope > h2.h-sub'); acceso(lib, h2, 'online', 'Tus partidas de Lichess y Chess.com', 'Escribe tu usuario y analiza tus partidas con el entrenador.'); }
+      montados = montados.filter(function (m) { if (document.contains(m.el)) return true; try { m.root.unmount(); } catch (e) {} return false; });
       var ps = document.querySelector('.play-setup');
-      if (ps) acceso(ps, null, 'online-jugar', 'Jugar en Lichess', 'Rivales reales o el Stockfish de Lichess, desde aquí.');
+      if (ps) {
+        ps.classList.toggle('li-on', true);
+        var head = ps.querySelector(':scope > .tc-head');
+        montar(ps, head, 'li-montaje', LichessHero);
+        if (head && !ps.querySelector(':scope > .li-sep')) { var sep = document.createElement('div'); sep.className = 'li-sep'; sep.innerHTML = '<span>o practica contra los bots de la academia</span>'; ps.insertBefore(sep, head); }
+        montar(ps, null, 'on-montaje', Partidas);
+      }
+      var lib = document.querySelector('.library');
+      if (lib && !lib.querySelector(':scope > .on-acceso')) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'on-acceso';
+        b.innerHTML = '<span class="on-logos"><i class="on-logo" style="background:#2a2d35">li</i><i class="on-logo" style="background:#6b9f3a">c</i></span><span><b>Tus partidas de Lichess y Chess.com</b><small>Están en Jugar: escribe tu usuario y analízalas con el entrenador.</small></span>' + ic('presiona');
+        b.addEventListener('click', function () { location.hash = 'jugar'; setTimeout(function () { var t = document.getElementById('mis-partidas-online'); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 600); });
+        lib.insertBefore(b, lib.querySelector(':scope > h2.h-sub'));
+      }
     });
   }).observe(document.documentElement, { childList: true, subtree: true });
 })();

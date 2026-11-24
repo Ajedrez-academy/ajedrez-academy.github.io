@@ -34,7 +34,6 @@
     { r: 'entrenadores', l: 'Entrenadores', i: 'users', c: 'blue' },
     { r: 'nivel', l: 'Prueba de nivel', i: 'target', c: 'green' },
     { r: 'coordenadas', l: 'Coordenadas', i: 'grid', c: 'teal' },
-    { r: 'online', l: 'Online', i: 'mundo', c: 'blue' },
     { r: '@ajustes', l: 'Ajustes', i: 'gear', c: 'gray' },
     { r: '@buscar', l: 'Buscar', i: 'search', c: 'blue' },
     { r: '@apoyo', l: 'Apoyar', i: 'cup', c: 'red' },
@@ -131,7 +130,7 @@
     ['aperturas', 'Aperturas', 'Cursos y repertorio'], ['finales', 'Finales', 'Practica contra el motor'], ['partidas', 'Partidas', 'Partidas históricas comentadas'],
     ['analisis', 'Análisis', 'Analiza una posición con Stockfish'], ['evaluar', 'Evaluar posiciones', '¿Quién está mejor?'], ['memoria', 'Memoria relámpago', 'Recuerda y coloca las piezas'],
     ['clasificacion', 'Clasificación', 'Liga semanal'], ['progreso', 'Progreso', 'Tus estadísticas y logros'], ['entrenadores', 'Entrenadores', 'Conoce a los personajes'],
-    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['coordenadas', 'Coordenadas', 'Entrena a leer el tablero en 30 segundos'], ['online', 'Online: Lichess y Chess.com', 'Tus partidas online y jugar en Lichess'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
+    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['coordenadas', 'Coordenadas', 'Entrena a leer el tablero en 30 segundos'], ['jugar', 'Lichess y Chess.com', 'Juega en Lichess y analiza tus partidas online'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
   ];
   var indice = null;
   function crearIndice() {
