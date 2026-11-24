@@ -34,6 +34,7 @@
     { r: 'entrenadores', l: 'Entrenadores', i: 'users', c: 'blue' },
     { r: 'nivel', l: 'Prueba de nivel', i: 'target', c: 'green' },
     { r: 'coordenadas', l: 'Coordenadas', i: 'grid', c: 'teal' },
+    { r: 'online', l: 'Online', i: 'mundo', c: 'blue' },
     { r: '@ajustes', l: 'Ajustes', i: 'gear', c: 'gray' },
     { r: '@buscar', l: 'Buscar', i: 'search', c: 'blue' },
     { r: '@apoyo', l: 'Apoyar', i: 'cup', c: 'red' },
@@ -47,7 +48,7 @@
     if (r === '@buscar') { if (window.AA_BUSCAR) window.AA_BUSCAR(); return; }
     if (r === '@instalar') { instalar(); return; }
     if (r === '@apoyo') { window.open('https://ko-fi.com/cleygonzalez', '_blank', 'noopener'); return; }
-    if (window.AA_UI && window.AA_UI.go && !/^(memoria|clasificacion|nivel|coordenadas|problema-del-dia)$/.test(r)) { try { window.AA_UI.go(r); } catch (e) { location.hash = r; } }
+    if (window.AA_UI && window.AA_UI.go && !/^(memoria|clasificacion|nivel|coordenadas|problema-del-dia|online)$/.test(r)) { try { window.AA_UI.go(r); } catch (e) { location.hash = r; } }
     else location.hash = r;
     window.scrollTo(0, 0);
   }
@@ -68,7 +69,7 @@
     hoja.innerHTML = '<div class="aa-mas-fondo" data-cerrar></div><div class="aa-mas-panel"><div class="aa-mas-asa" aria-hidden="true"></div>' +
       '<div class="aa-mas-tit"><b>Más secciones</b><button type="button" class="aa-mas-x" data-cerrar aria-label="Cerrar">×</button></div>' +
       '<div class="aa-mas-grid">' + MAS.map(function (m) {
-        return '<button type="button" class="aa-mas-it c-' + m.c + '" data-r="' + m.r + '"><span class="aa-mas-ic">' + IC[m.i] + '</span><span>' + m.l + '</span></button>';
+        return '<button type="button" class="aa-mas-it c-' + m.c + '" data-r="' + m.r + '"><span class="aa-mas-ic">' + (IC[m.i] || (window.AA_ICONO ? window.AA_ICONO(m.i) : '')) + '</span><span>' + m.l + '</span></button>';
       }).join('') + '</div></div>';
     hoja.addEventListener('click', function (e) {
       if (e.target.closest('[data-cerrar]')) { cerrarMas(); return; }
@@ -130,7 +131,7 @@
     ['aperturas', 'Aperturas', 'Cursos y repertorio'], ['finales', 'Finales', 'Practica contra el motor'], ['partidas', 'Partidas', 'Partidas históricas comentadas'],
     ['analisis', 'Análisis', 'Analiza una posición con Stockfish'], ['evaluar', 'Evaluar posiciones', '¿Quién está mejor?'], ['memoria', 'Memoria relámpago', 'Recuerda y coloca las piezas'],
     ['clasificacion', 'Clasificación', 'Liga semanal'], ['progreso', 'Progreso', 'Tus estadísticas y logros'], ['entrenadores', 'Entrenadores', 'Conoce a los personajes'],
-    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['coordenadas', 'Coordenadas', 'Entrena a leer el tablero en 30 segundos'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
+    ['nivel', 'Prueba de nivel', 'Juega y estimamos tu Elo'], ['coordenadas', 'Coordenadas', 'Entrena a leer el tablero en 30 segundos'], ['online', 'Online: Lichess y Chess.com', 'Tus partidas online y jugar en Lichess'], ['@ajustes', 'Ajustes', 'Tablero, piezas, sonido y tema']
   ];
   var indice = null;
   function crearIndice() {

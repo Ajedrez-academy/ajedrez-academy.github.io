@@ -1,0 +1,107 @@
+/* Ajedrez Academy · Online (ver online.js) */
+.on-page { max-width: 1040px; }
+.on-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 16px; }
+.on-top h1 { margin: 0 0 4px; } .on-top p { margin: 0; max-width: 560px; }
+.on-tabs { display: flex; gap: 6px; }
+.on-tabs button { padding: 9px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink-2); font: 800 .9rem 'Nunito', system-ui, sans-serif; cursor: pointer; }
+.on-tabs button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* cuenta */
+.on-cuenta { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 14px 16px; }
+.on-fuentes { display: flex; gap: 6px; }
+.on-fuente { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink-2); font: 800 .88rem 'Nunito', system-ui, sans-serif; cursor: pointer; }
+.on-fuente.on { color: var(--ink); border-color: var(--ink-2); background: var(--surface); box-shadow: var(--lift); }
+.on-logo { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; font: 900 .8rem/1 'Nunito', system-ui, sans-serif; font-style: normal; color: #fff; }
+.f-lichess .on-logo { background: #2a2d35; } .f-chesscom .on-logo { background: #6b9f3a; }
+.on-user { display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink-2); }
+.on-user .aa-ic { width: 18px; height: 18px; }
+.on-user input { flex: 1; min-width: 0; padding: 11px 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 700 .95rem 'Nunito', system-ui, sans-serif; }
+.on-nota { grid-column: 1 / -1; margin: 0; }
+.on-error { margin: 12px 0; padding: 10px 14px; border-radius: 12px; background: color-mix(in srgb, var(--red, #ff4b4b) 12%, var(--surface)); color: var(--red-d, #c92f2f); font-weight: 700; }
+
+/* resumen */
+.on-resumen { margin: 14px 0 10px; padding: 14px 16px; }
+.on-barra { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--gray, #e3e8e1); }
+.on-barra i { display: block; height: 100%; transition: width .8s cubic-bezier(.3, .9, .3, 1); animation: on-barra .9s both cubic-bezier(.3, .9, .3, 1); }
+@keyframes on-barra { from { width: 0 !important; } }
+.on-barra .w { background: var(--green); } .on-barra .d { background: #9aa3ab; } .on-barra .l { background: var(--red, #ff4b4b); }
+.on-cifras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.on-cifra { display: flex; flex-direction: column; align-items: center; padding: 8px; border: 1px solid transparent; border-radius: 12px; background: var(--bg); color: var(--ink); cursor: pointer; }
+.on-cifra b { font: 900 1.3rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; } .on-cifra small { color: var(--ink-2); font-weight: 700; font-size: .72rem; }
+.on-cifra.on { border-color: var(--ink-2); background: var(--surface); }
+.on-cifra.c-win b { color: var(--green-d, #1b8a45); } .on-cifra.c-loss b { color: var(--red-d, #c92f2f); }
+
+/* lista */
+.on-lista { display: flex; flex-direction: column; gap: 8px; }
+.on-fila { display: grid; grid-template-columns: 92px 1fr auto auto; align-items: center; gap: 14px; padding: 10px 12px; border-left: 4px solid var(--rc, var(--line)); animation: on-fila .35s both ease-out; }
+@keyframes on-fila { from { opacity: 0; transform: translateY(6px); } }
+.on-fila.r-win { --rc: var(--green); } .on-fila.r-loss { --rc: var(--red, #ff4b4b); } .on-fila.r-draw { --rc: #9aa3ab; } .on-fila.r-live { --rc: var(--blue); }
+.on-res { justify-self: start; padding: 4px 10px; border-radius: 999px; font: 800 .78rem/1.3 'Nunito', system-ui, sans-serif; background: color-mix(in srgb, var(--rc) 15%, var(--surface)); color: color-mix(in srgb, var(--rc) 70%, var(--ink)); }
+.on-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.on-info b { display: flex; align-items: center; gap: 6px; font: 800 .95rem/1.25 'Nunito', system-ui, sans-serif; }
+.on-info b small { color: var(--ink-2); font-weight: 700; }
+.on-info > small { color: var(--ink-2); font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.on-ficha { flex: none; display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+.on-ficha.b { background: #fff; box-shadow: inset 0 0 0 1.5px #9aa09a; } .on-ficha.n { background: #2a2d35; }
+.on-prec { display: flex; flex-direction: column; align-items: center; } .on-prec b { font: 900 1.05rem/1 'Nunito', system-ui, sans-serif; } .on-prec small { color: var(--ink-2); font-size: .66rem; font-weight: 700; }
+.on-acc { display: flex; gap: 6px; }
+.on-acc .btn { min-height: 38px; padding: 6px 14px; }
+.on-ext { display: grid; place-items: center; width: 38px; padding: 0 !important; }
+.on-ext .aa-ic { width: 16px; height: 16px; }
+.on-esqueleto { height: 60px; background: linear-gradient(90deg, var(--surface) 0%, var(--bg) 50%, var(--surface) 100%); background-size: 200% 100%; animation: on-brillo 1.2s linear infinite; }
+@keyframes on-brillo { to { background-position: -200% 0; } }
+.on-cargando { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+
+/* conectar / jugar */
+.on-conectar { max-width: 620px; padding: 26px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.on-conectar h2 { margin: 6px 0 0; } .on-conectar p { margin: 0; }
+.on-li-logo { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 18px; background: #2a2d35; color: #fff; font: 900 1.6rem/1 'Nunito', system-ui, sans-serif; box-shadow: 0 10px 24px -12px rgba(0,0,0,.6); }
+.on-li-logo.pequeno { width: 42px; height: 42px; border-radius: 12px; font-size: 1.05rem; }
+.on-puntos { margin: 4px 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.on-puntos li { padding-left: 22px; position: relative; font-weight: 700; }
+.on-puntos li::before { content: ""; position: absolute; left: 0; top: 4px; width: 14px; height: 14px; background: var(--green); -webkit-mask: var(--ic-check) center / contain no-repeat; mask: var(--ic-check) center / contain no-repeat; }
+.on-yo { display: flex; align-items: center; gap: 12px; padding: 12px 14px; max-width: 520px; }
+.on-yo > div:nth-child(2) { flex: 1; display: flex; flex-direction: column; } .on-yo small { color: var(--ink-2); font-size: .74rem; font-weight: 700; } .on-yo b { font: 800 1.05rem 'Nunito', system-ui, sans-serif; }
+.on-ritmos { display: grid; grid-template-columns: repeat(4, minmax(0, 150px)); gap: 10px; }
+.on-ritmo { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 16px 10px; cursor: pointer; border: 1px solid var(--line); transition: transform .15s, border-color .15s; }
+.on-ritmo:hover { transform: translateY(-2px); border-color: var(--green); }
+.on-ritmo b { font: 900 1.4rem/1 'Bricolage Grotesque', 'Nunito', system-ui, sans-serif; } .on-ritmo small { color: var(--ink-2); font-weight: 700; }
+.on-niveles { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; max-width: 640px; }
+.on-nivel { display: flex; flex-direction: column; align-items: center; padding: 10px 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.on-nivel:hover { border-color: var(--ink-2); } .on-nivel b { font: 900 1.2rem/1 'Nunito', system-ui, sans-serif; } .on-nivel small { color: var(--ink-2); font-size: .66rem; font-weight: 700; }
+.on-buscando { display: flex; align-items: center; gap: 14px; padding: 14px 16px; max-width: 520px; }
+.on-buscando > div { flex: 1; display: flex; flex-direction: column; }
+.on-radar { position: relative; flex: none; width: 34px; height: 34px; border-radius: 50%; background: color-mix(in srgb, var(--green) 20%, transparent); }
+.on-radar::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--green); animation: on-radar 1.4s ease-out infinite; }
+@keyframes on-radar { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+
+/* partida */
+.on-partida { display: grid; grid-template-columns: minmax(0, 560px) minmax(240px, 1fr); gap: 22px; align-items: start; }
+.on-tab { display: flex; flex-direction: column; gap: 8px; }
+.on-jug { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; }
+.on-jug b { flex: 1; font: 800 .95rem 'Nunito', system-ui, sans-serif; }
+.on-reloj { padding: 4px 10px; border-radius: 8px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font: 800 1.15rem/1 ui-monospace, Consolas, monospace; }
+.on-jug.turno .on-reloj { background: var(--ink); color: var(--bg); }
+.on-lado { display: flex; flex-direction: column; gap: 10px; }
+.on-estado { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; }
+.on-estado b { font: 800 1.15rem 'Nunito', system-ui, sans-serif; }
+.on-estado.fin { background: color-mix(in srgb, var(--green) 10%, var(--surface)); }
+.on-jugadas { display: flex; flex-wrap: wrap; gap: 4px 10px; max-height: 220px; overflow: auto; padding: 12px 14px; font: 700 .86rem ui-monospace, Consolas, monospace; color: var(--ink-2); }
+.on-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.on-verli { align-self: flex-start; }
+
+/* accesos desde Partidas y Jugar */
+.on-acceso { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; font: inherit; }
+.on-acceso:hover { border-color: var(--green); }
+.on-acceso .on-logos { display: flex; } .on-acceso .on-logo + .on-logo { margin-left: -6px; box-shadow: 0 0 0 2px var(--surface); }
+.on-acceso span { flex: 1; display: flex; flex-direction: column; } .on-acceso b { font: 800 .95rem 'Nunito', system-ui, sans-serif; } .on-acceso small { color: var(--ink-2); font-size: .78rem; font-weight: 600; }
+.on-acceso .aa-ic { width: 18px; height: 18px; color: var(--green-d, #1b8a45); }
+
+@media (max-width: 760px) {
+  .on-cuenta { grid-template-columns: 1fr; }
+  .on-fila { grid-template-columns: 1fr auto; grid-template-areas: "res prec" "info info" "acc acc"; gap: 8px; }
+  .on-res { grid-area: res; } .on-prec { grid-area: prec; } .on-info { grid-area: info; } .on-acc { grid-area: acc; } .on-acc .btn-primary { flex: 1; }
+  .on-ritmos { grid-template-columns: repeat(2, 1fr); }
+  .on-niveles { grid-template-columns: repeat(4, 1fr); }
+  .on-partida { grid-template-columns: 1fr; }
+}
