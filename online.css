@@ -216,3 +216,15 @@
 .jo-fuera { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #fff; color: #0d3220; animation: jo-abre .25s ease-out; }
 .jo-fuera > div { flex: 1; display: flex; flex-direction: column; } .jo-fuera b { font: 900 .98rem 'Nunito', system-ui, sans-serif; } .jo-fuera small { font: 600 .78rem/1.3 'Nunito', system-ui, sans-serif; opacity: .8; }
 .jo-abrir { flex: none; padding: 10px 14px; border-radius: 12px; background: #2bb45c; color: #fff; font: 900 .88rem 'Nunito', system-ui, sans-serif; text-decoration: none; }
+
+/* ---------- Jugar: pestañas Online / Contra los bots ---------- */
+.jo-tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; margin: 0 0 16px; padding: 4px; max-width: 420px; border-radius: 14px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.jo-tabs button { position: relative; z-index: 1; padding: 10px 12px; border: 0; background: none; color: var(--ink-2); font: 800 .92rem 'Nunito', system-ui, sans-serif; cursor: pointer; transition: color .2s; }
+.jo-tabs button[aria-selected="true"] { color: #fff; }
+.jo-tabs-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 10px; background: #134a2b; box-shadow: 0 6px 14px -8px rgba(0,0,0,.5); transition: transform .28s cubic-bezier(.3,.9,.3,1), background .28s; }
+.jo-tabs[data-v="bots"] .jo-tabs-ind { transform: translateX(100%); background: var(--blue, #2fa8ff); }
+.play-setup.li-on:not(.vista-bots) > :is(.tc-head, .vx-arena, .bots, .tc-opts, .tc-go, .li-sep) { display: none !important; }
+.play-setup.li-on.vista-bots > :is(.li-montaje, .on-montaje) { display: none !important; }
+.play-setup.li-on.vista-bots > :is(.tc-head, .vx-arena, .bots, .tc-opts, .tc-go) { animation: jo-abre .25s ease-out; }
+.play-setup.li-on > .li-sep { display: none !important; }
+.play-setup.li-on > .tc-head { margin-top: 0; }

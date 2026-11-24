@@ -182,6 +182,14 @@
     ['Clásica', 'reloj', [[30, 0], [30, 20]]]
   ];
   function tipoDe(r) { for (var k = 0; k < RITMOS.length; k++) for (var m = 0; m < RITMOS[k][2].length; m++) if (RITMOS[k][2][m][0] === r[0] && RITMOS[k][2][m][1] === r[1]) return RITMOS[k]; return RITMOS[2]; }
+  var KVI = 'aa-jugar-vista';
+  function vistaActual() { try { return sessionStorage.getItem(KVI) || 'online'; } catch (e) { return 'online'; } }
+  function vista(v) {
+    try { sessionStorage.setItem(KVI, v); } catch (e) {}
+    var ps = document.querySelector('.play-setup');
+    if (ps) { ps.classList.toggle('vista-bots', v === 'bots'); var t = ps.querySelector(':scope > .jo-tabs'); if (t) { t.dataset.v = v; t.querySelectorAll('[data-v]').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.v === v)); }); } }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   function irA(sel) { var t = document.querySelector(sel); if (t) t.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }
   function JugarOnline() {
     var UI = window.AA_UI, R = UI.React, h = R.createElement;
@@ -292,7 +300,7 @@
       h('div', { className: 'jo-grid' },
         tile('t-amigos', 'Desafiar a amigos', amigoAbierto ? 'Ritmo ' + ritmo[0] + '+' + ritmo[1] : 'En Lichess, con su usuario', A.amigos, function () { if (!tk) { conectarLichess(); return; } setAmigoAbierto(!amigoAbierto); },
           amigoAbierto ? h('form', { className: 'jo-amigo', onSubmit: retar }, h('input', { autoFocus: true, value: amigo, onChange: function (e) { setAmigo(e.target.value); }, placeholder: 'Usuario de Lichess', 'aria-label': 'Usuario de Lichess a retar', autoComplete: 'off', spellCheck: false }), h('button', { type: 'submit', disabled: !amigo.trim() }, 'Retar')) : null),
-        tile('t-bots', 'Contra los bots', 'Seis rivales que te explican cada jugada', A.bots, function () { irA('.play-setup > .tc-head'); }),
+        tile('t-bots', 'Contra los bots', 'Seis rivales que te explican cada jugada', A.bots, function () { vista('bots'); }),
         tile('t-mias', 'Tus partidas', 'Lichess y Chess.com, analizadas', A.mias, function () { irA('#mis-partidas-online'); })));
   }
 
@@ -383,9 +391,20 @@
       var ps = document.querySelector('.play-setup');
       if (ps) {
         ps.classList.toggle('li-on', true);
+        var esBots = vistaActual() === 'bots';
+        if (ps.classList.contains('vista-bots') !== esBots) ps.classList.toggle('vista-bots', esBots);
         var head = ps.querySelector(':scope > .tc-head');
+        // pestañas: Online (Lichess, amigos, tus partidas) · Contra los bots
+        var tabs = ps.querySelector(':scope > .jo-tabs');
+        if (!tabs) {
+          tabs = document.createElement('div'); tabs.className = 'jo-tabs'; tabs.setAttribute('role', 'tablist');
+          tabs.innerHTML = '<button type="button" role="tab" data-v="online">Online</button><button type="button" role="tab" data-v="bots">Contra los bots</button><i class="jo-tabs-ind" aria-hidden="true"></i>';
+          tabs.addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) vista(b.dataset.v); });
+          ps.insertBefore(tabs, ps.firstChild);
+        }
+        tabs.querySelectorAll('[data-v]').forEach(function (b) { var on = b.dataset.v === (esBots ? 'bots' : 'online'); if (b.getAttribute('aria-selected') !== String(on)) b.setAttribute('aria-selected', String(on)); });
+        if (tabs.dataset.v !== (esBots ? 'bots' : 'online')) tabs.dataset.v = esBots ? 'bots' : 'online';
         montar(ps, head, 'li-montaje', JugarOnline);
-        if (head && !ps.querySelector(':scope > .li-sep')) { var sep = document.createElement('div'); sep.className = 'li-sep'; sep.innerHTML = '<span>Bots de la academia</span>'; ps.insertBefore(sep, head); }
         montar(ps, null, 'on-montaje', Partidas);
       }
       var lib = document.querySelector('.library');
