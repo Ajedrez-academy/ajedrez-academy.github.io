@@ -300,7 +300,6 @@
       h('div', { className: 'jo-grid' },
         tile('t-amigos', 'Desafiar a amigos', amigoAbierto ? 'Ritmo ' + ritmo[0] + '+' + ritmo[1] : 'En Lichess, con su usuario', A.amigos, function () { if (!tk) { conectarLichess(); return; } setAmigoAbierto(!amigoAbierto); },
           amigoAbierto ? h('form', { className: 'jo-amigo', onSubmit: retar }, h('input', { autoFocus: true, value: amigo, onChange: function (e) { setAmigo(e.target.value); }, placeholder: 'Usuario de Lichess', 'aria-label': 'Usuario de Lichess a retar', autoComplete: 'off', spellCheck: false }), h('button', { type: 'submit', disabled: !amigo.trim() }, 'Retar')) : null),
-        tile('t-bots', 'Contra los bots', 'Seis rivales que te explican cada jugada', A.bots, function () { vista('bots'); }),
         tile('t-mias', 'Tus partidas', 'Lichess y Chess.com, analizadas', A.mias, function () { irA('#mis-partidas-online'); })));
   }
 

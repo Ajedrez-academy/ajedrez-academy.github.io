@@ -228,3 +228,7 @@
 .play-setup.li-on.vista-bots > :is(.tc-head, .vx-arena, .bots, .tc-opts, .tc-go) { animation: jo-abre .25s ease-out; }
 .play-setup.li-on > .li-sep { display: none !important; }
 .play-setup.li-on > .tc-head { margin-top: 0; }
+/* sin la tarjeta de bots (ya está la pestaña): amigos y tus partidas, una sobre otra */
+.jo-grid { grid-template-columns: 1fr; grid-template-rows: auto auto; }
+.jo-tile.t-amigos { grid-column: auto; }
+.t-mias .jo-arte { right: 22px; }
