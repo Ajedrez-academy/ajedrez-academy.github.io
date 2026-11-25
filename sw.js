@@ -1,6 +1,6 @@
-const C='aa-site-v23';
+const C='aa-site-v24';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','auth-config.js','login.js','retoques.css','retoques.js','retos.css','retos.js','nivel.css','nivel.js','evaluar-posiciones.js','memoria-posiciones.js','admin.css','admin.js','lecciones-datos.js','lecciones.js','partidas-tomo2.js','partidas-tomo3.js','apoyo.js','mejoras.css','mejoras.js','diario.js','actividad.js','coordenadas.js','teclado.js','vida.css','vida.js','entreno.css','entreno.js','visual.css','visual.js','aperturas.css','aperturas.js','iconos.js','repertorio.css','repertorio.js','online.css','online.js','privacidad.html'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(CORE.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||/ads-config.js|ads.txt/.test(u.pathname))return;
 const nav=e.request.mode==='navigate';
