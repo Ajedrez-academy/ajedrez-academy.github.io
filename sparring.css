@@ -1,0 +1,99 @@
+/* ---------- Juega la apertura ---------- */
+.sp { max-width: 1100px; margin: 0 auto; }
+.sp-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.sp-cab h1 { margin: 0; font-size: 1.6rem; }
+.sp-cab p { margin: 2px 0 0; }
+.sp-cab .hero-back span { display: inline-flex; width: 22px; height: 22px; }
+
+.sp-prep { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 28px; align-items: start; }
+.sp-prep-b { max-width: 420px; }
+.sp-pasos { margin: 0 0 18px; padding: 0; list-style: none; counter-reset: p; display: grid; gap: 12px; }
+.sp-pasos li { position: relative; padding: 12px 14px 12px 50px; border-radius: 14px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); line-height: 1.45; animation: sp-entra .35s ease-out both; }
+.sp-pasos li:nth-child(2) { animation-delay: .07s; } .sp-pasos li:nth-child(3) { animation-delay: .14s; }
+.sp-pasos li::before { counter-increment: p; content: counter(p); position: absolute; left: 14px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--green, #2bb45c); color: #fff; font: 900 .85rem/24px 'Nunito', system-ui, sans-serif; text-align: center; }
+.sp-op > span { display: block; margin-bottom: 8px; font-weight: 800; color: var(--ink-2); font-size: .9rem; }
+.sp-niv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+.sp-niv button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border: 0; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.sp-niv button b { font: 900 .95rem 'Nunito', system-ui, sans-serif; }
+.sp-niv button small { color: var(--ink-2); font-size: .75rem; }
+.sp-niv button.on { box-shadow: inset 0 0 0 2px var(--green, #2bb45c); transform: translateY(-1px); }
+.sp-chk { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: .92rem; color: var(--ink-2); cursor: pointer; }
+.sp-go { width: 100%; }
+
+.sp-juego { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.sp-b { position: relative; border-radius: 12px; }
+.sp-b.pulso-teoria, .sp-b.pulso-buena, .sp-b.pulso-castigo { animation: sp-pulso-ok .6s ease-out; }
+.sp-b.pulso-error { animation: sp-pulso-mal .6s ease-out; }
+.sp-aviso { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 7px 14px; border-radius: 999px; font: 900 .9rem 'Nunito', system-ui, sans-serif; color: #fff; pointer-events: none; animation: sp-aviso 1.6s ease-out forwards; white-space: nowrap; box-shadow: 0 8px 20px -10px rgba(0,0,0,.6); }
+.a-teoria { background: #2bb45c; } .a-buena { background: #2f8fd8; } .a-castigo { background: #8a4fe0; } .a-imprecision { background: #e0a020; } .a-error { background: #e0503c; }
+.sp-marcador { display: grid; grid-template-columns: auto auto 1fr; gap: 10px; align-items: stretch; }
+.sp-pts, .sp-racha { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 14px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.sp-pts b, .sp-racha b { font: 900 1.5rem/1 'Nunito', system-ui, sans-serif; }
+.sp-pts span, .sp-racha span { font-size: .72rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+.sp-racha.on b { color: #e0702a; animation: sp-salto .35s ease-out; }
+.sp-libro { display: flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 14px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-weight: 800; font-size: .88rem; color: var(--ink-2); text-align: center; }
+.sp-libro.on { background: color-mix(in srgb, #2bb45c 14%, var(--surface)); color: #1d8a45; box-shadow: inset 0 0 0 1px color-mix(in srgb, #2bb45c 40%, transparent); }
+.sp-estado { margin: 14px 0 10px; font: 800 1.02rem/1.35 'Nunito', system-ui, sans-serif; }
+.sp-pista { margin-bottom: 10px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, #2bb45c 12%, var(--surface)); animation: sp-entra .25s ease-out; }
+.sp-pista p { margin: 4px 0 0; font-size: .9rem; }
+.sp-bts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.sp-feed { display: grid; gap: 8px; }
+.sp-it { padding: 9px 12px 9px 14px; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); border-left: 4px solid var(--line); animation: sp-entra .3s ease-out both; }
+.sp-it b { margin-right: 8px; font: 900 .95rem 'Nunito', system-ui, sans-serif; }
+.sp-it p { margin: 4px 0 0; font-size: .88rem; line-height: 1.4; color: var(--ink-2); }
+.sp-it.rival { opacity: .9; }
+.sp-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .72rem; font-weight: 800; background: var(--gray, #e3e8e1); color: var(--ink-2); }
+.sp-it.t-teoria { border-left-color: #2bb45c; } .sp-it.t-teoria .sp-tag { background: #2bb45c; color: #fff; }
+.sp-it.t-buena { border-left-color: #2f8fd8; } .sp-it.t-buena .sp-tag { background: #2f8fd8; color: #fff; }
+.sp-it.t-castigo { border-left-color: #8a4fe0; } .sp-it.t-castigo .sp-tag { background: #8a4fe0; color: #fff; }
+.sp-it.t-imprecision { border-left-color: #e0a020; } .sp-it.t-imprecision .sp-tag { background: #e0a020; color: #fff; }
+.sp-it.t-error { border-left-color: #e0503c; } .sp-it.t-error .sp-tag { background: #e0503c; color: #fff; }
+.sp-it.t-trampa { border-left-color: #e0503c; } .sp-it.t-trampa .sp-tag { background: color-mix(in srgb, #e0503c 18%, var(--surface)); color: #c23a28; }
+.sp-it.t-nota { border-left-color: var(--line); }
+.sp-feed.largo { margin-bottom: 30px; }
+
+.sp-fin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 28px; align-items: start; margin-bottom: 10px; }
+.sp-fin .sp-pts { display: inline-flex; padding: 14px 26px; margin-bottom: 14px; animation: sp-salto .5s ease-out; }
+.sp-fin .sp-pts b { font-size: 2.6rem; }
+.sp-cifras { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+.sp-cifras div { display: flex; flex-direction: column; align-items: center; padding: 10px 4px; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); text-align: center; animation: sp-entra .35s ease-out both; }
+.sp-cifras b { font: 900 1.3rem 'Nunito', system-ui, sans-serif; }
+.sp-cifras small { font-size: .72rem; color: var(--ink-2); }
+.sp-eval { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.sp-eval span { font-weight: 800; color: var(--ink-2); }
+.sp-eval b.bien { color: #1d8a45; } .sp-eval b.mal { color: #c23a28; }
+.sp-jug { margin-top: 8px; line-height: 1.5; }
+
+/* acceso desde el curso */
+.sp-cta { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border: 0; border-radius: 16px; background: linear-gradient(120deg, #134a2b, #1f7a45); color: #fff; text-align: left; cursor: pointer; box-shadow: 0 10px 24px -16px rgba(0,0,0,.6); transition: transform .15s, box-shadow .15s; }
+.sp-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -16px rgba(0,0,0,.7); }
+.sp-cta b { display: block; font: 900 1.05rem 'Nunito', system-ui, sans-serif; }
+.sp-cta small { display: block; margin-top: 2px; opacity: .82; font-size: .85rem; }
+.sp-cta-ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(255,255,255,.14); }
+.sp-cta-ic .aa-ic, .sp-cta-ic svg { width: 24px; height: 24px; }
+.course-cta + .sp-cta { margin-top: 10px; }
+.course-top .sp-cta { grid-column: 1 / -1; }
+
+/* fallo explicado */
+.sp-fallo { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); border-left: 4px solid var(--line); animation: sp-entra .25s ease-out; }
+.sp-fallo b { font-weight: 900; }
+.sp-fallo p { margin: 4px 0 0; font-size: .9rem; line-height: 1.4; color: var(--ink-2); }
+.sp-fallo.cargando p { animation: sp-parpadeo 1s ease-in-out infinite; }
+.sp-fallo.t-buena { border-left-color: #2f8fd8; } .sp-fallo.t-imprecision { border-left-color: #e0a020; } .sp-fallo.t-error { border-left-color: #e0503c; }
+
+@keyframes sp-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes sp-aviso { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.9); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -8px); } }
+@keyframes sp-pulso-ok { 0% { box-shadow: 0 0 0 0 rgba(43,180,92,.55); } 100% { box-shadow: 0 0 0 14px rgba(43,180,92,0); } }
+@keyframes sp-pulso-mal { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@keyframes sp-salto { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes sp-parpadeo { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .sp *, .sp-fallo, .sp-cta { animation: none !important; transition: none !important; } }
+
+@media (max-width: 860px) {
+  .sp-prep, .sp-juego, .sp-fin { grid-template-columns: minmax(0, 1fr); }
+  .sp-prep-b { display: none; }
+  .sp-cifras { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sp-cab h1 { font-size: 1.3rem; }
+}
+.card.sp-cta { flex-direction: row; justify-content: flex-start; align-items: center; text-align: left; min-height: 0; }
+.card.sp-cta > span:last-child { flex: 1; }
